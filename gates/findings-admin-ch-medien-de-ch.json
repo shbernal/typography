@@ -1,0 +1,73 @@
+{
+  "gate": "findings",
+  "corpus": "admin-ch-medien-de-ch",
+  "note": "Press releases of the Swiss federal administration, German edition, set to the Federal Chancellery house standard. This is the corpus that carries Swiss guillemets, which the Constitution does not contain.",
+  "pack": "de-CH@0.1.0",
+  "standard": "Duden",
+  "units": 37,
+  "characters": 111812,
+  "unitsWithFindings": 0,
+  "fingerprint": "37e908c9e9098432",
+  "exposure": {
+    "U+00AB «": 38,
+    "U+00BB »": 38,
+    "U+201E „": 1,
+    "U+201C “": 0,
+    "U+201D ”": 1,
+    "U+00BF ¿": 0,
+    "U+00A1 ¡": 0,
+    "?": 7,
+    "!": 1,
+    ";": 23,
+    ":": 90,
+    "\" straight": 0,
+    "' straight": 2,
+    "U+2019 ’": 23,
+    "U+00A0 NBSP": 37,
+    "U+202F NNBSP": 0
+  },
+  "rules": {
+    "de.apostrophe": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de.space-before-punctuation": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de.straight-double-quote": {
+      "fixable": false,
+      "severity": "warning",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de-CH.guillemet-open-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de-CH.guillemet-close-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de-CH.inward-guillemets": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    }
+  }
+}

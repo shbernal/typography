@@ -1,0 +1,82 @@
+{
+  "gate": "findings",
+  "corpus": "fundeu-rae-es",
+  "note": "FundeuRAE articles. The foundation the Real Academia Espanola promotes with the Agencia EFE, whose subject is correct Spanish, so a typographic finding in its own prose is worth reading.",
+  "pack": "es@0.1.0",
+  "standard": "Real Academia Espanola",
+  "units": 300,
+  "characters": 641015,
+  "unitsWithFindings": 1,
+  "fingerprint": "83e39f568320f9d3",
+  "exposure": {
+    "U+00AB «": 1033,
+    "U+00BB »": 1031,
+    "U+201E „": 0,
+    "U+201C “": 13,
+    "U+201D ”": 16,
+    "U+00BF ¿": 38,
+    "U+00A1 ¡": 1,
+    "?": 38,
+    "!": 1,
+    ";": 270,
+    ":": 236,
+    "\" straight": 0,
+    "' straight": 0,
+    "U+2019 ’": 5,
+    "U+00A0 NBSP": 1273,
+    "U+202F NNBSP": 6
+  },
+  "rules": {
+    "es.guillemet-open-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.guillemet-close-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.opening-mark-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.unpaired-question": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 1,
+      "units": 1,
+      "samples": [
+        "462975.txt  \"ocede de What<RSQUO>s your name? y se usa en Cádiz para r\""
+      ]
+    },
+    "es.unpaired-exclamation": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.space-before-punctuation": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.straight-double-quote": {
+      "fixable": false,
+      "severity": "warning",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    }
+  }
+}

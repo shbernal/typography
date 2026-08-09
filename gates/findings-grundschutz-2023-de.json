@@ -8,6 +8,24 @@
   "characters": 986380,
   "unitsWithFindings": 7,
   "fingerprint": "c17b17fe7b6d0b2b",
+  "exposure": {
+    "U+00AB «": 0,
+    "U+00BB »": 0,
+    "U+201E „": 85,
+    "U+201C “": 82,
+    "U+201D ”": 0,
+    "U+00BF ¿": 0,
+    "U+00A1 ¡": 0,
+    "?": 20,
+    "!": 0,
+    ";": 0,
+    ":": 132,
+    "\" straight": 13,
+    "' straight": 0,
+    "U+2019 ’": 0,
+    "U+00A0 NBSP": 0,
+    "U+202F NNBSP": 0
+  },
   "rules": {
     "de.apostrophe": {
       "fixable": true,

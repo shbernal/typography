@@ -22,10 +22,10 @@ SOFTWARE.
 
 ---
 
-This license covers the source code in this repository.
+This license covers the source code and documentation in this repository.
 
-It does not cover the material under `test/fixtures/`. Those files are
-third-party works, redistributed here under their own terms, and each fixture
-directory carries its own license text and attribution. See
-`test/fixtures/README.md`. MIT on this repository's code does not relicense
-them, and reusing a fixture means honouring the license that ships beside it.
+It does not cover the release gate corpora. Those are third-party published works
+and are deliberately not redistributed here: `gates/corpora/` is ignored, and
+what is committed is a list of URLs, the fetcher, and per-rule counts. Building a
+corpus locally leaves you holding somebody else's text under whatever terms they
+publish it; MIT on this repository does not relicense it. See `gates/README.md`.

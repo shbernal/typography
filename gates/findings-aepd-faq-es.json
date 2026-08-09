@@ -1,0 +1,89 @@
+{
+  "gate": "findings",
+  "corpus": "aepd-faq-es",
+  "note": "The Spanish data protection agency's public FAQ. Every entry is a question, which is the only material here that puts es.unpaired-question in front of correctly opened interrogatives at any volume.",
+  "pack": "es@0.1.0",
+  "standard": "Real Academia Espanola",
+  "units": 116,
+  "characters": 220269,
+  "unitsWithFindings": 21,
+  "fingerprint": "6c75dffaa85e0156",
+  "exposure": {
+    "U+00AB «": 0,
+    "U+00BB »": 0,
+    "U+201E „": 0,
+    "U+201C “": 5,
+    "U+201D ”": 4,
+    "U+00BF ¿": 332,
+    "U+00A1 ¡": 0,
+    "?": 332,
+    "!": 0,
+    ";": 6,
+    ":": 113,
+    "\" straight": 162,
+    "' straight": 230,
+    "U+2019 ’": 0,
+    "U+00A0 NBSP": 90,
+    "U+202F NNBSP": 0
+  },
+  "rules": {
+    "es.guillemet-open-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.guillemet-close-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.opening-mark-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.unpaired-question": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.unpaired-exclamation": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.space-before-punctuation": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.straight-double-quote": {
+      "fixable": false,
+      "severity": "warning",
+      "findings": 162,
+      "units": 21,
+      "samples": [
+        "0010-preguntas-frecuentes-10-menores-y-educacion.txt  \"ponible en la página web \\\"tudecideseninternet.es\\\"\\nD\"",
+        "0010-preguntas-frecuentes-10-menores-y-educacion.txt  \"b \\\"tudecideseninternet.es\\\"\\nDicha página contiene ta\"",
+        "0016-ner-mas-informacion-sobre-el-tratamiento-de-datos-de-menores.txt  \"ponible en la página web \\\"tudecideseninternet.es\\\"\\nD\"",
+        "0016-ner-mas-informacion-sobre-el-tratamiento-de-datos-de-menores.txt  \"b \\\"tudecideseninternet.es\\\"\\nDicha página contiene ta\"",
+        "0028-preguntas-frecuentes-12-sede-electronica.txt  \"vegador?\\nPulse el enlace \\\"Certificado AC RAIZ FNMT-\"",
+        "0028-preguntas-frecuentes-12-sede-electronica.txt  \"tificado AC RAIZ FNMT-RCM\\\" que encontrará en https:\"",
+        "0028-preguntas-frecuentes-12-sede-electronica.txt  \"u equipo, pulse el botón \\\"Abrir\\\".\\nA...\\nLeer más sob\"",
+        "0028-preguntas-frecuentes-12-sede-electronica.txt  \"po, pulse el botón \\\"Abrir\\\".\\nA...\\nLeer más sobre '¿C\""
+      ]
+    }
+  }
+}

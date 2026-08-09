@@ -24,8 +24,14 @@ in CI is what backs that claim.
 ```powershell
 pnpm check          # typecheck + lint + test. The done gate.
 pnpm build
-pnpm gates:verify   # the release gates. Needs corpora not in this repo.
+pnpm corpus         # rebuild the gate corpora from gates/sources/*.urls
+pnpm gates:verify   # the release gates.
 ```
+
+The corpora are third-party text and are gitignored; the URL lists and the
+fetcher are committed, so `pnpm corpus` reconstructs them. The French gate
+additionally needs the consumer working tree, since it diffs against the
+implementation the pack was extracted from.
 
 ## The rules that must not be broken
 
@@ -91,6 +97,14 @@ professionally typeset text, because sloppy text measures recall (never in doubt
 while typeset text measures the false-positive rate (the actual failure mode).
 Counts are committed, corpora are not, and every release after the first reviews
 a delta.
+
+**A zero is not automatically a result.** A rule reports nothing either because
+the publisher set the text correctly or because the text contained nothing it
+could match, and only the first is evidence. Every gate report carries an
+`exposure` block counting the characters that actually occurred, and each corpus
+declares in `gates/corpora.json` what it is there to expose the rules to, which
+the gate checks. If you add a corpus, declare it, and if you add a rule, check
+that some corpus exposes the character it is about.
 
 ## Conventions
 

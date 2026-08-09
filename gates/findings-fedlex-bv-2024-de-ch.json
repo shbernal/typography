@@ -1,0 +1,73 @@
+{
+  "gate": "findings",
+  "corpus": "fedlex-bv-2024-de-ch",
+  "note": "Swiss Federal Constitution, German, consolidated 3 March 2024, from Fedlex. Long formal Swiss German with around 700 real no-break spaces and no quotation marks whatsoever.",
+  "pack": "de-CH@0.1.0",
+  "standard": "Duden",
+  "units": 1,
+  "characters": 199319,
+  "unitsWithFindings": 0,
+  "fingerprint": "0d41efc877bb4d84",
+  "exposure": {
+    "U+00AB «": 0,
+    "U+00BB »": 0,
+    "U+201E „": 0,
+    "U+201C “": 0,
+    "U+201D ”": 0,
+    "U+00BF ¿": 0,
+    "U+00A1 ¡": 0,
+    "?": 0,
+    "!": 1,
+    ";": 637,
+    ":": 93,
+    "\" straight": 0,
+    "' straight": 0,
+    "U+2019 ’": 0,
+    "U+00A0 NBSP": 722,
+    "U+202F NNBSP": 0
+  },
+  "rules": {
+    "de.apostrophe": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de.space-before-punctuation": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de.straight-double-quote": {
+      "fixable": false,
+      "severity": "warning",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de-CH.guillemet-open-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de-CH.guillemet-close-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de-CH.inward-guillemets": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    }
+  }
+}

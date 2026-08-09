@@ -6,14 +6,23 @@
     "",
     "`registry` corpora are read out of a translation-harness registry on the machine",
     "running the gate, resolved against --consumer. `text` corpora are read from",
-    "gates/corpora/<id>/, which is gitignored.",
+    "gates/corpora/<id>/, which is gitignored. A `text` corpus with a `fetch` block is",
+    "rebuildable: `node scripts/fetch-corpus.ts` reads the frozen URL list under",
+    "gates/sources/ and writes the documents. A gate whose corpus cannot be rebuilt is",
+    "a number nobody else can check.",
     "",
     "A corpus qualifies only if it is professionally typeset. That is the whole",
     "subtlety of this gate and the easiest thing to get wrong: sloppy text makes",
     "nearly every finding a true positive, which measures recall, which nobody",
     "doubts. In text somebody set properly, every finding is a suspected false",
     "positive by construction, and the false-positive rate is the failure mode these",
-    "rules actually have."
+    "rules actually have.",
+    "",
+    "Corpora are chosen per rule, not per language. Two of these exist only because",
+    "one rule needed material the other corpora do not contain: aepd-faq-es is where",
+    "es.unpaired-question meets several hundred correctly opened interrogatives, and",
+    "admin-ch-medien-de-ch is where the Swiss guillemet rules meet Swiss guillemets.",
+    "Their partners cover scale and register instead."
   ],
   "corpora": [
     {
@@ -22,7 +31,92 @@
       "source": "registry",
       "path": "data/work/grundschutz-2023-de/registry.sqlite3",
       "column": "source_json",
+      "exposes": [
+        "U+201E „",
+        "U+201C “",
+        "\" straight",
+        ":"
+      ],
       "note": "BSI IT-Grundschutz-Kompendium 2023, German source text. Published by a federal agency and edited to a house standard, which is what makes it usable here."
+    },
+    {
+      "id": "boe-lopdgdd-2018-es",
+      "lang": "es",
+      "source": "text",
+      "fetch": {
+        "urls": "gates/sources/boe-lopdgdd-2018-es.urls",
+        "format": "xml",
+        "region": "<texto>([\\s\\S]*?)</texto>"
+      },
+      "exposes": [
+        "U+00AB «",
+        "U+00BB »",
+        ":"
+      ],
+      "note": "Ley Organica 3/2018, from the Boletin Oficial del Estado. Spain's official gazette, set by the state printer. Legal register: guillemets and no interrogatives at all."
+    },
+    {
+      "id": "aepd-faq-es",
+      "lang": "es",
+      "source": "text",
+      "fetch": {
+        "urls": "gates/sources/aepd-faq-es.urls",
+        "format": "html",
+        "region": "<main[^>]*>([\\s\\S]*?)</main>"
+      },
+      "exposes": [
+        "U+00BF ¿",
+        "?",
+        "\" straight"
+      ],
+      "note": "The Spanish data protection agency's public FAQ. Every entry is a question, which is the only material here that puts es.unpaired-question in front of correctly opened interrogatives at any volume."
+    },
+    {
+      "id": "fundeu-rae-es",
+      "lang": "es",
+      "source": "text",
+      "fetch": {
+        "urls": "gates/sources/fundeu-rae-es.urls",
+        "format": "wp-json"
+      },
+      "exposes": [
+        "U+00AB «",
+        "U+00BB »",
+        "U+00BF ¿",
+        "U+00A0 NBSP"
+      ],
+      "note": "FundeuRAE articles. The foundation the Real Academia Espanola promotes with the Agencia EFE, whose subject is correct Spanish, so a typographic finding in its own prose is worth reading."
+    },
+    {
+      "id": "fedlex-bv-2024-de-ch",
+      "lang": "de-CH",
+      "source": "text",
+      "fetch": {
+        "urls": "gates/sources/fedlex-bv-2024-de-ch.urls",
+        "format": "html",
+        "region": "<body[^>]*>([\\s\\S]*)</body>"
+      },
+      "exposes": [
+        ";",
+        ":",
+        "U+00A0 NBSP"
+      ],
+      "note": "Swiss Federal Constitution, German, consolidated 3 March 2024, from Fedlex. Long formal Swiss German with around 700 real no-break spaces and no quotation marks whatsoever."
+    },
+    {
+      "id": "admin-ch-medien-de-ch",
+      "lang": "de-CH",
+      "source": "text",
+      "fetch": {
+        "urls": "gates/sources/admin-ch-medien-de-ch.urls",
+        "format": "html",
+        "region": "<main id=\"main-content\"[^>]*>([\\s\\S]*?)</main>"
+      },
+      "exposes": [
+        "U+00AB «",
+        "U+00BB »"
+      ],
+      "note": "Press releases of the Swiss federal administration, German edition, set to the Federal Chancellery house standard. This is the corpus that carries Swiss guillemets, which the Constitution does not contain."
     }
   ]
 }

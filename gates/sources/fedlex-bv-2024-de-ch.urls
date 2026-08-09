@@ -1,0 +1,16 @@
+# Bundesverfassung der Schweizerischen Eidgenossenschaft (SR 101), German,
+# consolidated as at 3 March 2024, from the Fedlex file store.
+#
+# Two reasons this one is here. It is long, formal Swiss German set by the
+# Federal Chancellery, and it is full of real typographic no-break spaces -
+# around 700 of them - which is exactly the material that tells a checker's
+# space rules apart from a checker's guesses.
+#
+# It contains no quotation marks at all, so it says nothing about the Swiss
+# guillemet rules. That is what admin-ch-medien-de-ch.urls is for, and the two
+# corpora are deliberately not interchangeable.
+#
+# The URL carries its consolidation date, so it is immutable.
+#
+# format: html   region: <body>
+https://www.fedlex.admin.ch/filestore/fedlex.data.admin.ch/eli/cc/1999/404/20240303/de/html/fedlex-data-admin-ch-eli-cc-1999-404-20240303-de-html.html

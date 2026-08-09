@@ -115,19 +115,36 @@ stated rather than sniffed.
 
 ## Status
 
-`0.1.0`, and pre-1.0 is the accurate thing to say. French reproduces a prior
-implementation byte for byte over 11,058 real values. German has been reviewed
-against a million characters of published federal text. **Spanish has not been
-run past any real corpus yet** - see [gates/README.md](gates/README.md), which is
-honest about what each language's evidence actually is.
+`0.1.0`, and pre-1.0 is the accurate thing to say. Every language has now been
+run past real published text:
+
+| | Evidence | Result |
+|---|---|---|
+| `fr` | 11,058 real values, 827 of which a prior implementation rewrites | reproduces it byte for byte |
+| `de-DE` | 986,380 characters of published federal German | zero error-severity findings |
+| `es` | 1,106,553 characters: Spain's official gazette, the data protection agency's FAQ, 300 FundeuRAE articles | one false positive, and it is an English phrase quoted inside Spanish |
+| `de-CH` | 311,131 characters: the Swiss Federal Constitution and 37 federal press releases | zero findings, over 38 Swiss guillemet pairs |
+
+The Spanish number is the one worth knowing about. `es.unpaired-question`, the
+rule this package's whole shape was designed around, met 332 correctly opened
+interrogatives and reported none of them.
+
+[gates/README.md](gates/README.md) is honest about what each of those numbers is
+worth, including where the evidence is thin. Zero findings can mean the text was
+set correctly or that it contained nothing the rule could match, so every gate
+report also counts how many times each character actually occurred.
 
 ## Development
 
 ```bash
 pnpm check     # typecheck, lint, test
 pnpm build
-pnpm gates     # the release gates; needs corpora that are not in this repo
+pnpm corpus    # rebuild the gate corpora from the frozen URL lists
+pnpm gates     # the release gates
 ```
+
+The corpora are third-party text and are not in this repo. The URL lists and the
+fetcher are, so the gates can be rebuilt and their fingerprints compared.
 
 Node 24 for development (the sources run under type stripping); the published
 package runs on Node 20.

@@ -65,6 +65,7 @@
     "lint:fix": "biome check --write src test scripts",
     "format": "biome format --write src test scripts",
     "test": "node --test \"test/**/*.test.ts\"",
+    "corpus": "node scripts/fetch-corpus.ts",
     "gates": "node scripts/gate-fr-reproduction.ts && node scripts/gate-findings.ts",
     "gates:verify": "node scripts/gate-fr-reproduction.ts --verify && node scripts/gate-findings.ts --verify"
   },

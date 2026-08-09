@@ -16,7 +16,17 @@ import { pathToFileURL } from 'node:url';
 const EM_DASH = String.fromCharCode(0x2014);
 
 /** Files we scan; anything else is ignored. */
-const TEXT_EXTENSIONS = new Set(['.ts', '.md', '.json', '.mjs', '.cjs', '.txt', '.yml', '.yaml']);
+const TEXT_EXTENSIONS = new Set([
+  '.ts',
+  '.md',
+  '.json',
+  '.mjs',
+  '.cjs',
+  '.txt',
+  '.yml',
+  '.yaml',
+  '.urls',
+]);
 
 /** Directory names skipped wherever they appear. */
 const SKIP_NAMES = new Set(['node_modules', '.git', 'dist']);

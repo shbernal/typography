@@ -1,0 +1,80 @@
+{
+  "gate": "findings",
+  "corpus": "boe-lopdgdd-2018-es",
+  "note": "Ley Organica 3/2018, from the Boletin Oficial del Estado. Spain's official gazette, set by the state printer. Legal register: guillemets and no interrogatives at all.",
+  "pack": "es@0.1.0",
+  "standard": "Real Academia Espanola",
+  "units": 1,
+  "characters": 245269,
+  "unitsWithFindings": 0,
+  "fingerprint": "fd8297ef229bfe64",
+  "exposure": {
+    "U+00AB «": 35,
+    "U+00BB »": 35,
+    "U+201E „": 0,
+    "U+201C “": 0,
+    "U+201D ”": 0,
+    "U+00BF ¿": 0,
+    "U+00A1 ¡": 0,
+    "?": 0,
+    "!": 0,
+    ";": 11,
+    ":": 66,
+    "\" straight": 0,
+    "' straight": 0,
+    "U+2019 ’": 0,
+    "U+00A0 NBSP": 3,
+    "U+202F NNBSP": 0
+  },
+  "rules": {
+    "es.guillemet-open-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.guillemet-close-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.opening-mark-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.unpaired-question": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.unpaired-exclamation": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.space-before-punctuation": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "es.straight-double-quote": {
+      "fixable": false,
+      "severity": "warning",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    }
+  }
+}
