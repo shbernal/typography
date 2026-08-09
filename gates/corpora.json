@@ -1,0 +1,28 @@
+{
+  "//": [
+    "Where the release gate gets its text. The text itself is not here and must not be:",
+    "these are third-party published works, and what this repo commits is the per-rule",
+    "counts plus a fingerprint, so a release review is a delta rather than a re-triage.",
+    "",
+    "`registry` corpora are read out of a translation-harness registry on the machine",
+    "running the gate, resolved against --consumer. `text` corpora are read from",
+    "gates/corpora/<id>/, which is gitignored.",
+    "",
+    "A corpus qualifies only if it is professionally typeset. That is the whole",
+    "subtlety of this gate and the easiest thing to get wrong: sloppy text makes",
+    "nearly every finding a true positive, which measures recall, which nobody",
+    "doubts. In text somebody set properly, every finding is a suspected false",
+    "positive by construction, and the false-positive rate is the failure mode these",
+    "rules actually have."
+  ],
+  "corpora": [
+    {
+      "id": "grundschutz-2023-de",
+      "lang": "de-DE",
+      "source": "registry",
+      "path": "data/work/grundschutz-2023-de/registry.sqlite3",
+      "column": "source_json",
+      "note": "BSI IT-Grundschutz-Kompendium 2023, German source text. Published by a federal agency and edited to a house standard, which is what makes it usable here."
+    }
+  ]
+}

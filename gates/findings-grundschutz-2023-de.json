@@ -1,0 +1,71 @@
+{
+  "gate": "findings",
+  "corpus": "grundschutz-2023-de",
+  "note": "BSI IT-Grundschutz-Kompendium 2023, German source text. Published by a federal agency and edited to a house standard, which is what makes it usable here.",
+  "pack": "de-DE@0.1.0",
+  "standard": "Duden",
+  "units": 8500,
+  "characters": 986380,
+  "unitsWithFindings": 7,
+  "fingerprint": "c17b17fe7b6d0b2b",
+  "rules": {
+    "de.apostrophe": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de.space-before-punctuation": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de.straight-double-quote": {
+      "fixable": false,
+      "severity": "warning",
+      "findings": 13,
+      "units": 7,
+      "samples": [
+        "APP.3.6.A16.title  \"ines DNS-Servers in eine \\\"P-A-P\\\"-Struktur\"",
+        "APP.3.6.A16.title  \"NS-Servers in eine \\\"P-A-P\\\"-Struktur\"",
+        "APP.4.4.A9.description  \"Pods SOLLTEN NICHT den \\\"default\\\"-Service-Account \"",
+        "APP.4.4.A9.description  \"OLLTEN NICHT den \\\"default\\\"-Service-Account nutzen. \"",
+        "APP.4.4.A9.description  \"vice-Account nutzen. Dem \\\"default\\\"-Service-Account \"",
+        "APP.4.4.A9.description  \"ount nutzen. Dem \\\"default\\\"-Service-Account SOLLTEN \"",
+        "APP.4.4.A18.description  \"-Name, Metadaten („Labels\\\"), die Kubernetes Service\"",
+        "APP.5.3.A9.description  \"r SPF-Eintrag SOLLTE den \\\"-all\\\" Parameter enthalten\""
+      ]
+    },
+    "de-DE.low-quote-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de-DE.guillemet-open-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de-DE.guillemet-close-space": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "de-DE.outward-guillemets": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    }
+  }
+}

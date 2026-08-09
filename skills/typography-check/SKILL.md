@@ -1,0 +1,123 @@
+---
+name: typography-check
+description: Check or fix French, Spanish and German orthotypography with the typocheck CLI - no-break spaces before French punctuation, guillemets and their spacing, the paired Spanish opening marks ¿ and ¡, German quotation marks, and straight apostrophes that should be U+2019. Use when validating or cleaning translated strings, a French, Spanish or German document, subtitle or UI copy, or when someone asks whether text follows Imprimerie nationale, RAE or Duden convention. Not a speller, grammar checker or style guide, and it does not translate.
+---
+
+# Typography check
+
+Run the checker. Do not hand-apply typographic rules from memory, and do not
+write a regular expression to do this: the rules are cited to a standard, the
+edge cases are the whole difficulty, and the tool already exists in this package.
+
+## Invoke it
+
+Installed as a dependency, the binary is next door:
+
+```bash
+npx typocheck check --lang fr path/to/file.md
+```
+
+Installed as a plugin, the binary came out of the same tarball as this file:
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/dist/cli.js" check --lang fr path/to/file.md
+```
+
+With no project to install into and no plugin:
+
+```bash
+npx @shbernal/typography check --lang fr path/to/file.md
+```
+
+Piping works, and is usually what you want for a paragraph out of a conversation
+or a column of translated strings:
+
+```bash
+printf '%s' "$TEXT" | npx typocheck check --lang es -
+```
+
+Verbs and flags:
+
+| | |
+|---|---|
+| `check` | report only. Never touches a file. The default thing to do. |
+| `fix --write` | apply the safe subset in place |
+| `--lang <tag>` | required: `fr`, `es`, `de-DE`, `de-CH` |
+| `--json` | machine-readable findings |
+| `--strict` | make warnings fail too |
+| `langs` | list the packs and their standards |
+
+Exit `0` clean, `1` findings, `2` misuse.
+
+## Four things to get right
+
+### 1. The findings are invisible. Never quote raw text back
+
+A no-break space (U+00A0), a narrow no-break space (U+202F) and a regular space
+render identically. So does a straight apostrophe next to a curly one at small
+sizes. If you paste raw output into a message, you will show the user two
+identical-looking strings and it will look completely fine.
+
+The tool already escapes them: `<NBSP>`, `<NNBSP>`, `<THINSP>`, `<RSQUO>`,
+`<LAQUO>`, `<RAQUO>`. **Quote the tool's excerpt, not the source text.**
+
+### 2. Some findings must not be fixed, and the report says which
+
+Every finding is marked `fixable` or not. The unfixable ones are the interesting
+half and they are unfixable for a reason, not an oversight.
+
+The canonical case: a Spanish sentence ending in `?` with no opening `¿` is an
+unambiguous defect, and inserting the `¿` means deciding where the interrogative
+*clause* began. `Si vienes, ¿me avisas?` is correct, and no substitution could
+have produced it. So report those to the user and ask. Never rewrite them
+yourself, and never suggest a `sed` that does.
+
+### 3. `--write` is a separate decision from checking
+
+Default to `check`. Rewriting somebody's file needs them to have asked for it.
+`fix` without `--write` prints exactly what it would have done, so run that first
+and show it.
+
+### 4. State the language; do not sniff it
+
+The tool refuses to guess, and so should you. A French rule applied to Swiss
+German produces confident nonsense: French requires a narrow no-break space
+inside its guillemets and German forbids one, using the same two characters.
+
+There is **no bare `de`**. Germany and Austria set `»Wort«`; Switzerland sets
+`«Wort»`. If you do not know which, ask - the answer is usually in the document's
+own metadata, the target locale of the project, or the user's first message.
+`de-AT` follows `de-DE`, and the tool will not make that substitution for you on
+purpose, so pass `de-DE`.
+
+## Reading a report
+
+```
+draft.fr.md:12:34  fixable fr.space-before-colon  Breaking space before a colon; French requires U+00A0
+      "voici<NBSP>: ici"
+      Imprimerie nationale, Lexique des regles typographiques (2002), "Ponctuation"
+```
+
+`file:line:column`, then `fixable` or the severity, then the rule id, then the
+citation. When a user disputes a finding, the citation is the answer, and the
+answer to "why did it not fix this one" is always that the repair needs
+information a substitution does not have.
+
+A count with no version beside it is not comparable to the next one, which is why
+the footer stamps `typocheck 0.1.0 (fr@0.1.0)`. Keep the stamp when you paste a
+report anywhere it will be read later.
+
+## Per-language detail
+
+Read one only when the language is settled and the user asks *why* a rule exists
+or disputes a finding:
+
+- [references/fr.md](references/fr.md) - Imprimerie nationale
+- [references/es.md](references/es.md) - RAE
+- [references/de.md](references/de.md) - Duden, both regions
+
+## What this is not
+
+It does not translate, spell-check or judge grammar or style. It has no opinion
+about English: the Oxford comma is house style rather than a standard, and a pack
+asserting one would smuggle a preference in under a national standard's banner.

@@ -1,0 +1,76 @@
+{
+  "name": "@shbernal/typography",
+  "version": "0.1.0",
+  "description": "Orthotypography rules for French, Spanish and German as data: check text against a national standard, or fix the subset that is safe to fix unattended.",
+  "keywords": [
+    "typography",
+    "orthotypography",
+    "french",
+    "spanish",
+    "german",
+    "imprimerie-nationale",
+    "rae",
+    "duden",
+    "guillemets",
+    "no-break-space",
+    "i18n",
+    "l10n",
+    "linter"
+  ],
+  "author": "shbernal",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shbernal/typography"
+  },
+  "type": "module",
+  "packageManager": "pnpm@11.11.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "typocheck": "dist/cli.js"
+  },
+  "files": ["dist", "skills", ".claude-plugin", "README.md", "CHANGELOG.md", "LICENSE"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./fr": {
+      "types": "./dist/fr.d.ts",
+      "import": "./dist/fr.js"
+    },
+    "./es": {
+      "types": "./dist/es.d.ts",
+      "import": "./dist/es.js"
+    },
+    "./de-DE": {
+      "types": "./dist/de-DE.d.ts",
+      "import": "./dist/de-DE.js"
+    },
+    "./de-CH": {
+      "types": "./dist/de-CH.d.ts",
+      "import": "./dist/de-CH.js"
+    }
+  },
+  "scripts": {
+    "clean": "node --eval \"import('node:fs').then(fs => fs.rmSync('dist', { recursive: true, force: true }))\"",
+    "build": "pnpm run clean && tsc -p tsconfig.build.json",
+    "prepack": "pnpm run build",
+    "check": "pnpm run typecheck && pnpm run lint && pnpm test",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "biome check src test scripts && pnpm run lint:text",
+    "lint:text": "node scripts/check-no-emdash.ts",
+    "lint:fix": "biome check --write src test scripts",
+    "format": "biome format --write src test scripts",
+    "test": "node --test \"test/**/*.test.ts\"",
+    "gates": "node scripts/gate-fr-reproduction.ts && node scripts/gate-findings.ts",
+    "gates:verify": "node scripts/gate-fr-reproduction.ts --verify && node scripts/gate-findings.ts --verify"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.0",
+    "@types/node": "^24.0.0",
+    "typescript": "^7.0.2"
+  }
+}

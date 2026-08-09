@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    # Both platforms. Nothing here spawns a process or touches a path, so the
+    # platform risk is narrow and specific: this package's whole subject is
+    # invisible characters, and a repo that normalises line endings wrongly on
+    # one platform is exactly where U+00A0 and U+202F assertions would silently
+    # start failing. `.gitattributes` pins that; this matrix is what proves it.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out typography
+        uses: actions/checkout@v5
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: 11.11.0
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install and check
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm check
+
+      - name: Build
+        run: pnpm build
+
+  # `engines.node` claims >= 20, and the check job above cannot back that claim:
+  # it runs the sources under Node's type stripping, which needs 24. So this job
+  # builds `dist/` and exercises the built CLI on the oldest supported runtime.
+  # Without it the engines field is an aspiration.
+  oldest-supported:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out typography
+        uses: actions/checkout@v5
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: 11.11.0
+
+      - name: Set up Node 24 to build
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install and build
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: Set up Node 20 to run
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Smoke the built CLI on Node 20
+        run: node scripts/smoke-dist.mjs

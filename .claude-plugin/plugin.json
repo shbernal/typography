@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "typography-check",
+  "displayName": "Typography check",
+  "description": "Check or fix French, Spanish and German orthotypography against Imprimerie nationale, RAE and Duden.",
+  "author": {
+    "name": "shbernal",
+    "url": "https://github.com/shbernal"
+  },
+  "homepage": "https://github.com/shbernal/typography#readme",
+  "repository": "https://github.com/shbernal/typography",
+  "license": "MIT",
+  "keywords": ["typography", "french", "spanish", "german", "i18n", "l10n"]
+}
