@@ -57,7 +57,7 @@ export const germanCommonRules: readonly Rule[] = [
   detectRule({
     id: 'de.straight-double-quote',
     summary: 'Straight double quote; German quotation marks are a matched pair',
-    cite: `${DUDEN}, "Anfuehrungszeichen"`,
+    cite: `${DUDEN}, "Anführungszeichen"`,
     severity: 'warning',
     // Not fixable: the two ends are the same character, so choosing between an
     // opening and a closing mark means pairing across the whole value, and

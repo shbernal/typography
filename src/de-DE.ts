@@ -25,7 +25,7 @@ const rules: readonly Rule[] = [
   replaceRule({
     id: 'de-DE.low-quote-space',
     summary: 'Space after the opening low quotation mark; German sets it closed up',
-    cite: `${DUDEN}, "Anfuehrungszeichen"`,
+    cite: `${DUDEN}, "Anführungszeichen"`,
     // U+201E has exactly one job in any language that uses it, so removing the
     // space after it damages nothing.
     //
@@ -40,7 +40,7 @@ const rules: readonly Rule[] = [
   replaceRule({
     id: 'de-DE.guillemet-open-space',
     summary: 'Space after the opening guillemet `»`; German sets `»Wort«` closed up',
-    cite: `${DUDEN}, "Anfuehrungszeichen"`,
+    cite: `${DUDEN}, "Anführungszeichen"`,
     // The lookbehind is load-bearing and its absence would have been a defect
     // this package could not detect in itself.
     //
@@ -56,7 +56,7 @@ const rules: readonly Rule[] = [
   replaceRule({
     id: 'de-DE.guillemet-close-space',
     summary: 'Space before the closing guillemet `«`; German sets `»Wort«` closed up',
-    cite: `${DUDEN}, "Anfuehrungszeichen"`,
+    cite: `${DUDEN}, "Anführungszeichen"`,
     // The mirror guard: a `«` with a letter or digit immediately after it is
     // opening a Swiss or French quotation, so the space before it is a real word
     // boundary rather than padding inside a quotation.
@@ -67,7 +67,7 @@ const rules: readonly Rule[] = [
   detectRule({
     id: 'de-DE.outward-guillemets',
     summary: 'Guillemets point outward (`«Wort»`), which is the Swiss and French setting',
-    cite: `${DUDEN}, "Anfuehrungszeichen"`,
+    cite: `${DUDEN}, "Anführungszeichen"`,
     // `«` immediately followed by a word character is `«` being used to *open* a
     // quotation, which is correct in `de-CH` and wrong here.
     //

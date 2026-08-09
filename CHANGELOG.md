@@ -22,7 +22,7 @@ First cut. Nothing published yet.
     error-severity findings, 13 warnings, one of them a genuinely mismatched
     quotation pair.
   - `es` over 1,106,553 characters from Spain's official gazette, the data
-    protection agency's FAQ and 300 FundeuRAE articles: **one**
+    protection agency's FAQ and 300 FundéuRAE articles: **one**
     `es.unpaired-question` false positive, an English phrase quoted inside
     Spanish, against 332 correctly opened interrogatives. 162
     `es.straight-double-quote` warnings, 100 of them true positives in ordinary

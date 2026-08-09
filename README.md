@@ -122,7 +122,7 @@ run past real published text:
 |---|---|---|
 | `fr` | 11,058 real values, 827 of which a prior implementation rewrites | reproduces it byte for byte |
 | `de-DE` | 986,380 characters of published federal German | zero error-severity findings |
-| `es` | 1,106,553 characters: Spain's official gazette, the data protection agency's FAQ, 300 FundeuRAE articles | one false positive, and it is an English phrase quoted inside Spanish |
+| `es` | 1,106,553 characters: Spain's official gazette, the data protection agency's FAQ, 300 FundéuRAE articles | one false positive, and it is an English phrase quoted inside Spanish |
 | `de-CH` | 311,131 characters: the Swiss Federal Constitution and 37 federal press releases | zero findings, over 38 Swiss guillemet pairs |
 
 The Spanish number is the one worth knowing about. `es.unpaired-question`, the

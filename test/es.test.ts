@@ -32,7 +32,7 @@ test('it stays off URLs, queries and templates', () => {
   for (const text of [
     'https://example.com/a?b=1',
     'Ver /docs/es?lang=es para mas.',
-    'El operador a ? b : c en el codigo.',
+    'El operador a ? b : c en el código.',
     'const v = a ?? b;',
   ]) {
     assert.ok(!ids(text).includes('es.unpaired-question'), `fired on ${JSON.stringify(text)}`);

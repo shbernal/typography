@@ -11,7 +11,7 @@
 // `check` verb at all. They are the same defects the fixable rules decline to
 // repair, reported rather than guessed at.
 //
-// Citations are section-level, to `Lexique des regles typographiques en usage a
+// Citations are section-level, to `Lexique des règles typographiques en usage à
 // l'Imprimerie nationale` (2002). A rule with no citation does not belong here:
 // that is the line between a national standard and a house style, and it is the
 // only thing keeping this file from becoming a place where preferences collect.
@@ -27,7 +27,7 @@ import {
   type TypographyPack,
 } from './pack.ts';
 
-const LEXIQUE = 'Imprimerie nationale, Lexique des regles typographiques (2002)';
+const LEXIQUE = 'Imprimerie nationale, Lexique des règles typographiques (2002)';
 
 /** Bumps when a rule changes, and never for a release that does not touch one.
  * This is the era stamp a corpus gets tagged with, so a version that moved for a

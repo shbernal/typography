@@ -112,12 +112,12 @@ The 13 fall into three classes:
    what the gate bought.
 2. **A quotation mark that should be German.** `"P-A-P"-Struktur`. True positive.
 3. **A quoted code identifier**: `"default"-Service-Account`, `"-all" Parameter`.
-   Typographically German would set these with `„ "`, and many house styles keep
+   Typographically German would set these with `„ “`, and many house styles keep
    straight quotes around literals. This is the domain judgement rather than the
    language one, and it is why the rule is a **warning** and is not fixable.
 
 The four German guillemet rules have no exposure here, which the corpus states
-rather than hides: this text quotes with `„ "` throughout.
+rather than hides: this text quotes with `„ “` throughout.
 
 ## `es`, reviewed 2026-08-09 against three corpora
 
@@ -125,17 +125,17 @@ rather than hides: this text quotes with `„ "` throughout.
 
 | Corpus | What it is | Values | Characters |
 |---|---|---|---|
-| `boe-lopdgdd-2018-es` | Ley Organica 3/2018, from Spain's official gazette | 1 | 245,269 |
+| `boe-lopdgdd-2018-es` | Ley Orgánica 3/2018, from Spain's official gazette | 1 | 245,269 |
 | `aepd-faq-es` | The Spanish data protection agency's public FAQ | 116 | 220,269 |
-| `fundeu-rae-es` | 300 FundeuRAE articles | 300 | 641,015 |
+| `fundeu-rae-es` | 300 FundéuRAE articles | 300 | 641,015 |
 
-FundeuRAE is the foundation the Real Academia Espanola promotes with the Agencia
+FundéuRAE is the foundation the Real Academia Española promotes with the Agencia
 EFE, and correct Spanish is its entire subject, so a typographic finding in its
 own prose is worth reading twice. The AEPD FAQ is here for one reason: every
 entry is a question, and it is the only material that puts `es.unpaired-question`
 in front of correctly opened interrogatives at any volume.
 
-| Rule | BOE | AEPD | Fundeu | Exposure across the three |
+| Rule | BOE | AEPD | Fundéu | Exposure across the three |
 |---|---|---|---|---|
 | `es.guillemet-open-space` | 0 | 0 | 0 | 1,068 opening guillemets |
 | `es.guillemet-close-space` | 0 | 0 | 0 | 1,066 closing guillemets |
@@ -220,7 +220,7 @@ well evidenced. A Swiss corpus with heavier quotation would improve it.
 
 `admin-ch-medien-de-ch` contains one `„`, the German low quote, in Swiss federal
 text. `de-CH.inward-guillemets` catches the other direction, a German `»Wort«`
-appearing in Swiss text, but there is no `de-CH` rule for `„Wort"`. The asymmetry
+appearing in Swiss text, but there is no `de-CH` rule for `„Wort“`. The asymmetry
 is not deliberate and the corpus is what surfaced it. Adding the rule is a
 judgement about `de-CH`'s scope rather than a bug fix, so it is recorded here
 rather than made quietly.

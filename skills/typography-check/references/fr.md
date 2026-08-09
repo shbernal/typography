@@ -1,6 +1,6 @@
 # French, per the Imprimerie nationale
 
-Source: `Lexique des regles typographiques en usage a l'Imprimerie nationale`
+Source: `Lexique des règles typographiques en usage à l'Imprimerie nationale`
 (2002). Read this when a user disputes a finding or asks why a rule did not fix
 something.
 

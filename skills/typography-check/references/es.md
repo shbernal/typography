@@ -1,6 +1,6 @@
 # Spanish, per the RAE
 
-Source: `Ortografia de la lengua espanola` (Real Academia Espanola, 2010).
+Source: `Ortografía de la lengua española` (Real Academia Española, 2010).
 
 Spanish is where this package's shape came from. Read the first rule below before
 answering any question about why the tool did not fix something.

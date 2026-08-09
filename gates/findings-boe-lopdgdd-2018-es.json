@@ -1,9 +1,9 @@
 {
   "gate": "findings",
   "corpus": "boe-lopdgdd-2018-es",
-  "note": "Ley Organica 3/2018, from the Boletin Oficial del Estado. Spain's official gazette, set by the state printer. Legal register: guillemets and no interrogatives at all.",
+  "note": "Ley Orgánica 3/2018, from the Boletín Oficial del Estado. Spain's official gazette, set by the state printer. Legal register: guillemets and no interrogatives at all.",
   "pack": "es@0.1.0",
-  "standard": "Real Academia Espanola",
+  "standard": "Real Academia Española",
   "units": 1,
   "characters": 245269,
   "unitsWithFindings": 0,

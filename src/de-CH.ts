@@ -27,7 +27,7 @@ const rules: readonly Rule[] = [
   replaceRule({
     id: 'de-CH.guillemet-open-space',
     summary: 'Space after the opening guillemet `«`; Swiss German sets `«Wort»` closed up',
-    cite: `${DUDEN}, "Anfuehrungszeichen"`,
+    cite: `${DUDEN}, "Anführungszeichen"`,
     // The same pattern and replacement as the Spanish rule, arrived at from a
     // different standard. They are not shared, and should not be: the day RAE
     // and Duden disagree, a shared constant would have to be split under time
@@ -43,7 +43,7 @@ const rules: readonly Rule[] = [
   replaceRule({
     id: 'de-CH.guillemet-close-space',
     summary: 'Space before the closing guillemet `»`; Swiss German sets `«Wort»` closed up',
-    cite: `${DUDEN}, "Anfuehrungszeichen"`,
+    cite: `${DUDEN}, "Anführungszeichen"`,
     pattern: new RegExp(`${ANY_SPACE}+»(?![\\p{L}\\p{N}])`, 'gu'),
     replacement: '»',
   }),
@@ -51,7 +51,7 @@ const rules: readonly Rule[] = [
   detectRule({
     id: 'de-CH.inward-guillemets',
     summary: 'Guillemets point inward (`»Wort«`), which is the German and Austrian setting',
-    cite: `${DUDEN}, "Anfuehrungszeichen"`,
+    cite: `${DUDEN}, "Anführungszeichen"`,
     // The exact inverse of `de-DE.outward-guillemets`, and check-only for the
     // same reason: the text may be a correct German quotation inside a Swiss
     // document rather than a mistake.

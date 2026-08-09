@@ -1,4 +1,4 @@
-// Spanish orthotypography, per the Real Academia Espanola.
+// Spanish orthotypography, per the Real Academia Española.
 //
 // Spanish is the language that shaped this package's central type. French and
 // Spanish use the identical pair of quotation marks with opposite spacing rules,
@@ -12,7 +12,7 @@
 // So Spanish ships four check-only rules and three fixable ones, and the
 // asymmetry is the information rather than an omission.
 //
-// Citations are section-level, to `Ortografia de la lengua espanola` (RAE,
+// Citations are section-level, to `Ortografía de la lengua española` (RAE,
 // 2010).
 
 import {
@@ -26,7 +26,7 @@ import {
   type TypographyPack,
 } from './pack.ts';
 
-const ORTOGRAFIA = 'RAE, Ortografia de la lengua espanola (2010)';
+const ORTOGRAFIA = 'RAE, Ortografía de la lengua española (2010)';
 
 const VERSION = '0.1.0';
 
@@ -87,7 +87,7 @@ const rules: readonly Rule[] = [
   replaceRule({
     id: 'es.opening-mark-space',
     summary: 'Space after `¿` or `¡`; the mark is set against the word it opens',
-    cite: `${ORTOGRAFIA}, "Los signos de interrogacion y de exclamacion"`,
+    cite: `${ORTOGRAFIA}, "Los signos de interrogación y de exclamación"`,
     // Fixable where the closing half is not, and the difference is the whole
     // argument of this package: `¿` is already in the text, so its position is
     // known and only the spacing is wrong. Nothing has to be inferred.
@@ -102,7 +102,7 @@ const rules: readonly Rule[] = [
   detectRule({
     id: 'es.unpaired-question',
     summary: 'Sentence ends in `?` with no opening `¿`',
-    cite: `${ORTOGRAFIA}, "Los signos de interrogacion y de exclamacion"`,
+    cite: `${ORTOGRAFIA}, "Los signos de interrogación y de exclamación"`,
     // The rule this package's design turns on. RAE requires both halves, and
     // omitting the opening one is the single most common defect in Spanish
     // written by speakers of languages that have no opening mark - which is to
@@ -121,7 +121,7 @@ const rules: readonly Rule[] = [
   detectRule({
     id: 'es.unpaired-exclamation',
     summary: 'Sentence ends in `!` with no opening `¡`',
-    cite: `${ORTOGRAFIA}, "Los signos de interrogacion y de exclamacion"`,
+    cite: `${ORTOGRAFIA}, "Los signos de interrogación y de exclamación"`,
     pattern: /!/g,
     refine: (match, value) => unpaired(value, match.index, '¡'),
   }),
@@ -129,7 +129,7 @@ const rules: readonly Rule[] = [
   detectRule({
     id: 'es.space-before-punctuation',
     summary: 'Space before `; : ! ?`, which Spanish does not take',
-    cite: `${ORTOGRAFIA}, "Los signos de puntuacion"`,
+    cite: `${ORTOGRAFIA}, "Los signos de puntuación"`,
     // Check-only, and this is the case where the boundary is worth stating,
     // because deleting a space looks like the safest edit imaginable.
     //
@@ -187,7 +187,7 @@ function unpaired(value: string, index: number, opener: string): Match | null {
 export const es: TypographyPack = {
   id: `es@${VERSION}`,
   lang: 'es',
-  standard: 'Real Academia Espanola',
+  standard: 'Real Academia Española',
   rules,
   normalize: composeNormalize(rules),
 };

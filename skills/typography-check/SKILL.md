@@ -95,7 +95,7 @@ purpose, so pass `de-DE`.
 ```
 draft.fr.md:12:34  fixable fr.space-before-colon  Breaking space before a colon; French requires U+00A0
       "voici<NBSP>: ici"
-      Imprimerie nationale, Lexique des regles typographiques (2002), "Ponctuation"
+      Imprimerie nationale, Lexique des règles typographiques (2002), "Ponctuation"
 ```
 
 `file:line:column`, then `fixable` or the severity, then the rule id, then the
