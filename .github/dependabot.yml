@@ -1,0 +1,21 @@
+version: 2
+updates:
+  # Dev dependencies only, because there are no runtime ones and that is a
+  # constraint rather than a coincidence. If Dependabot ever opens a PR under
+  # "dependencies" here, something has gone wrong that is worth stopping for.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    groups:
+      dev:
+        patterns: ['*']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']

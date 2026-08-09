@@ -1,0 +1,37 @@
+# Security policy
+
+## Supported versions
+
+Pre-1.0. The latest published version is the only supported one.
+
+## Reporting a vulnerability
+
+Use GitHub's private vulnerability reporting on this repository
+(**Security** > **Report a vulnerability**). That keeps the report private until
+there is a fix. Please do not open a public issue for a vulnerability.
+
+Expect an acknowledgement within a week. This is a small library maintained by
+one person, so a fix is a best effort rather than an SLA.
+
+## What the attack surface actually is
+
+Worth stating, because it is smaller than the word "linter" suggests:
+
+- **No runtime dependencies**, in either the library or the CLI. There is no
+  transitive tree to be compromised through.
+- **No network, no child processes, no dynamic code.** The library is regular
+  expressions over strings. The CLI reads files and stdin and writes stdout, and
+  writes a file only when you pass `--write`.
+- **The regular expressions are the surface that matters.** Every rule runs over
+  attacker-controllable text, so a pattern that backtracks catastrophically is a
+  denial of service in a host that checks user input. If you find one, that is a
+  vulnerability in this package and worth reporting.
+- `scripts/fetch-corpus.ts` does make network requests, to the URLs listed in
+  `gates/sources/`. It is a development script, is not in the published tarball,
+  and never runs as part of installing or using the package.
+
+## Publishing
+
+Releases are published from GitHub Actions with npm trusted publishing and build
+provenance, so a tarball on npm can be traced to the workflow run and commit that
+produced it. There are no long-lived npm tokens in this repository.

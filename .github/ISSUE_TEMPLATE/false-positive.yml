@@ -1,0 +1,52 @@
+name: False positive
+description: typocheck reported something in text that was set correctly
+labels: ['false positive']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The most useful report this project can get. Unit tests measure whether a
+        rule fires on text written to make it fire; only real published prose
+        measures whether it fires on text that was already right.
+  - type: input
+    id: lang
+    attributes:
+      label: Language tag
+      placeholder: fr, es, de-DE, de-CH
+    validations:
+      required: true
+  - type: input
+    id: rule
+    attributes:
+      label: Rule id
+      placeholder: es.unpaired-question
+    validations:
+      required: true
+  - type: textarea
+    id: text
+    attributes:
+      label: The text
+      description: >
+        Paste it in a code fence. If you can, paste the escaped excerpt typocheck
+        printed rather than retyping the text: a no-break space and a space look
+        identical, and retyping loses the thing in question.
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Where it was published
+      description: >
+        A URL or a citation. This decides how much the report weighs: text set by
+        somebody who sets type for a living is evidence, and may end up in a
+        corpus under gates/.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The line typocheck stamps on its report, e.g. `typocheck 0.1.0 (es@0.1.0)`
+    validations:
+      required: true

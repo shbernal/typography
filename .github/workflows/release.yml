@@ -1,0 +1,67 @@
+name: Release
+
+# Publishes to npm on a `v*` tag, using npm trusted publishing. There is no
+# NPM_TOKEN in this repository and there should never be one: the registry
+# authenticates the workflow itself over OIDC, and the tarball carries build
+# provenance, so a package on npm can be traced back to the run and the commit
+# that produced it.
+#
+# Before the first release this needs a trusted publisher configured on the npm
+# package, pointing at this repository and this workflow file name.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # trusted publishing and provenance
+    steps:
+      - name: Check out typography
+        uses: actions/checkout@v5
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: 11.11.0
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing needs a recent npm, and the one bundled with Node is
+      # not guaranteed to be recent enough.
+      - name: Update npm
+        run: npm install --global npm@latest
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # The tag is the only thing that says which version this is, and
+      # package.json is the only thing that decides what gets published. A
+      # release where they disagree is the one nobody notices until it is on the
+      # registry.
+      - name: Refuse a tag that disagrees with package.json
+        run: node scripts/check-release-tag.mjs
+
+      - name: Check
+        run: pnpm check
+
+      - name: Build
+        run: pnpm build
+
+      - name: Smoke the built CLI
+        run: node scripts/smoke-dist.mjs
+
+      - name: Publish
+        run: npm publish --provenance --access public

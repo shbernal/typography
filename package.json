@@ -19,9 +19,17 @@
   ],
   "author": "shbernal",
   "license": "MIT",
+  "homepage": "https://github.com/shbernal/typography#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/shbernal/typography"
+    "url": "git+https://github.com/shbernal/typography.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shbernal/typography/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "type": "module",
   "packageManager": "pnpm@11.11.0",

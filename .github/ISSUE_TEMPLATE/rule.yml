@@ -1,0 +1,59 @@
+name: New or changed rule
+description: A typographic rule this should enforce and does not
+labels: ['rule']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One thing decides whether a rule can ship: a citation. Every rule names
+        the section of the Imprimerie nationale, the RAE or the Duden that
+        decides it. That line is what keeps the packs from becoming a place where
+        preferences collect, and it is why there is no English pack.
+  - type: input
+    id: lang
+    attributes:
+      label: Language tag
+      placeholder: fr, es, de-DE, de-CH
+    validations:
+      required: true
+  - type: textarea
+    id: rule
+    attributes:
+      label: The rule
+      description: What is wrong, and what correct looks like.
+    validations:
+      required: true
+  - type: input
+    id: citation
+    attributes:
+      label: Citation
+      description: >
+        The standards body and the section. If there is not one, say so: it may
+        still be a house style worth documenting, but it will not become a rule.
+    validations:
+      required: true
+  - type: dropdown
+    id: fixable
+    attributes:
+      label: Can it be repaired unattended?
+      description: >
+        A rule whose repair needs information the pattern does not have ships
+        with detection and no fix, and that is a normal outcome rather than an
+        unfinished one.
+      options:
+        - 'Yes: one substitution, and applying it twice changes nothing'
+        - 'No: repairing it needs a judgement or a parse'
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples
+      description: >
+        Both directions, please. Text the rule should flag, and text that looks
+        similar and must not be flagged. The second kind is the harder half and
+        the one that decides whether the rule is shippable.
+      render: text
+    validations:
+      required: true
