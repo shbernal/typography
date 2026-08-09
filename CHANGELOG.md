@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.1.0
 
-First cut. Nothing published yet.
+First cut.
 
 - **The packs.** `fr` (Imprimerie nationale), `es` (RAE), `de-DE` and `de-CH`
   (Duden), each rule cited to a section. There is no bare `de`: Germany and
@@ -29,10 +29,12 @@ First cut. Nothing published yet.
     prose and 62 quoted UI labels, which is the same split German produced.
   - `de-CH` over 311,131 characters of the Swiss Federal Constitution and 37
     federal press releases: zero findings, over 38 Swiss guillemet pairs.
-- **Corpora are rebuildable.** `gates/sources/*.urls` freezes the document URLs
-  and `scripts/fetch-corpus.ts` turns them into text, so a gate is a number
-  somebody else can check rather than one they have to believe. The text itself
-  stays out of the repo.
+- **Four of the six corpora are rebuildable, and the other two are named.**
+  `gates/sources/*.urls` freezes the document URLs and `scripts/fetch-corpus.ts`
+  turns them into text, so `es` and `de-CH` are numbers somebody else can check
+  rather than ones they have to believe. The `de-DE` corpus and the French
+  baseline live in a private working tree and cannot be rebuilt by a contributor;
+  `gates/README.md` says which is which. The text itself stays out of the repo.
 - **Gate reports count exposure.** A rule that reports nothing has either met
   text that was set correctly or text that never contained anything it could
   match, and those are not the same result. Each corpus declares which characters
@@ -41,6 +43,7 @@ First cut. Nothing published yet.
 - **`skills/typography-check/`**, shipping from this repo rather than from a
   skills repo, so there is no copy to keep honest against a source.
 
-Not done: nothing is published yet, and `de-CH`'s quotation rules have an order
-of magnitude less exposure than the other languages'. See `gates/README.md`,
-which says so in the section about the weakest review rather than in a footnote.
+Not done, and stated rather than glossed: `de-CH`'s quotation rules have an order
+of magnitude less exposure than the other languages', and two of the six gate
+corpora cannot be rebuilt by anyone but the maintainer. See `gates/README.md`,
+which says both in their own sections rather than in a footnote.

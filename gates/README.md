@@ -19,25 +19,64 @@ node scripts/gate-fr-reproduction.ts --verify
 node scripts/gate-findings.ts --verify
 ```
 
-Neither runs in CI, because the French baseline lives in a consumer working tree
-and the findings corpora are several megabytes of somebody else's text.
+Neither runs in CI, because two of the corpora live in a private working tree
+and the rest are several megabytes of somebody else's text.
+
+## Four of the six corpora are rebuildable, and two are not
+
+Say which, because a gate you cannot re-run is worth less than one you can and
+the difference should not have to be discovered.
+
+| Corpus | Rebuildable | How |
+|---|---|---|
+| `boe-lopdgdd-2018-es` | yes | `node scripts/fetch-corpus.ts` |
+| `aepd-faq-es` | yes | same |
+| `fundeu-rae-es` | yes | same |
+| `fedlex-bv-2024-de-ch` | yes | same |
+| `admin-ch-medien-de-ch` | yes | same |
+| `grundschutz-2023-de` | **no** | a `registry.sqlite3` in a private consumer tree, resolved against `--consumer` |
+
+The French reproduction gate is in the second category too: its baseline is the
+prior implementation and the corpora it ran over, both of which live in the same
+private tree.
+
+Two names appear here and they are different things.
+[`translation-harness`](https://github.com/shbernal/translation-harness) is the
+public tool whose `job.normalize` a pack satisfies structurally, and no code in
+this repo imports it. `translation-agents` is a private working tree that happens
+to hold registries in that tool's format, and it is the only thing `--consumer`
+ever points at. Nothing public depends on the second.
+
+So off the maintainer's machine, `pnpm corpus && node scripts/gate-findings.ts
+--verify` reproduces `es` and `de-CH` in full and reports `grundschutz-2023-de`
+as absent, and the French gate cannot run at all. That is a real limit on what an
+outside contributor can check, and the honest thing is to state it rather than
+let a failing gate imply a broken checkout. An unrun gate said plainly is fine.
+
+`grundschutz-2023-de` stays where it is because the BSI publishes the
+Kompendium as a document set rather than as pages a URL list could freeze, and
+the registry is where it was already extracted and aligned. Moving it into the
+`fetch` shape is a task, not a decision.
 
 ## What is committed, and what is not
 
 The corpora are third-party published works and are not this repo's to
 redistribute, so `gates/corpora/` is ignored. What is committed is:
 
-- **`gates/sources/*.urls`**, a frozen list of document URLs per corpus.
+- **`gates/sources/*.urls`**, a frozen list of document URLs, for each corpus
+  that has one.
 - **`scripts/fetch-corpus.ts`**, which turns a list into text.
 - **`gates/findings-*.json`**, the per-rule counts, exposure counts, samples and
-  a corpus fingerprint.
+  a corpus fingerprint, for every corpus including the two that are not
+  rebuildable.
 
 That combination is deliberate. A gate whose corpus cannot be rebuilt is a number
 nobody else can check, and a gate that ships the corpus is a redistribution
-problem. With the list frozen, anyone can rebuild and compare fingerprints, and
-every release after the first reviews a **delta**: a rule change that moves
-German findings over a fixed corpus from 34 to 210 shows up in a diff instead of
-in a user's inbox.
+problem. Where the list is frozen, anyone can rebuild and compare fingerprints;
+where it is not, the fingerprint is at least enough to tell the maintainer that
+the corpus moved. Either way every release after the first reviews a **delta**: a
+rule change that moves German findings over a fixed corpus from 34 to 210 shows
+up in a diff instead of in a user's inbox.
 
 The extraction from HTML is load-bearing rather than incidental. This package's
 whole subject is characters that are invisible on screen, so the reader collapses
@@ -88,7 +127,8 @@ register, the other carries the characters the first one lacks:
 ## `de-DE`, reviewed 2026-08-09 against `grundschutz-2023-de`
 
 BSI IT-Grundschutz-Kompendium 2023, German source text: 8,500 values, 986,380
-characters, published by a federal agency and edited to a house standard.
+characters, published by a federal agency and edited to a house standard. This is
+the corpus that is **not** rebuildable from a URL list; see the table above.
 
 **Every error-severity rule fired zero times.** All 13 findings came from one
 warning-level rule, and the corpus contains exactly 13 straight double quotes, so

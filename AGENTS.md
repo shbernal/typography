@@ -10,8 +10,8 @@ Orthotypography rules for French, Spanish and German, published as
 cites its source. There is a library, a `typocheck` CLI, and a skill in `skills/`
 that ships from this same repo.
 
-**Pre-release, and Santiago owns it.** No backwards-compatibility obligation and
-no deference to prior architecture unless he asks for it.
+**Pre-release, and single-maintainer.** No backwards-compatibility obligation and
+no deference to prior architecture unless the maintainer asks for it.
 
 ## Environment
 
@@ -28,10 +28,12 @@ pnpm corpus         # rebuild the gate corpora from gates/sources/*.urls
 pnpm gates:verify   # the release gates.
 ```
 
-The corpora are third-party text and are gitignored; the URL lists and the
-fetcher are committed, so `pnpm corpus` reconstructs them. The French gate
-additionally needs the consumer working tree, since it diffs against the
-implementation the pack was extracted from.
+The corpora are third-party text and are gitignored. `pnpm corpus` reconstructs
+four of the six from the committed URL lists. The other two, the `de-DE`
+`grundschutz-2023-de` registry and everything the French reproduction gate reads,
+live in the private consumer tree that `--consumer` points at, defaulting to
+`../translation-agents`. Off that machine those two cannot be run, which
+`gates/README.md` states in a table rather than leaving to be discovered.
 
 ## The rules that must not be broken
 

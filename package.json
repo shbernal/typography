@@ -39,7 +39,7 @@
   "bin": {
     "typocheck": "dist/cli.js"
   },
-  "files": ["dist", "skills", ".claude-plugin", "README.md", "CHANGELOG.md", "LICENSE"],
+  "files": ["dist", "src", "skills", ".claude-plugin", "README.md", "CHANGELOG.md", "LICENSE"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

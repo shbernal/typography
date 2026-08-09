@@ -3,6 +3,12 @@
   "compilerOptions": {
     "noEmit": false,
     "declaration": true,
+    // Both maps resolve `sources` to `../src/*.ts`, so `src` is in package.json's
+    // `files`. Shipping a map whose sources are not in the tarball is a dangling
+    // reference that costs a consumer go-to-definition and gains nothing. The
+    // source is also where this package explains itself, which makes it worth the
+    // few kilobytes; `exports` names only `dist`, so nothing can import it by
+    // accident.
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "dist",

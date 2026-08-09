@@ -1,7 +1,7 @@
 {
   "gate": "findings",
   "corpus": "grundschutz-2023-de",
-  "note": "BSI IT-Grundschutz-Kompendium 2023, German source text. Published by a federal agency and edited to a house standard, which is what makes it usable here.",
+  "note": "BSI IT-Grundschutz-Kompendium 2023, German source text. Published by a federal agency and edited to a house standard, which is what makes it usable here. The BSI ships the Kompendium as a document set rather than as pages a URL list could freeze, so this one is read from a private registry and cannot be rebuilt by a contributor.",
   "pack": "de-DE@0.1.0",
   "standard": "Duden",
   "units": 8500,

@@ -143,8 +143,30 @@ pnpm corpus    # rebuild the gate corpora from the frozen URL lists
 pnpm gates     # the release gates
 ```
 
-The corpora are third-party text and are not in this repo. The URL lists and the
-fetcher are, so the gates can be rebuilt and their fingerprints compared.
+The corpora are third-party text and are not in this repo. For four of the six,
+the URL list and the fetcher are, so they can be rebuilt and their fingerprints
+compared. The `de-DE` corpus and the French baseline live in a private working
+tree and cannot be, which [gates/README.md](gates/README.md) names rather than
+averages away.
 
 Node 24 for development (the sources run under type stripping); the published
 package runs on Node 20.
+
+## Contributing, and the report worth most
+
+[CONTRIBUTING.md](CONTRIBUTING.md) has the setup and the two invariants most
+likely to trip you. The single most useful issue this project can receive is a
+**false positive**: text that was set correctly and that `typocheck` complained
+about anyway. Unit tests measure whether a rule fires on text written to make it
+fire, which is recall, which was never in doubt. Only prose somebody published
+without a thought for this checker measures the failure mode these rules have,
+and that is the one thing this repo cannot generate for itself.
+
+- [Report a false positive](https://github.com/shbernal/typography/issues/new?template=false-positive.yml)
+- [Security policy](SECURITY.md), including what the attack surface actually is
+- [Changelog](CHANGELOG.md)
+- [Code of conduct](CODE_OF_CONDUCT.md)
+
+MIT, in [LICENSE](LICENSE). The license covers this repository; it does not cover
+the gate corpora, which are third-party published works and are not redistributed
+here.

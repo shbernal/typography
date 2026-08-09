@@ -2,6 +2,8 @@
 
 Thanks for looking. This is a small library with a narrow subject, and most of
 what follows is about the two ways a typography checker goes wrong.
+[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) applies, and its short version is that
+disagreements here are about text and are settleable with a citation.
 
 ## Getting set up
 
@@ -58,13 +60,20 @@ over prose somebody published without any thought for this checker.
 ```bash
 node scripts/fetch-corpus.ts       # builds the corpora from frozen URL lists
 node scripts/gate-findings.ts      # the triage
-node scripts/gate-fr-reproduction.ts --consumer ../translation-agents
 ```
 
-The corpora are third-party text and are not in this repo. The URL lists are,
-so you can rebuild them and compare fingerprints. `gates/README.md` records what
+The corpora are third-party text and are not in this repo. The URL lists are, so
+you can rebuild them and compare fingerprints. `gates/README.md` records what
 each corpus is, what it exposes, and every finding class anyone has triaged.
 A rule change that moves a count is a change to that file too.
+
+**Two of the gates you cannot run, and that is expected rather than a broken
+checkout.** The `de-DE` corpus and the whole French reproduction gate read from a
+private working tree, so `gate-findings.ts` will report `grundschutz-2023-de` as
+absent and `gate-fr-reproduction.ts` will not start. Run what you can, say in the
+pull request what you could not run, and a maintainer runs the rest. An unrun
+gate stated plainly is fine; an unrun gate left unmentioned is not.
+`gates/README.md` has the table of which is which.
 
 If you add a language, it needs a corpus **before** the release, not after. A
 language whose rules have never met real published text has not been reviewed,
