@@ -133,6 +133,22 @@ two genuine findings, both in a headline a callout reproduces. Which four
 characters differ is still unknown, which is why the whole block goes rather than
 the phrase alone.
 
+That is also where this stops being closed. The pattern is anchored to the
+callout's structure and its phrase together, and from a GitHub runner it matches
+nothing at all: the rebuild that used to come back 76 characters short now comes
+back 1,706 characters long, which is 19 callouts still being there, each of them
+4 characters shorter than the ones this pattern was written against. So the four
+characters are inside the callout markup rather than somewhere near it, and the
+block served to a data centre is not the block served here. What it is instead is
+not known. Guessing costs a rebuild per guess, so the next step is to measure it
+rather than to widen the pattern until something matches.
+
+The consequence for anyone rebuilding: `theconversation-fr` reproduces from a
+connection that is served the callouts this repository was built against and does
+not from one that is not. Matching seven of eight fingerprints from a data centre
+is the expected result and is not evidence that anything upstream has changed. The
+other seven match from everywhere.
+
 Both of those were diagnosed at the granularity of a whole corpus, because a whole
 corpus was all the committed evidence could describe. `gates/documents-*.json`
 exists because of the second one: 76 characters somewhere in 43 documents is a
