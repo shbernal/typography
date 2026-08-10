@@ -79,30 +79,106 @@ for (const { name, text } of SHAPES) {
   });
 }
 
+/** How long a batch of repeats must run before its timing is worth reading.
+ *
+ * A single `check` of the smaller input below costs about 0.4 ms in the German
+ * packs, which is beneath what a loaded shared runner resolves, so timing one
+ * call there measures the scheduler and not the rules. An earlier version of
+ * this test did exactly that and floored the result at 1 ms to keep the division
+ * safe, which meant `de-DE` and `de-CH` were never actually being checked: their
+ * true cost sat under the floor, the ratio came out below 1, and the assertion
+ * passed without having measured anything. Repeating the call into a batch this
+ * long and dividing back out measures the same quantity with the noise averaged
+ * down, and gives every pack a baseline that means something. */
+const BATCH_MS = 25;
+
+/** How many batches of each size to take, alternating between the two sizes.
+ *
+ * The alternation is the part that matters. Measuring one size to completion and
+ * then the other puts anything that changes between the two phases - a frequency
+ * step, a co-tenant waking up, a GC cycle - undiluted into the ratio, because it
+ * moves one measurement and not the other. Sampling both across the same window
+ * moves them together. Measured over fifteen trials of all four packs, that took
+ * the worst ratio seen from 4.8x down to 3.7x, against a bound of 5x, and every
+ * pack's median onto 3.1x, which is what linear looks like at this geometry. */
+const ROUNDS = 3;
+
+/** Cost of one call, from a batch of `runs` of them. */
+function perRun(fn: () => unknown, runs: number): number {
+  return (
+    milliseconds(() => {
+      for (let i = 0; i < runs; i++) fn();
+    }) / runs
+  );
+}
+
+/** How many repeats of `fn` it takes to fill `BATCH_MS`. */
+function batchSize(fn: () => unknown): number {
+  let runs = 1;
+  while (runs < 1 << 20) {
+    const took = milliseconds(() => {
+      for (let i = 0; i < runs; i++) fn();
+    });
+    if (took >= BATCH_MS) break;
+    runs *= 2;
+  }
+  return runs;
+}
+
 // The budget above catches a blowup. This catches the subtler thing: a rule that
 // is linear but with a cost per character that grows with the input, which reads
-// as "slow" long before it reads as "hung". Doubling the input may not double the
-// time exactly on a noisy runner, so the bound is 4x for a 2x input, which no
-// quadratic rule can slip under and no linear rule can exceed.
+// as "slow" long before it reads as "hung".
+//
+// The input is tripled rather than doubled, and the bound is 5x, because those
+// two numbers have to straddle a gap. A linear rule given 3x the text takes about
+// 3x the time and a quadratic one takes about 9x, so 5x sits between them with
+// room on both sides. Doubling does not offer that: linear lands on 2x and
+// quadratic on 4x, so a 4x bound is placed exactly where a quadratic rule lands
+// and catches it or misses it on the noise of the day. Measured here, with a
+// deliberately quadratic function against a deliberately linear one: quadratic
+// came in at 7.4x to 10.6x and linear at 2.5x to 3.4x, five trials each, with no
+// overlap. At 2x and a 4x bound the same quadratic function scored 3.5x to 4.5x
+// and went undetected in three trials out of five.
 test('cost grows no faster than the text does', () => {
   const line = (n: number) =>
     `Il a dit :${' '.repeat(n)}\nEt puis « bonjour » ;\n${'a?'.repeat(n / 2)}`;
+
+  // Built once, out here, because `line` allocates in proportion to `n`. Building
+  // it inside the measured region charged the rules for the string builder too,
+  // and charged the larger size three times as much of it as the smaller one,
+  // which is a growing cost per character that has nothing to do with the rules.
+  const small = line(20_000);
+  const large = line(60_000);
 
   for (const pack of packs) {
     // Warm the JIT on a shape it will meet in the measured runs, so the first
     // measurement is not paying for compilation the second one gets free.
     check(pack, line(4_000));
 
-    const small = Math.max(
-      1,
-      milliseconds(() => check(pack, line(20_000))),
-    );
-    const large = milliseconds(() => check(pack, line(40_000)));
+    const smallRuns = batchSize(() => check(pack, small));
+    const largeRuns = batchSize(() => check(pack, large));
+
+    // Fastest rather than average, because the interference here is one-sided:
+    // nothing makes a run finish sooner than its own cost, so the minimum is the
+    // closest reading available to the cost with the interference taken out.
+    let smallCost = Number.POSITIVE_INFINITY;
+    let largeCost = Number.POSITIVE_INFINITY;
+    for (let round = 0; round < ROUNDS; round++) {
+      smallCost = Math.min(
+        smallCost,
+        perRun(() => check(pack, small), smallRuns),
+      );
+      largeCost = Math.min(
+        largeCost,
+        perRun(() => check(pack, large), largeRuns),
+      );
+    }
 
     assert.ok(
-      large < small * 4,
-      `${pack.lang}: doubling the input took ${(large / small).toFixed(1)}x the time ` +
-        `(${small.toFixed(1)} ms then ${large.toFixed(1)} ms), which is superlinear.`,
+      largeCost < smallCost * 5,
+      `${pack.lang}: tripling the input took ${(largeCost / smallCost).toFixed(1)}x the time ` +
+        `(${smallCost.toFixed(2)} ms then ${largeCost.toFixed(2)} ms per run), which is superlinear. ` +
+        'A linear rule lands near 3x here.',
     );
   }
 });
