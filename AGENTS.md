@@ -1,91 +1,62 @@
 # AGENTS.md
 
-Session-start briefing for AI coding agents. Human usage is in `README.md`. This
-file is what you need before you touch anything.
+Session-start briefing. `README.md` is for humans deciding whether to use this;
+`docs/` is the detail. This file is the short form: what will bite you, and
+where to read before you touch a rule.
 
 ## What this project is
 
 Orthotypography rules for French, Spanish and German, published as
-`@shbernal/typography`. A pack is a list of rules from a standards body; each rule
-cites its source. There is a library, a `typocheck` CLI, and a skill in `skills/`
-that ships from this same repo.
+`@shbernal/typography`. A pack is a list of rules from a standards body; each
+rule cites its source. There is a library, a `typocheck` CLI, and a skill in
+`skills/` that ships from this same repo.
 
-**Pre-release, and single-maintainer.** No backwards-compatibility obligation and
-no deference to prior architecture unless the maintainer asks for it.
+**Pre-release, and single-maintainer.** No backwards-compatibility obligation
+and no deference to prior architecture unless the maintainer asks for it.
 
 ## Environment
 
-Node 24 for development: the sources run directly under Node's type stripping,
-which is why `erasableSyntaxOnly` is on and why relative imports keep their `.ts`
-extension. `rewriteRelativeImportExtensions` turns them into `.js` on the way into
-`dist/`. The **published** package targets Node 22, and `scripts/smoke-dist.mjs`
-in CI is what backs that claim.
+Node 24 for development (the sources run under type stripping); the published
+package targets Node 22.
 
 ```powershell
-pnpm check          # typecheck + lint + test. The done gate.
+pnpm check          # typecheck + lint + test. The done gate
 pnpm build
 pnpm corpus         # rebuild the gate corpora from gates/sources/*.urls
-pnpm gates:verify   # the release gates.
+pnpm gates:verify   # the release gates
 ```
 
-The corpora are third-party text and are gitignored. `pnpm corpus` reconstructs
-all eight corpora from the committed URL lists, so `pnpm gates:verify` needs a
-network and nothing else. The French *reproduction* gate is the exception and is
-different in kind: it reads both its corpora and the prior implementation it
-diffs against out of a private consumer tree at `../translation-agents`, so off
-that machine it cannot run at all. `gates/README.md` states this rather than
-leaving it to be discovered.
+All eight corpora are gitignored and rebuildable from committed URL lists. The
+French *reproduction* gate is the exception: it reads a private tree at
+`../translation-agents`, so off that machine it cannot run at all.
 
 ## The rules that must not be broken
 
-- **`check` is a superset of `fix`, and `normalize` is the fix set.** If you add
-  a rule whose repair needs information the pattern does not have, it gets a
-  `find` and no `fix`. Do not "complete" a `detectRule` by guessing a repair.
-  `es.unpaired-question` is the canonical case: knowing the `¿` is missing is not
-  knowing where it goes.
-- **A rule with no citation does not ship.** That is the line between a national
-  standard and a house style, and it is the only thing keeping the packs from
-  becoming a place where preferences collect. English gets no pack for exactly
-  this reason: the Oxford comma is not a standard.
+- **`check` is a superset of `fix`, and `normalize` is the fix set.** A rule
+  whose repair needs information the pattern does not have gets a `find` and no
+  `fix`. Do not "complete" a `detectRule` by guessing a repair.
+- **A rule with no citation does not ship**, and **a pack must not assert what
+  its citation does not fix.** When a standard admits two spellings, rule on what
+  is wrong under both and preserve the rest.
 - **Never write a rule twice.** `replaceRule` derives `find` and `fix` from one
-  pattern, so the report and the rewrite cannot disagree. If you find yourself
-  writing a matcher and a rewriter separately, plus a test to keep them equal,
-  stop: the test is a symptom.
+  pattern. If you are writing a matcher and a rewriter separately plus a test to
+  keep them equal, the test is a symptom.
 - **Every fix must be idempotent, and an inserting rule has to match its own
-  output.** Otherwise a backfill never converges and each pass looks like
-  progress. `test/packs.test.ts` asserts this per rule and per pack.
+  output**, or a backfill never converges and each pass looks like progress.
 - **A pattern must have one way to match, and a pattern that starts with a space
-  quantifier must be anchored to the start of the run.** Both halves of that
-  sentence cost real time. `ANY_SPACE*BREAKABLE ANY_SPACE*` is ambiguous, because
-  `BREAKABLE` is a subset of `ANY_SPACE`, so on a run of spaces with no guillemet
-  after it the engine tries every way of splitting the run: the French guillemet
-  rules took 15 seconds on one padded 3,000-space line. `ANY_SPACE+` followed by a
-  guillemet is unambiguous and still quadratic, because without a
-  `(?<!ANY_SPACE)` in front of it every character of a run starts a fresh scan
-  that consumes to the end of it. Rules in three of the four packs had one or the
-  other, and the German and Spanish ones were found only after the French one had
-  been fixed and written up as French-only.
-
-  Write the exception as a lookahead at the position where the run starts, take
-  the run once, and do not enumerate the defects as alternatives. `src/fr.ts`
-  works through it at the constant `CORRECT_AFTER_OPEN`, and `test/perf.test.ts`
-  holds every pack to linear time so a fourth instance fails rather than ships.
-- **Never paste an invisible character into a test.** U+0020, U+00A0 and U+202F
-  are indistinguishable in a source file, and a test using them literally passes
-  while asserting the wrong thing. Use `' '` and friends.
-- **A report must never quote raw text.** Use `reveal` / `excerptAt`. A raw
-  excerpt shows a reader two identical-looking strings and looks fine.
-- **No em dashes (U+2014).** `scripts/check-no-emdash.ts` enforces it, in lint and
-  again in the test suite. A module that must *name* the character builds it with
-  `String.fromCharCode(0x2014)`.
-- **Zero runtime dependencies.** Not an aspiration. It is what makes
-  `npx @shbernal/typography` fetch one tarball rather than resolve a tree, which
-  is what makes the public entry point tolerable and what the skill leans on. Dev
-  dependencies are unconstrained.
-- **A pack must not import `translation-harness`,** and there is no registration
-  call in either direction. `{ id, normalize }` is the whole contract, satisfied
-  structurally. `test/packs.test.ts` asserts it, since nothing else holds the two
-  shapes together.
+  quantifier must be anchored to the start of the run.** This one has cost real
+  time: an ambiguous French guillemet rule took 15 seconds on a padded
+  3,000-space line, and three of the four packs had a version of the problem.
+  `docs/development.md` works through it; `test/perf.test.ts` holds every pack
+  to linear time, including the two `withWidth` derives.
+- **Never paste an invisible character into a test or a doc.** U+0020, U+00A0,
+  U+202F and U+2009 are indistinguishable in a source file, and a test using them
+  literally passes while asserting the wrong thing. Use `NO_BREAK` and friends.
+- **A report must never quote raw text.** Use `reveal` / `excerptAt`.
+- **No em dashes (U+2014).** Enforced in lint and again in the test suite.
+- **Zero runtime dependencies**, and **a pack must not import
+  `translation-harness`.** `{ id, normalize }` is the whole contract, satisfied
+  structurally, with no registration call in either direction.
 
 ## Pack ids are era stamps
 
@@ -95,61 +66,49 @@ corpus normalized under `fr@0.1.0` and one under `fr@0.2.0` are two typography
 eras; every row is individually correct and nothing compares two rows, which is
 how a corpus splits invisibly. Bumping a pack version is a CHANGELOG entry.
 
-## Adding a language
+`fr`'s `withWidth` returns a derived pack whose id carries the width it imposes
+(`fr@0.2.0+house-00A0`), for the same reason.
 
-1. `src/<tag>.ts`, one module, no shared engine. Read `src/fr.ts` first for the
-   comment density expected: every narrowing says what it is protecting.
-2. A tag is as specific as the convention requires, and no more. `fr` is bare
-   because French is one convention at this level of detail; German is two, so
-   there is no `de`.
-3. Register it in `src/check.ts`'s `packs` and add a subpath export.
-4. A corpus in `gates/corpora.json` **before** the release, not after. A language
-   whose rules have never met real published text has not been reviewed,
-   whatever the unit tests say.
+## Where to read before changing something
 
-## The gates
-
-`gates/README.md` owns this and is worth reading before touching a rule. In
-short: French has a byte-for-byte **reproduction** gate against the
-implementation it was extracted from, and every language including French has a
-**findings triage** over professionally typeset text, because sloppy text
-measures recall (never in doubt) while typeset text measures the false-positive
-rate (the actual failure mode). Counts are committed, corpora are not, and every
-release after the first reviews a delta.
+| Doing | Read |
+|---|---|
+| Changing a rule | [`gates/README.md`](gates/README.md), then [`docs/evidence.md`](docs/evidence.md) |
+| Adding a language | [`docs/development.md`](docs/development.md) |
+| Touching a pattern | [`docs/development.md`](docs/development.md), the linear-time section |
+| Changing the protocol | [`docs/design.md`](docs/design.md) |
+| Touching the French width logic | [`docs/corpus-consistency.md`](docs/corpus-consistency.md) |
+| Cutting a release | [`docs/development.md`](docs/development.md) |
 
 **The French guillemet rules are settled, and the way they were settled is the
 precedent to follow.** At `fr@0.1.0` they fired on every guillemet in 2.4M
-characters of correctly set French, wanting U+202F where the publishers use
-U+00A0. The fix was not to pick the other width. The citation does not fix a
-width at all, so the rules were narrowed to the spacing that is wrong under
-either reading and given `conformRule`, which repairs in whichever width the
-document already uses. `fr.mixed-no-break-space` reports a document that uses
-both, and does not repair it, because choosing is the author's call.
+characters of correctly set French. The fix was not to pick the other width: the
+citation does not fix one, so the rules were narrowed to the spacing that is
+wrong under either reading. Two lessons that generalise, and neither is about
+French:
 
-Two lessons that generalise, and neither is about French:
-
-- **A pack must not assert what its citation does not fix.** When a standard
-  admits two spellings, rule on what is wrong under both and preserve the rest.
-  Consistency within a document is honestly assertable; a house preference
-  dressed as a national standard is the thing this repo exists not to do.
+- A pack must not assert what its citation does not fix.
 - **A reproduction gate constrains a rule only where its corpus exercises it.**
-  Narrowing these rules looked blocked by `gates/fr-reproduction`, which pins
+  Narrowing those rules looked blocked by `gates/fr-reproduction`, which pins
   `normalize` byte for byte. It was not: that corpus contains no guillemet the
-  prior implementation had to re-space, so the gate still reports 0 differences.
-  Measure before concluding a gate forbids a change.
+  prior implementation had to re-space. Measure before concluding a gate forbids
+  a change.
 
 **A zero is not automatically a result.** A rule reports nothing either because
 the publisher set the text correctly or because the text contained nothing it
 could match, and only the first is evidence. Every gate report carries an
-`exposure` block counting the characters that actually occurred, and each corpus
-declares in `gates/corpora.json` what it is there to expose the rules to, which
-the gate checks. If you add a corpus, declare it, and if you add a rule, check
-that some corpus exposes the character it is about.
+`exposure` block. If you add a corpus, declare it in `gates/corpora.json`; if you
+add a rule, check that some corpus exposes the character it is about.
 
 ## Conventions
 
-- Strict TypeScript, ESM, small pure functions. Match the surrounding style.
-- When you learn something durable - a measured property, a rule that had to be
-  narrowed and why - write it into the comment above the rule or into
+- Strict TypeScript, ESM, small pure functions. Match the surrounding style, and
+  read `src/fr.ts` for the comment density expected: every narrowing says what it
+  is protecting.
+- `pnpm` for every command example, in docs and in CI. The one exception is
+  `skills/typography-check/SKILL.md`, which uses `npx` because it runs on
+  whatever machine the end user has.
+- When you learn something durable, a measured property or a rule that had to be
+  narrowed and why, write it into the comment above the rule or into
   `gates/README.md`. Counts from one run and what you tried before it worked
   belong in the commit message.

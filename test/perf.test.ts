@@ -23,7 +23,15 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { check, fix, packs } from '../src/check.ts';
+import { withWidth } from '../src/fr.ts';
 import { NARROW_NO_BREAK, NO_BREAK, THIN } from '../src/pack.ts';
+
+/** The registry plus the two packs `withWidth` derives. Those carry patterns the
+ * registry ones do not - the guillemet runs with the correct-spelling exclusion
+ * removed - and a pattern that takes a space run is exactly the shape this file
+ * exists to watch. Left out, they would be the fourth instance of the bug in the
+ * header, shipping unmeasured. */
+const MEASURED = [...packs, withWidth(NO_BREAK), withWidth(NARROW_NO_BREAK)];
 
 /** Generous enough to survive a loaded runner, tight enough that any return of
  * super-linear behaviour blows straight through it. */
@@ -71,11 +79,11 @@ const SHAPES: readonly { name: string; text: string }[] = [
 
 for (const { name, text } of SHAPES) {
   test(`check stays linear on ${name}`, () => {
-    for (const pack of packs) within(`check(${pack.lang}) on ${name}`, () => check(pack, text));
+    for (const pack of MEASURED) within(`check(${pack.id}) on ${name}`, () => check(pack, text));
   });
 
   test(`fix stays linear on ${name}`, () => {
-    for (const pack of packs) within(`fix(${pack.lang}) on ${name}`, () => fix(pack, text));
+    for (const pack of MEASURED) within(`fix(${pack.id}) on ${name}`, () => fix(pack, text));
   });
 }
 
@@ -167,7 +175,7 @@ test('cost grows no faster than the text does', () => {
   const small = line(5_000);
   const large = line(15_000);
 
-  for (const pack of packs) {
+  for (const pack of MEASURED) {
     // Warm the JIT on a shape it will meet in the measured runs, so the first
     // measurement is not paying for compilation the second one gets free.
     check(pack, line(4_000));
@@ -193,7 +201,7 @@ test('cost grows no faster than the text does', () => {
 
     assert.ok(
       largeCost < smallCost * 5,
-      `${pack.lang}: tripling the input took ${(largeCost / smallCost).toFixed(1)}x the time ` +
+      `${pack.id}: tripling the input took ${(largeCost / smallCost).toFixed(1)}x the time ` +
         `(${smallCost.toFixed(2)} ms then ${largeCost.toFixed(2)} ms per run), which is superlinear. ` +
         'A linear rule lands near 3x here.',
     );

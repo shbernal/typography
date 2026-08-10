@@ -1,6 +1,6 @@
 {
   "name": "@shbernal/typography",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Orthotypography rules for French, Spanish and German as data: check text against a national standard, or fix the subset that is safe to fix unattended.",
   "keywords": [
     "typography",
@@ -39,7 +39,16 @@
   "bin": {
     "typocheck": "dist/cli.js"
   },
-  "files": ["dist", "src", "skills", ".claude-plugin", "README.md", "CHANGELOG.md", "LICENSE"],
+  "files": [
+    "dist",
+    "src",
+    "skills",
+    "docs",
+    ".claude-plugin",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

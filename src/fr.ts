@@ -116,7 +116,15 @@ const RUN_START = `(?<!${ANY_SPACE})`;
  * never, and a rule with nothing in dispute does not need a ballot. */
 const BALLOT = `(?<=\u00AB)(.)|(.)(?=\u00BB)|(.)(?=[;!?])`;
 
-function tally(value: string): { full: number; narrow: number } {
+/** How many of each width voted. Additive: the tally of two values concatenated
+ * is the tally of one plus the tally of the other, which is the whole reason
+ * `surveyWidth` can fold a corpus without re-deriving the ballot. */
+interface Ballot {
+  readonly full: number;
+  readonly narrow: number;
+}
+
+function tally(value: string): Ballot {
   let full = 0;
   let narrow = 0;
   for (const m of value.matchAll(new RegExp(BALLOT, 'gs'))) {
@@ -128,32 +136,45 @@ function tally(value: string): { full: number; narrow: number } {
 }
 
 /**
+ * Which width a ballot settles on.
+ *
+ * A tie, and a ballot with no evidence either way, goes to U+202F: it is the
+ * width the Lexique sets its own pages in, so it is the better default, and
+ * breaking the tie toward a fixed side is also what makes `normalize`
+ * idempotent. Every fix moves the count further toward the side already chosen
+ * and never away from it, so the second pass reaches the same verdict as the
+ * first.
+ */
+function verdictOf({ full, narrow }: Ballot): string {
+  return full > narrow ? NO_BREAK : NARROW_NO_BREAK;
+}
+
+/** The width a ballot uses but did not settle on, or null if it uses at most
+ * one. Null is the ordinary answer and means there is nothing to report. */
+function minorityOf(counts: Ballot): string | null {
+  if (counts.full === 0 || counts.narrow === 0) return null;
+  return verdictOf(counts) === NO_BREAK ? NARROW_NO_BREAK : NO_BREAK;
+}
+
+/**
  * Which no-break space this text already uses, and so which one a repair to it
  * should be spelled in.
- *
- * A tie, and text with no evidence either way, goes to U+202F: it is the width
- * the Lexique sets its own pages in, so it is the better default, and breaking
- * the tie toward a fixed side is also what makes `normalize` idempotent. Every
- * fix moves the count further toward the side already chosen and never away from
- * it, so the second pass reaches the same verdict as the first.
  *
  * The unit is the value the caller passed, which for `typocheck` is a whole file
  * and for a translation harness is one field. That is the right grain in both
  * cases and it is not the same grain: a registry normalized field by field can
  * still be inconsistent across rows, which is the defect the harness this was
- * extracted from exists to catch one level up.
+ * extracted from exists to catch one level up. `surveyWidth` and `withWidth`
+ * below are that level up; this function is unchanged and still decides per
+ * value, which is what keeps `fr` itself exactly as it was.
  */
 function houseWidth(value: string): string {
-  const { full, narrow } = tally(value);
-  return full > narrow ? NO_BREAK : NARROW_NO_BREAK;
+  return verdictOf(tally(value));
 }
 
-/** The width this text uses but did not settle on, or null if it uses only one.
- * Null is the ordinary answer and means there is nothing to report. */
+/** The width this text uses but did not settle on, or null if it uses only one. */
 function minorityWidth(value: string): string | null {
-  const { full, narrow } = tally(value);
-  if (full === 0 || narrow === 0) return null;
-  return houseWidth(value) === NO_BREAK ? NARROW_NO_BREAK : NO_BREAK;
+  return minorityOf(tally(value));
 }
 
 const rules: readonly Rule[] = [
@@ -318,3 +339,165 @@ export const fr: TypographyPack = {
 };
 
 export default fr;
+
+// ---------------------------------------------------------------------------
+// Corpus-wide width: for a host normalizing many values
+// ---------------------------------------------------------------------------
+//
+// Everything above decides per value, and for `typocheck`, whose value is a
+// whole file, that is the end of it. A translation harness passes one field at a
+// time, and there the per-value ballot leaves a real hole: row 1 settles on
+// U+00A0 and row 2 on U+202F, each correct alone, and the registry splits. That
+// is the defect this module was extracted from a harness to catch, reintroduced
+// one level up, and no consumer can close it from outside because the ballot is
+// private and a host reimplementing it would drift from the pack the first time
+// a rule changed.
+//
+// The two functions below close it, and they are deliberately two rather than
+// one. `surveyWidth` reports; `withWidth` acts on the report. Keeping them apart
+// is the same stance the pack takes everywhere else: this package can say what a
+// corpus does and it cannot say what a corpus should do, because the citation
+// does not fix a width. `fr.mixed-no-break-space` already reserves that decision
+// for the author, and a host surveying its own registry is the author making it.
+
+/** What a corpus's ballot came to. `minority` is null when the corpus uses at
+ * most one width, which is the answer a host wants to see. */
+export interface WidthSurvey {
+  /** Positions spelled with U+00A0. */
+  readonly full: number;
+  /** Positions spelled with U+202F. */
+  readonly narrow: number;
+  /** The width the corpus settles on, by the same count and the same tiebreak
+   * `normalize` applies to a single value. */
+  readonly verdict: string;
+  /** The width the corpus uses but did not settle on, or null if it uses at
+   * most one. Non-null is the split worth reporting. */
+  readonly minority: string | null;
+  /** How many positions are spelled in the minority width. Zero when there is
+   * no minority, so this is the number of values-worth of drift a host would
+   * repair by imposing `verdict`. */
+  readonly minorityCount: number;
+}
+
+/**
+ * Fold the ballot across many values.
+ *
+ * This is `houseWidth` at corpus grain, and it is the same ballot rather than a
+ * second implementation of it: `tally` is additive, so summing per-value tallies
+ * is exactly tallying the concatenation. A host runs this over its registry
+ * once, reports the split, and decides.
+ *
+ * Reporting is often the whole use. A corpus with `minority === null` is already
+ * consistent and needs nothing done to it; `minorityCount` on a split corpus is
+ * the size of the problem, and it is the number a host should look at before
+ * reaching for `withWidth`, because harmonizing rewrites text that is correct.
+ */
+export function surveyWidth(values: Iterable<string>): WidthSurvey {
+  let full = 0;
+  let narrow = 0;
+  for (const value of values) {
+    const counts = tally(value);
+    full += counts.full;
+    narrow += counts.narrow;
+  }
+  const counts: Ballot = { full, narrow };
+  const minority = minorityOf(counts);
+  return {
+    full,
+    narrow,
+    verdict: verdictOf(counts),
+    minority,
+    minorityCount: minority === null ? 0 : minority === NO_BREAK ? full : narrow,
+  };
+}
+
+/**
+ * The patterns above, widened to match a correct guillemet spelled in the other
+ * admissible width.
+ *
+ * **This is the part that is not just a pinned `choose`, and the reason matters.**
+ * `CORRECT_AFTER_OPEN` and `CORRECT_BEFORE_CLOSE` exist to exclude *both*
+ * correct spellings, which is the narrowing that took `fr` from 6,817 false
+ * positives to 103. So pinning `choose` to a fixed width changes nothing at all:
+ * the rows that split a corpus are correct-in-the-other-width, the shipped
+ * patterns do not match them, and `choose` is never consulted. A width imposed
+ * that way is a silent no-op, which is worse than not offering one.
+ *
+ * These patterns drop the exclusion and take the run unconditionally. That is
+ * `fr@0.1.0` behaviour, re-admitted on purpose and reachable only through
+ * `withWidth`, where a host has stated the width. Still linear: `«` and
+ * `RUN_START` anchor each run so it is a candidate once, and there is still one
+ * way to match it.
+ */
+function harmonizingRules(width: string): readonly Rule[] {
+  return [
+    conformRule({
+      id: 'fr.space-before-high-punctuation',
+      summary: `Space before \`; ! ?\` that is not the corpus's no-break space`,
+      cite: `${LEXIQUE}, "Ponctuation"`,
+      pattern: new RegExp(`${ANY_SPACE}(?=[;!?])`, 'g'),
+      choose: () => width,
+    }),
+    conformRule({
+      id: 'fr.guillemet-open',
+      summary: `Opening guillemet whose inner space is not the corpus's no-break space`,
+      cite: `${LEXIQUE}, "Guillemets"`,
+      pattern: new RegExp(`«${ANY_SPACE}*`, 'g'),
+      choose: () => `«${width}`,
+    }),
+    conformRule({
+      id: 'fr.guillemet-close',
+      summary: `Closing guillemet whose inner space is not the corpus's no-break space`,
+      cite: `${LEXIQUE}, "Guillemets"`,
+      pattern: new RegExp(`${RUN_START}${ANY_SPACE}*»`, 'g'),
+      choose: () => `${width}»`,
+    }),
+  ];
+}
+
+/**
+ * A French pack that spells every no-break space the same way, for a host that
+ * has surveyed its corpus and settled the question.
+ *
+ * Use it with `surveyWidth`: survey the registry once, then normalize every
+ * value under the one verdict. Per-value behaviour is unchanged for everyone
+ * else, because this returns a new pack and does not touch `fr`.
+ *
+ * **The id is a different era stamp, and that is the load-bearing part.** A
+ * corpus normalized by this pack has had correct text retyped into the imposed
+ * width; one normalized by `fr` has not. Those are two typography eras by
+ * exactly the argument that separates `fr@0.1.0` from `fr@0.2.0`, and a stamp
+ * that read `fr@0.2.0` on both would say the two corpora were set the same way.
+ * So the id carries the width: `fr@0.2.0+house-00A0`.
+ *
+ * `fr.mixed-no-break-space` is **not** in this pack. Its whole content is that
+ * choosing a width is the author's call, and reaching this function is the
+ * author making it. It would also now be a lie in the report: it is check-only,
+ * so every finding carries `fixable: false`, while this pack's `normalize`
+ * repairs every position it detects. The three rules above cover the same three
+ * ballot positions exactly, so nothing is lost by dropping it.
+ *
+ * Throws on any width other than the two the standard admits. U+2009 is the
+ * reason: it is the right width and it breaks lines, so a host that reached for
+ * it would be imposing a defect on every value it owns.
+ */
+export function withWidth(width: string): TypographyPack {
+  if (width !== NO_BREAK && width !== NARROW_NO_BREAK)
+    throw new Error(
+      'withWidth: the width must be NO_BREAK (U+00A0) or NARROW_NO_BREAK (U+202F). ' +
+        'Those are the two spellings the Lexique admits, and nothing else is a no-break space.',
+    );
+
+  const harmonizing = new Map(harmonizingRules(width).map((rule) => [rule.id, rule]));
+  const derived = rules.flatMap((rule) =>
+    rule.id === 'fr.mixed-no-break-space' ? [] : [harmonizing.get(rule.id) ?? rule],
+  );
+
+  return {
+    id: `fr@${VERSION}+house-${width === NO_BREAK ? '00A0' : '202F'}`,
+    lang: 'fr',
+    standard: 'Imprimerie nationale',
+    rules: derived,
+    normalize: composeNormalize(derived),
+  };
+}

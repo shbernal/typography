@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { check } from '../src/check.ts';
-import { fr } from '../src/fr.ts';
+import { fr, surveyWidth, withWidth } from '../src/fr.ts';
 
 const NBSP = '\u00a0';
 const NNBSP = '\u202f';
@@ -154,4 +154,147 @@ test('the pack stamps an era', () => {
   // under 0.2.0 did not, so the stamp has to tell them apart.
   assert.equal(fr.id, 'fr@0.2.0');
   assert.equal(fr.lang, 'fr');
+});
+
+// ---------------------------------------------------------------------------
+// Corpus-wide width
+// ---------------------------------------------------------------------------
+
+/** Two rows that are each correct on their own and inconsistent together. This
+ * is the whole defect: nothing in `fr` compares two values, so `normalize`
+ * leaves both alone and the corpus splits. */
+const SPLIT: readonly string[] = [`«${NBSP}oui${NBSP}»`, `«${NNBSP}non${NNBSP}»`, `bien${NBSP}!`];
+
+test('normalize leaves a split corpus split, which is why the survey exists', () => {
+  for (const row of SPLIT) assert.equal(fr.normalize(row), row);
+});
+
+test('the survey folds the ballot across values', () => {
+  const survey = surveyWidth(SPLIT);
+  // Three U+00A0 (two guillemets and the one before `!`) against two U+202F.
+  assert.equal(survey.full, 3);
+  assert.equal(survey.narrow, 2);
+  assert.equal(survey.verdict, NBSP);
+  assert.equal(survey.minority, NNBSP);
+  assert.equal(survey.minorityCount, 2);
+});
+
+test('the survey is the same ballot as the per-value one, not a second copy', () => {
+  // Summing per-value tallies must equal tallying the concatenation, or the
+  // corpus verdict and the per-value verdict are two implementations that will
+  // drift the first time a rule changes.
+  assert.deepEqual(surveyWidth(SPLIT), surveyWidth([SPLIT.join('\n')]));
+});
+
+test('a consistent corpus reports no minority', () => {
+  const survey = surveyWidth([`«${NNBSP}oui${NNBSP}»`, `«${NNBSP}non${NNBSP}»`]);
+  assert.equal(survey.minority, null);
+  assert.equal(survey.minorityCount, 0);
+});
+
+test('an empty corpus takes the same default a value with no evidence takes', () => {
+  const survey = surveyWidth([]);
+  assert.equal(survey.verdict, NNBSP);
+  assert.equal(survey.minority, null);
+});
+
+test('the colon is not on the ballot', () => {
+  // It has a fixed width by citation, so it does not vote and imposing a width
+  // does not move it.
+  assert.equal(surveyWidth([`voici${NBSP}: ici`]).full, 0);
+  assert.equal(withWidth(NNBSP).normalize(`voici${NBSP}: ici`), `voici${NBSP}: ici`);
+});
+
+test('imposing a width harmonizes rows the shipped rules will not touch', () => {
+  // The reason `withWidth` rebuilds the patterns instead of pinning `choose`.
+  // These rows are correct-in-the-other-width, the shipped patterns exclude
+  // exactly that, and so a width imposed by pinning `choose` would be a silent
+  // no-op on precisely the rows that split the corpus.
+  const house = withWidth(NBSP);
+  assert.equal(house.normalize(`«${NNBSP}non${NNBSP}»`), `«${NBSP}non${NBSP}»`);
+  assert.equal(house.normalize(`bien${NNBSP}!`), `bien${NBSP}!`);
+  // And the whole corpus comes out with nothing left to report.
+  assert.equal(surveyWidth(SPLIT.map((row) => house.normalize(row))).minority, null);
+});
+
+test('survey then impose is the intended sequence, in both directions', () => {
+  for (const width of [NBSP, NNBSP]) {
+    const house = withWidth(width);
+    const settled = SPLIT.map((row) => house.normalize(row));
+    const survey = surveyWidth(settled);
+    assert.equal(survey.minority, null);
+    assert.equal(survey.verdict, width);
+  }
+});
+
+test('an imposed width still repairs what the shipped rules repair', () => {
+  const house = withWidth(NNBSP);
+  assert.equal(house.normalize('«mot»'), `«${NNBSP}mot${NNBSP}»`);
+  assert.equal(house.normalize('«  mot  »'), `«${NNBSP}mot${NNBSP}»`);
+  assert.equal(house.normalize(`«${THINSP}mot${THINSP}»`), `«${NNBSP}mot${NNBSP}»`);
+  assert.equal(house.normalize("l'ete"), `l${RSQUO}ete`);
+  // And still inserts nothing before a colon, so a URL survives.
+  assert.equal(house.normalize('https://example.com'), 'https://example.com');
+});
+
+test('an imposed width is a different era stamp', () => {
+  // A corpus normalized under `withWidth` has had correct text retyped into the
+  // imposed width and one normalized under `fr` has not. A stamp that read
+  // `fr@0.2.0` on both would say they were set the same way.
+  assert.equal(withWidth(NBSP).id, 'fr@0.2.0+house-00A0');
+  assert.equal(withWidth(NNBSP).id, 'fr@0.2.0+house-202F');
+  assert.notEqual(withWidth(NBSP).id, fr.id);
+  assert.notEqual(withWidth(NBSP).id, withWidth(NNBSP).id);
+});
+
+test('an imposed width drops the rule that says the width is undecided', () => {
+  const house = withWidth(NBSP);
+  assert.ok(!house.rules.some((r) => r.id === 'fr.mixed-no-break-space'));
+  // Dropping it loses no coverage: the three conform rules cover the same three
+  // ballot positions, and every one of them is now fixable.
+  assert.deepEqual(
+    check(house, SPLIT.join('\n')).filter((f) => !f.fixable),
+    [],
+  );
+});
+
+test('an imposed width is idempotent, per rule and per pack', () => {
+  const texts = [
+    ...SPLIT,
+    '',
+    '«»',
+    `«${NBSP}`,
+    `${NNBSP}»`,
+    'Il a dit «  bonjour  » ; puis « au revoir »!',
+    `Mixed ${NBSP} et ${NNBSP} et ${THINSP} ensemble.`,
+  ];
+  for (const width of [NBSP, NNBSP]) {
+    const house = withWidth(width);
+    for (const text of texts) {
+      const once = house.normalize(text);
+      assert.equal(house.normalize(once), once, `${house.id} on ${JSON.stringify(text)}`);
+      for (const rule of house.rules) {
+        if (!rule.fix) continue;
+        const ruleOnce = rule.fix(text);
+        assert.equal(rule.fix(ruleOnce), ruleOnce, `${rule.id} on ${JSON.stringify(text)}`);
+        // And the rule reports exactly when it rewrites, as everywhere else.
+        assert.equal(rule.find(text).length > 0, ruleOnce !== text, `${rule.id} disagrees`);
+      }
+    }
+  }
+});
+
+test('a width the standard does not admit is refused', () => {
+  // U+2009 is the trap: right width, breaks lines. A host that imposed it would
+  // be writing a defect into every value it owns.
+  assert.throws(() => withWidth(THINSP), /must be NO_BREAK/);
+  assert.throws(() => withWidth(' '), /must be NO_BREAK/);
+  assert.throws(() => withWidth(''), /must be NO_BREAK/);
+});
+
+test('an imposed pack still satisfies the harness protocol', () => {
+  const house = withWidth(NBSP);
+  assert.equal(typeof house.normalize, 'function');
+  assert.equal(house.lang, 'fr');
+  assert.equal(house.standard, fr.standard);
 });

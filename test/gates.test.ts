@@ -41,7 +41,18 @@ const NUMBER = new Map(
   ),
 );
 
-const DOCS = ['README.md', 'AGENTS.md', 'CHANGELOG.md', join('gates', 'README.md')];
+/** Every document that states how many corpora there are. `docs/` joined this
+ * list when the README stopped carrying the detail: the claim moved, and a
+ * check that kept watching only the old locations would have gone quiet rather
+ * than gone red. */
+const DOCS = [
+  'README.md',
+  'AGENTS.md',
+  'CHANGELOG.md',
+  join('gates', 'README.md'),
+  join('docs', 'evidence.md'),
+  join('docs', 'development.md'),
+];
 
 test('the corpus table in gates/README.md lists every corpus and no others', () => {
   const gates = readFileSync(join(ROOT, 'gates', 'README.md'), 'utf8');
@@ -62,8 +73,8 @@ test('the corpus table in gates/README.md lists every corpus and no others', () 
 });
 
 test('every corpus is rebuildable, which is what the docs claim', () => {
-  // The claim is stated flatly in four documents now that there is no exception
-  // to qualify it. If a corpus without a frozen URL list is ever added, this
+  // The claim is stated flatly wherever it appears, now that there is no
+  // exception to qualify it. If a corpus without a frozen URL list is ever added, this
   // fails and the sentences have to be rewritten rather than quietly becoming
   // untrue, which is exactly how the last count went wrong.
   for (const spec of corpora)

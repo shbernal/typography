@@ -1,5 +1,66 @@
 # Changelog
 
+## 0.1.2
+
+Additive. No pack version moves, no rule changes what it matches, and
+`fr.normalize` is byte-for-byte what it was, so a corpus normalized under
+`0.1.1` needs nothing done to it.
+
+- **`surveyWidth` and `withWidth`, on `@shbernal/typography/fr`.** For a host
+  normalizing many values that have to be consistent with each other, which
+  `fr` alone could not give it. The pack decides the no-break-space width per
+  value, and the value is whatever the caller passed: a whole file for
+  `typocheck`, one field for a translation harness. Both are the right grain and
+  they are not the same grain, so a registry normalized field by field could
+  settle row 1 on U+00A0 and row 2 on U+202F, each correct alone, and split.
+  `fr.mixed-no-break-space` is the right rule at the wrong scope: its survey
+  runs within one value and never sees the second row.
+
+  `surveyWidth(values)` folds the ballot across a corpus and returns the
+  verdict, the minority width and the minority count. It is the same ballot
+  rather than a second implementation of it: the tally is additive, so summing
+  per-value tallies is exactly tallying the concatenation, which is what stops a
+  host drifting from the pack the first time a rule changes. `withWidth(width)`
+  returns a pack that spells every no-break space the same way. Reported by a
+  consumer who had moved a translation pipeline onto this package (#3).
+
+- **`withWidth` rebuilds the guillemet patterns rather than pinning `choose`,
+  and had to.** The obvious implementation does nothing, silently. The shipped
+  patterns carry `CORRECT_AFTER_OPEN` and `CORRECT_BEFORE_CLOSE`, whose entire
+  job is to exclude *both* correct spellings, and that exclusion is the
+  narrowing that took French from 6,817 false positives to 103. The rows that
+  split a corpus are correct-in-the-other-width, so the shipped patterns never
+  match them and `choose` is never consulted: measured on a two-row corpus, a
+  pinned `choose` found 0 matches and rewrote nothing. So the derived pack takes
+  each space run unconditionally, which is `fr@0.1.0` behaviour re-admitted on
+  purpose and reachable only where a host has stated the width. Still linear,
+  and `test/perf.test.ts` now measures the two derived packs alongside the four
+  registry ones rather than taking that on trust.
+
+- **A derived pack carries its own era stamp**, `fr@0.2.0+house-00A0` or
+  `fr@0.2.0+house-202F`. A corpus normalized by it has had correct text retyped
+  into the imposed width and one normalized by `fr` has not, which is two
+  typography eras by exactly the argument separating `fr@0.1.0` from `fr@0.2.0`.
+  A stamp reading `fr@0.2.0` on both would have said they were set the same way,
+  which is the failure the stamp exists to prevent, reintroduced one layer up.
+
+- **`fr.mixed-no-break-space` is not in a derived pack.** Its content is that
+  choosing a width is the author's call, and calling `withWidth` is the author
+  making it. It would also have been a lie in the report: it is check-only, so
+  every finding carries `fixable: false`, while the derived pack's `normalize`
+  repairs every position it detects. Nothing is lost, because the three conform
+  rules cover the same three ballot positions exactly.
+
+- **`docs/`**, and a `README.md` that is about why the package exists and what
+  it is for rather than how it works. The design, the API, the evidence and the
+  development notes moved into five pages; `AGENTS.md` keeps the invariants and
+  points at them. The corpus-count check in `test/gates.test.ts` watches the new
+  locations too: the claim moved, and a check still watching only the old ones
+  would have gone quiet rather than gone red.
+
+  `docs/` ships in the tarball, so the README's links resolve for somebody
+  reading the package rather than the repository.
+
 ## 0.1.1
 
 No change to the packs, the CLI or anything else inside the tarball: `0.1.1`
