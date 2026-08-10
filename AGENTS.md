@@ -54,6 +54,22 @@ leaving it to be discovered.
 - **Every fix must be idempotent, and an inserting rule has to match its own
   output.** Otherwise a backfill never converges and each pass looks like
   progress. `test/packs.test.ts` asserts this per rule and per pack.
+- **A pattern must have one way to match, and a pattern that starts with a space
+  quantifier must be anchored to the start of the run.** Both halves of that
+  sentence cost real time. `ANY_SPACE*BREAKABLE ANY_SPACE*` is ambiguous, because
+  `BREAKABLE` is a subset of `ANY_SPACE`, so on a run of spaces with no guillemet
+  after it the engine tries every way of splitting the run: the French guillemet
+  rules took 15 seconds on one padded 3,000-space line. `ANY_SPACE+` followed by a
+  guillemet is unambiguous and still quadratic, because without a
+  `(?<!ANY_SPACE)` in front of it every character of a run starts a fresh scan
+  that consumes to the end of it. Rules in three of the four packs had one or the
+  other, and the German and Spanish ones were found only after the French one had
+  been fixed and written up as French-only.
+
+  Write the exception as a lookahead at the position where the run starts, take
+  the run once, and do not enumerate the defects as alternatives. `src/fr.ts`
+  works through it at the constant `CORRECT_AFTER_OPEN`, and `test/perf.test.ts`
+  holds every pack to linear time so a fourth instance fails rather than ships.
 - **Never paste an invisible character into a test.** U+0020, U+00A0 and U+202F
   are indistinguishable in a source file, and a test using them literally passes
   while asserting the wrong thing. Use `' '` and friends.

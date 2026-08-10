@@ -46,6 +46,7 @@ Verbs and flags:
 | `--json` | machine-readable findings |
 | `--strict` | make warnings fail too |
 | `langs` | list the packs and their standards |
+| `--version` | the tool version and every pack id |
 
 Exit `0` clean, `1` findings, `2` misuse.
 
@@ -117,8 +118,9 @@ answer to "why did it not fix this one" is always that the repair needs
 information a substitution does not have.
 
 A count with no version beside it is not comparable to the next one, which is why
-the footer stamps `typocheck 0.1.0 (fr@0.1.0)`. Keep the stamp when you paste a
-report anywhere it will be read later.
+the footer stamps `typocheck 0.1.0 (fr@0.2.0)`. Keep the stamp when you paste a
+report anywhere it will be read later. `typocheck --version` prints the same two
+numbers without needing a file to check.
 
 ## Per-language detail
 

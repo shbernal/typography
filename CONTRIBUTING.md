@@ -21,7 +21,7 @@ paranoia: this package's whole subject is invisible characters, and a repo that
 normalised line endings differently on one platform is exactly where a U+00A0
 assertion would start silently passing for the wrong reason.
 
-## The two rules most likely to trip you
+## The three rules most likely to trip you
 
 **A rule that can find something it cannot safely repair gets a `find` and no
 `fix`.** `check` is a superset of `fix`, and `pack.normalize` is the fix set
@@ -30,6 +30,16 @@ in `?` with no `¿` is unambiguously wrong, and knowing that is not knowing wher
 the `¿` goes, because the mark opens the interrogative clause rather than the
 sentence. `Si vienes, ¿me avisas?` is correct and no substitution produces it.
 Do not complete a `detectRule` by guessing a repair.
+
+**A rule that reads a run of spaces must be linear.** This is the one invariant
+here that a careful reader will not spot by reading the rule, and three of the
+four packs shipped a violation of it. A pattern with two ways to match the same
+run of spaces backtracks through all of them, and a pattern starting with
+`ANY_SPACE+` rescans the run once per character unless a `(?<!ANY_SPACE)` anchors
+it to the run's start. In this package that is not academic: the French guillemet
+rules took 15 seconds on a single 3,000-space line, which an indented block
+produces by accident. `test/perf.test.ts` runs every pack over the shapes that
+break a naive pattern, and `src/fr.ts` explains the fix at `CORRECT_AFTER_OPEN`.
 
 **A rule with no citation does not ship.** Every rule names the section of the
 Imprimerie nationale, the RAE or the Duden that decides it. That line is the only

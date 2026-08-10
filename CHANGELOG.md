@@ -18,9 +18,31 @@ First cut.
   French guillemet result below: when the citation does not fix a width, a rule
   with a literal replacement has to invent one, and either invention retypes
   text that was already correct.
-- **`typocheck`**, with `check`, `fix --write` and `langs`. Reads files or stdin.
-  Requires `--lang` and does not detect. Stamps every report with the tool
-  version and the pack id.
+- **`typocheck`**, with `check`, `fix --write`, `langs` and `--version`. Reads
+  files or stdin. Requires `--lang` and does not detect. Stamps every report with
+  the tool version and the pack id. An argument starting with a dash that is not
+  a flag it knows is a misuse and exits `2`; a bare `-` is still stdin. Without
+  that, a typo in `--write` fell through to the file list and came back as
+  "cannot read --wrote", so a mistyped flag read as a missing file and the
+  rewrite silently did not happen.
+- **Every pack runs in linear time**, asserted in `test/perf.test.ts` over long
+  runs of each of the four spaces, unbroken tokens and very long URLs. This is
+  filed as a feature because three rules did not have it. `fr.guillemet-open` and
+  `fr.guillemet-close` were alternations over `ANY_SPACE*BREAKABLE ANY_SPACE*`,
+  and since `BREAKABLE` is a subset of `ANY_SPACE` the engine could split a run of
+  spaces at every position in it: 242 ms at 800 spaces, 1.5 s at 1,600, and 15 s
+  for one padded 3,000-space line - an indented block or a wrapped table, not an
+  attack. `es.guillemet-close-space`, `de-DE.guillemet-close-space` and
+  `de-CH.guillemet-close-space` were quadratic for a plainer reason: `ANY_SPACE+»`
+  re-enters at every character of a run. `es`'s token scan walked to the nearest
+  whitespace once per `?`, which is quadratic in an unbroken token and is now
+  capped at 128 characters either way. All eight corpora and the reproduction gate
+  report identical results before and after, so this is a rewrite of how the rules
+  are spelled and not of what they find.
+
+  Worth recording separately: the German and Spanish instances were found by the
+  scaling assertion in that test file, *after* the French one had been fixed and
+  written up as French-only. The measurement caught what reading the diff did not.
 - **Zero runtime dependencies**, as a constraint rather than a coincidence.
 - **`gates/`**, the release gates, and every language has been through one:
   - `fr` reproduces the implementation it was extracted from byte for byte over
@@ -64,7 +86,10 @@ First cut.
   space the document already uses. `fr.mixed-no-break-space` reports a document
   that uses both and does not repair it, because choosing is the author's call.
   The pack id moved to `fr@0.2.0`; the reproduction gate still reports 0
-  differences, because its corpus never exercised the case.
+  differences, because its corpus never exercised the case. **So this release
+  ships French at `fr@0.2.0` and the other three packs at `@0.1.0`**, which is
+  what a pack version being independent of the package version looks like the
+  first time it happens. There is no `0.2.0` section below to look for.
 - **Gate reports count exposure.** A rule that reports nothing has either met
   text that was set correctly or text that never contained anything it could
   match, and those are not the same result. Each corpus declares which characters

@@ -1,5 +1,10 @@
 # @shbernal/typography
 
+[![CI](https://github.com/shbernal/typography/actions/workflows/ci.yml/badge.svg)](https://github.com/shbernal/typography/actions/workflows/ci.yml)
+[![Corpus](https://github.com/shbernal/typography/actions/workflows/corpus.yml/badge.svg)](https://github.com/shbernal/typography/actions/workflows/corpus.yml)
+[![npm](https://img.shields.io/npm/v/@shbernal/typography)](https://www.npmjs.com/package/@shbernal/typography)
+[![No dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
+
 Orthotypography for French, Spanish and German, as data rather than as advice.
 
 Each language gets a pack of rules taken from the body that actually decides them
@@ -173,17 +178,26 @@ pnpm gates     # the release gates
 
 The corpora are third-party text and are not in this repo, but all eight corpora
 are rebuildable: the frozen URL lists and the fetcher are committed, so anyone can
-run `pnpm corpus` and compare fingerprints. The French *reproduction* baseline is
-the one thing that cannot be rebuilt, because it diffs against a prior
-implementation in a private tree, and [gates/README.md](gates/README.md) names it
-rather than averaging it away.
+run `pnpm corpus` and compare fingerprints. A scheduled workflow rebuilds them
+monthly, so the claim in the previous sentence fails loudly when a publisher moves
+a document rather than quietly when a contributor tries. The French
+*reproduction* baseline is the one thing that cannot be rebuilt, because it diffs
+against a prior implementation in a private tree, and
+[gates/README.md](gates/README.md) names it rather than averaging it away.
+
+The rules run over whatever text a host hands them, so `test/perf.test.ts` holds
+every pack to linear time over the shapes that break a naive pattern: long runs
+of each of the four spaces, unbroken tokens, very long URLs. That file exists
+because three rules did not pass it. A guillemet rule written as an alternation
+over `ANY_SPACE*BREAKABLE ANY_SPACE*` can split a run of spaces at every position
+in it, and one padded 3,000-space line took 15 seconds to check.
 
 Node 24 for development (the sources run under type stripping); the published
 package runs on Node 20.
 
 ## Contributing, and the report worth most
 
-[CONTRIBUTING.md](CONTRIBUTING.md) has the setup and the two invariants most
+[CONTRIBUTING.md](CONTRIBUTING.md) has the setup and the three invariants most
 likely to trip you. The single most useful issue this project can receive is a
 **false positive**: text that was set correctly and that `typocheck` complained
 about anyway. Unit tests measure whether a rule fires on text written to make it

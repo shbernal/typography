@@ -10,7 +10,7 @@
 // Everything else about Swiss German typography is Duden's, so this pack is the
 // common rules plus its own quotation marks.
 
-import { ANY_SPACE, DUDEN, germanCommonRules } from './de-common.ts';
+import { ANY_SPACE, DUDEN, germanCommonRules, RUN_START } from './de-common.ts';
 import {
   composeNormalize,
   detectRule,
@@ -44,7 +44,7 @@ const rules: readonly Rule[] = [
     id: 'de-CH.guillemet-close-space',
     summary: 'Space before the closing guillemet `»`; Swiss German sets `«Wort»` closed up',
     cite: `${DUDEN}, "Anführungszeichen"`,
-    pattern: new RegExp(`${ANY_SPACE}+»(?![\\p{L}\\p{N}])`, 'gu'),
+    pattern: new RegExp(`${RUN_START}${ANY_SPACE}+»(?![\\p{L}\\p{N}])`, 'gu'),
     replacement: '»',
   }),
 

@@ -113,3 +113,44 @@ test('langs lists every pack with its standard', () => {
   assert.match(r.stdout, /de-CH@0\.1\.0\s+Duden/);
   assert.match(r.stdout, /fr@0\.2\.0\s+Imprimerie nationale/);
 });
+
+test('--version answers, in all three spellings, with the pack ids too', () => {
+  for (const spelling of ['--version', '-v', 'version']) {
+    const r = run([spelling]);
+    assert.equal(r.status, 0, `${spelling} should exit 0`);
+    assert.match(r.stdout, /^typocheck \d+\.\d+\.\d+$/m);
+    // The pack ids are on it because a findings count is only comparable against
+    // the pack that produced it, so a bug report quoting one needs both.
+    assert.match(r.stdout, /fr@\d+\.\d+\.\d+/);
+    assert.match(r.stdout, /de-CH@\d+\.\d+\.\d+/);
+  }
+});
+
+test('a mistyped flag is a misuse, not a missing file', () => {
+  // The failure this prevents: `--wrote` used to fall through to the file list
+  // and come back as "cannot read --wrote", so a typo in `--write` looked like a
+  // path problem and the rewrite silently did not happen.
+  const r = run(['fix', '--lang', 'fr', '--wrote', withFile('« mot »')]);
+  assert.equal(r.status, 2);
+  assert.match(r.stderr, /unknown option '--wrote'/);
+  assert.doesNotMatch(r.stderr, /cannot read/);
+});
+
+test('every unknown flag is named, not just the first', () => {
+  const r = run(['check', '--lang', 'fr', '--nope', '--also-nope', '-']);
+  assert.equal(r.status, 2);
+  assert.match(r.stderr, /'--nope'/);
+  assert.match(r.stderr, /'--also-nope'/);
+});
+
+test('a bare - is still stdin and not a flag', () => {
+  const r = run(['check', '--lang', 'fr', '-'], 'Bonjour!');
+  assert.notEqual(r.status, 2);
+  assert.match(r.stdout, /<stdin>/);
+});
+
+test('-h works after a verb, where it used to be read as a filename', () => {
+  const r = run(['check', '-h']);
+  assert.equal(r.status, 0);
+  assert.match(r.stdout, /typocheck \d+\.\d+\.\d+ - orthotypography/);
+});

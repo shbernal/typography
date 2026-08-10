@@ -78,20 +78,37 @@ const BREAKABLE = `[ ${THIN}]`;
 const NO_BREAK_SPACE = `[${NO_BREAK}${NARROW_NO_BREAK}]`;
 
 /**
- * Guillemet spacing that is wrong whichever convention a document follows: a
- * breaking space anywhere in the run, more than one space, or no space at all.
+ * The run of spaces beside a guillemet is wrong unless it is exactly one
+ * no-break space. That one sentence covers all three defects - a breaking space
+ * anywhere in the run, more than one space, no space at all - and exactly one
+ * U+00A0 and exactly one U+202F are what it leaves out, which is the whole of
+ * what the corpora taught this pack.
  *
- * Exactly one U+00A0 and exactly one U+202F are both absent from this, and that
- * absence is the whole of what the corpora taught this pack.
+ * **How it is spelled matters as much as what it says.** The direct translation
+ * enumerates the three defects as an alternation:
  *
- * `absent` is the no-space case and is the only asymmetric part, because it is a
- * lookahead after `«` and a lookbehind before `»`. Note that it also makes each
- * rule match its own output's *neighbourhood* but not its own output, which is
- * what keeps an inserting rule idempotent without matching the correct form.
+ *     (?:ANY_SPACE*BREAKABLE ANY_SPACE*|ANY_SPACE{2,}|absent)
+ *
+ * `BREAKABLE` is a subset of `ANY_SPACE`, so the first branch can split a run of
+ * spaces at every position in it and the second can re-match what the first gave
+ * up. Against a run with no guillemet after it the engine walks that ambiguity:
+ * 800 ordinary spaces took 242 ms, 1,600 took 1.5 s, and a single padded
+ * 3,000-space line took 15 s. Nothing hostile is required to produce one - an
+ * indented block or a wrapped table will do - and this package's own security
+ * policy calls a pattern that behaves this way a vulnerability in it.
+ *
+ * So the rules below take the run *once*, greedily, with no second way to match
+ * it, and carry the exception as a lookahead at the position where the run
+ * begins. Nothing to backtrack means linear, and `test/perf.test.ts` holds it
+ * there rather than trusting this comment.
  */
-function wrongSpacing(absent: string): string {
-  return `(?:${ANY_SPACE}*${BREAKABLE}${ANY_SPACE}*|${ANY_SPACE}{2,}|${absent})`;
-}
+const CORRECT_AFTER_OPEN = `(?!${NO_BREAK_SPACE}(?!${ANY_SPACE}))`;
+const CORRECT_BEFORE_CLOSE = `(?!${NO_BREAK_SPACE}»)`;
+
+/** The start of a space run, so a run is a candidate once rather than once per
+ * character in it. Without this the close rule is quadratic even with an
+ * unambiguous body, because every position inside a run starts a fresh scan. */
+const RUN_START = `(?<!${ANY_SPACE})`;
 
 /** Every position where this pack has an opinion about *which* no-break space to
  * use. The colon is deliberately not here: the Lexique specifies the word space
@@ -197,7 +214,11 @@ const rules: readonly Rule[] = [
     // What it no longer does is rewrite a correct guillemet to the other correct
     // spelling. See the header: that behaviour produced 3,231 findings on one
     // corpus and 0 real defects among them.
-    pattern: new RegExp(`\u00AB${wrongSpacing(`(?!${ANY_SPACE})`)}`, 'g'),
+    //
+    // `\u00AB` fixes where the run starts, the lookahead rejects the one correct
+    // spelling, and `ANY_SPACE*` then takes the rest with nothing after it to
+    // backtrack for.
+    pattern: new RegExp(`\u00AB${CORRECT_AFTER_OPEN}${ANY_SPACE}*`, 'g'),
     choose: (value) => `\u00AB${houseWidth(value)}`,
   }),
 
@@ -205,7 +226,10 @@ const rules: readonly Rule[] = [
     id: 'fr.guillemet-close',
     summary: 'Closing guillemet whose inner space is breaking, doubled or missing',
     cite: `${LEXIQUE}, "Guillemets"`,
-    pattern: new RegExp(`${wrongSpacing(`(?<!${ANY_SPACE})`)}\u00BB`, 'g'),
+    // The mirror, with the run anchored on its left instead of by `\u00AB`. The
+    // no-space case is the position of `\u00BB` itself, where the run is empty and
+    // the lookbehind reads the character before it.
+    pattern: new RegExp(`${RUN_START}${CORRECT_BEFORE_CLOSE}${ANY_SPACE}*\u00BB`, 'g'),
     choose: (value) => `${houseWidth(value)}\u00BB`,
   }),
 

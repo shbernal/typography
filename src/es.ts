@@ -34,30 +34,56 @@ const VERSION = '0.1.0';
  * rules look, so all three are the defect. */
 const ANY_SPACE = `[ ${NO_BREAK}${NARROW_NO_BREAK}]`;
 
+/** The start of a space run. `de-common.ts` explains what it is protecting
+ * against at length; the short version is that `ANY_SPACE+»` without it rescans
+ * a run of spaces once per character in the run. Not imported from there, for
+ * the reason the guillemet rules below are not either: the day RAE and Duden
+ * disagree, a shared constant has to be split by whoever is holding the release. */
+const RUN_START = `(?<!${ANY_SPACE})`;
+
 /** Ends a sentence for the purpose of the paired-mark scan below. */
 const SENTENCE_END = /[.!?\n…]/;
 
 /**
- * The whitespace-delimited token containing `index`.
+ * How far either scan below will walk before giving up. Every `?` and `!` in a
+ * value pays this, so an uncapped scan is quadratic in the length of an unbroken
+ * run: `a?` repeated to 8,000 characters took 1.7 s, and the values here are
+ * whole documents. A token longer than this is not a Spanish word under any
+ * reading, so the cap costs nothing a reader would want back.
+ */
+const TOKEN_SCAN = 128;
+
+/**
+ * The whitespace-delimited token containing `index`, or null when it runs past
+ * `TOKEN_SCAN` characters in either direction.
  *
  * Every check-only rule here needs it for the same reason: a `?` in
  * `https://x/y?a=1` is the identical character in a construction that must never
  * be reported, and the only cheap signal that tells them apart is that the URL
  * has no spaces in it and carries `/` or `=`.
  */
-function token(value: string, index: number): string {
+function token(value: string, index: number): string | null {
+  const floor = Math.max(0, index - TOKEN_SCAN);
+  const ceiling = Math.min(value.length, index + TOKEN_SCAN);
   let from = index;
   let to = index;
-  while (from > 0 && !/\s/.test(value[from - 1]!)) from--;
-  while (to < value.length && !/\s/.test(value[to]!)) to++;
-  return value.slice(from, to);
+  while (from > floor && !/\s/.test(value[from - 1]!)) from--;
+  while (to < ceiling && !/\s/.test(value[to]!)) to++;
+  const bounded =
+    (from === 0 || /\s/.test(value[from - 1]!)) && (to === value.length || /\s/.test(value[to]!));
+  return bounded ? value.slice(from, to) : null;
 }
 
 /** True when the token around `index` looks like a URL, a query string, a path
  * or an identifier rather than prose. Deliberately crude: it is a filter on a
- * report, so a miss costs a false positive that a human reads and dismisses. */
+ * report, so a miss costs a false positive that a human reads and dismisses.
+ *
+ * A token too long to scan counts as machine text, which is the conservative
+ * direction: it suppresses a finding rather than inventing one, and 128
+ * unbroken characters of Spanish prose do not occur. */
 function looksMachine(value: string, index: number): boolean {
   const t = token(value, index);
+  if (t === null) return true;
   return t.includes('://') || t.includes('=') || t.includes('/') || t.startsWith('-');
 }
 
@@ -80,7 +106,7 @@ const rules: readonly Rule[] = [
     id: 'es.guillemet-close-space',
     summary: 'Space before a closing guillemet; Spanish sets `«texto»` closed up',
     cite: `${ORTOGRAFIA}, "Las comillas"`,
-    pattern: new RegExp(`${ANY_SPACE}+»`, 'g'),
+    pattern: new RegExp(`${RUN_START}${ANY_SPACE}+»`, 'g'),
     replacement: '»',
   }),
 

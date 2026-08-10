@@ -87,6 +87,40 @@ test('the skill teaches the four things that are not in --help', () => {
   );
 });
 
+test('every pack id the skill quotes is the one that pack currently has', () => {
+  // The failure this catches, which had already happened: the skill's worked
+  // example of a report footer read `(fr@0.1.0)` while the pack shipped
+  // `fr@0.2.0`, and the same file tells the reader that a report stamped
+  // `fr@0.1.0` predates the guillemet narrowing and should be ignored. So the
+  // example taught a model to distrust the tool's own current output.
+  //
+  // A pack version moves whenever a rule changes, which is exactly when nobody is
+  // thinking about the skill, so this cannot be left to review.
+  const current = new Set(packs.map((p) => p.id));
+  const quoted = [...SKILL.matchAll(/\b((?:fr|es|de-DE|de-CH)@\d+\.\d+\.\d+)\b/g)];
+
+  assert.ok(quoted.length > 0, 'the skill should show at least one stamp');
+  for (const match of quoted) {
+    const id = match[1]!;
+    if (current.has(id)) continue;
+
+    // A superseded pack may be named, but only where the skill is telling the
+    // reader what changed - "At `fr@0.1.0` the rules used to", "a report stamped
+    // `fr@0.1.0` predates this". The test has to read the words immediately
+    // before *this* occurrence rather than ask whether the file says them
+    // anywhere: SKILL.md carries both of those sentences, so a file-wide search
+    // would have licensed the broken footer that prompted this test and caught
+    // nothing at all.
+    const lead = SKILL.slice(Math.max(0, match.index - 16), match.index);
+    assert.match(
+      lead,
+      /(?:\bAt|\bstamped)\s+`?$/,
+      `SKILL.md quotes ${id}, which no pack ships, in a position that reads as current. ` +
+        `Preceded by ${JSON.stringify(lead)}.`,
+    );
+  }
+});
+
 test('the references exist and one is read only once the language is known', () => {
   for (const ref of ['fr', 'es', 'de']) {
     const body = readFileSync(join(SKILL_DIR, 'references', `${ref}.md`), 'utf8');

@@ -1,0 +1,75 @@
+name: Corpus
+
+# "All eight corpora are rebuildable" is a load-bearing claim. It appears in the
+# README, in CHANGELOG.md, in CONTRIBUTING.md and in gates/README.md, and every
+# findings number in `gates/*.json` is worth checking only for as long as it
+# holds. It is also the claim most likely to stop being true without anyone
+# doing anything: a journal reorganises its permalinks, a federal site moves a
+# PDF, a page starts serving an interstitial. Nothing in the repository changes,
+# the tests stay green, and the first person to find out is a contributor whose
+# `pnpm corpus` half-fails on their first afternoon.
+#
+# So this rebuilds them on a schedule and fails loudly when it cannot. It is the
+# only CI here that talks to the outside world, and it exists to protect a
+# sentence rather than the code.
+#
+# It does not run the reproduction gate, which cannot run anywhere but the
+# maintainer's machine. gates/README.md says why, and that is a different kind of
+# unrunnable from this one.
+
+on:
+  schedule:
+    # Monthly. The documents are official publications and standards-body text,
+    # which move on the order of years; anything more frequent is load on
+    # somebody else's servers in exchange for nothing.
+    #
+    # GitHub disables a schedule after 60 days without a commit to the default
+    # branch, so on a quiet repository this stops on its own and stops silently.
+    # `workflow_dispatch` is here so a maintainer can re-run it by hand, which is
+    # also what re-enables the schedule.
+    - cron: '0 4 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out typography
+        uses: actions/checkout@v5
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5
+        with:
+          version: 11.11.0
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Failing here means the URL lists have rotted: a document 404s, or moved,
+      # or now needs a session. `fetch-corpus.ts` also exits non-zero when a
+      # document downloads but extracts to nothing, which is what an interstitial
+      # or a paywall looks like from here and is the failure that would otherwise
+      # quietly shrink a corpus instead of breaking it.
+      - name: Rebuild every corpus from the frozen URL lists
+        run: node scripts/fetch-corpus.ts --refresh
+
+      # Failing here means the corpora rebuilt but no longer say what
+      # `gates/*.json` records. On a scheduled run the rules have not changed, so
+      # this is upstream text that has changed under a frozen URL - a revised
+      # edition, a corrected typo, a re-typeset page. That is a real event and
+      # wants a human: the committed counts describe text that no longer exists,
+      # and re-baselining without reading the delta would launder the change.
+      - name: Verify the committed findings against the rebuilt corpora
+        run: node scripts/gate-findings.ts --verify
+
+      - name: Say what was actually measured
+        run: node scripts/gate-findings.ts

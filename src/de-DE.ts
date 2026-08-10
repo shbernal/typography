@@ -8,7 +8,7 @@
 // So the one thing a shared German pack could not have done is exactly the thing
 // a reader needs: tell a Swiss quotation from a German mistake.
 
-import { ANY_SPACE, DUDEN, germanCommonRules } from './de-common.ts';
+import { ANY_SPACE, DUDEN, germanCommonRules, RUN_START } from './de-common.ts';
 import {
   composeNormalize,
   detectRule,
@@ -60,7 +60,7 @@ const rules: readonly Rule[] = [
     // The mirror guard: a `«` with a letter or digit immediately after it is
     // opening a Swiss or French quotation, so the space before it is a real word
     // boundary rather than padding inside a quotation.
-    pattern: new RegExp(`${ANY_SPACE}+«(?![\\p{L}\\p{N}])`, 'gu'),
+    pattern: new RegExp(`${RUN_START}${ANY_SPACE}+«(?![\\p{L}\\p{N}])`, 'gu'),
     replacement: '«',
   }),
 

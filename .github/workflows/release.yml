@@ -27,8 +27,11 @@ jobs:
       - name: Check out typography
         uses: actions/checkout@v5
 
+      # Pinned to a commit. This job holds an OIDC token that can publish to npm
+      # under this package's name, so a third-party action resolved through a
+      # moving tag is the one supply-chain step that matters here.
       - name: Set up pnpm
-        uses: pnpm/action-setup@v5
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5
         with:
           version: 11.11.0
 

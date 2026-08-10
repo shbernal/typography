@@ -26,6 +26,24 @@ export const DUDEN = 'Duden, Die deutsche Rechtschreibung, Richtlinien';
 /** Space, U+00A0 and U+202F. German takes none of the three inside a quotation. */
 export const ANY_SPACE = `[ ${NO_BREAK}${NARROW_NO_BREAK}]`;
 
+/**
+ * The start of a space run.
+ *
+ * Every rule that opens with `ANY_SPACE+` needs this, and the reason is not
+ * obvious enough to leave to whoever writes the next one. A pattern like
+ * `ANY_SPACE+«` re-enters at every character of a run of spaces, and at each one
+ * it consumes to the end of the run and backtracks the whole way looking for the
+ * `«` that is not there. That is quadratic in the length of the run, and a run of
+ * spaces is something an indented block or a padded table produces without
+ * anybody meaning to. Anchoring the start makes a run a candidate once.
+ *
+ * It changes nothing about what matches: a match could only ever begin at the
+ * start of a run, because the engine scans left to right and takes the first one.
+ * `test/perf.test.ts` is what found this, in these rules, after the same defect
+ * had been fixed in `fr.ts` and thought to be French-only.
+ */
+export const RUN_START = `(?<!${ANY_SPACE})`;
+
 /** Rules common to every German region. Region packs prepend their own. */
 export const germanCommonRules: readonly Rule[] = [
   replaceRule({

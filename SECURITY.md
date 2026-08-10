@@ -26,6 +26,17 @@ Worth stating, because it is smaller than the word "linter" suggests:
   attacker-controllable text, so a pattern that backtracks catastrophically is a
   denial of service in a host that checks user input. If you find one, that is a
   vulnerability in this package and worth reporting.
+
+  `test/perf.test.ts` is what stands behind that paragraph rather than merely
+  next to it: every pack is held to linear time over long runs of each of the
+  four spaces this package knows about, unbroken tokens, and very long URLs.
+  Three rules failed it when it was written. The French guillemet rules were an
+  alternation over `ANY_SPACE*BREAKABLE ANY_SPACE*`, and because `BREAKABLE` is a
+  subset of `ANY_SPACE` a run of ordinary spaces could be split at every position
+  in it: 15 seconds for a single padded 3,000-space line, which an indented block
+  produces without anybody meaning to. The Spanish and German closing-quote rules
+  were quadratic through an unanchored `ANY_SPACE+»`. All are fixed, and the
+  shapes that broke them are in that test.
 - `scripts/fetch-corpus.ts` does make network requests, to the URLs listed in
   `gates/sources/`. It is a development script, is not in the published tarball,
   and never runs as part of installing or using the package.

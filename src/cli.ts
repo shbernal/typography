@@ -40,6 +40,7 @@ Options
   --json               machine-readable findings on stdout
   --strict             exit non-zero on warnings as well as errors
   -h, --help
+  -v, --version
 
 There is no language detection and there will not be. A French rule applied to
 Swiss German produces confident nonsense, and guessing wrong is worse than
@@ -51,7 +52,11 @@ interface Options {
   readonly write: boolean;
   readonly json: boolean;
   readonly strict: boolean;
+  readonly help: boolean;
   readonly paths: string[];
+  /** Arguments that look like flags and are not. Collected rather than thrown so
+   * a caller who mistyped two of them hears about both. */
+  readonly unknown: string[];
 }
 
 function parse(argv: readonly string[]): Options {
@@ -59,7 +64,9 @@ function parse(argv: readonly string[]): Options {
   let write = false;
   let json = false;
   let strict = false;
+  let help = false;
   const paths: string[] = [];
+  const unknown: string[] = [];
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]!;
@@ -68,10 +75,17 @@ function parse(argv: readonly string[]): Options {
     else if (arg === '--write') write = true;
     else if (arg === '--json') json = true;
     else if (arg === '--strict') strict = true;
+    else if (arg === '-h' || arg === '--help') help = true;
+    // A bare `-` is stdin and is a path. Anything else with a leading dash is a
+    // flag this build does not have, and the alternative to saying so is worse
+    // than it looks: `--wrote` would fall through to `paths` and be reported as
+    // a file that does not exist, so a typo in `--write` reads as a missing file
+    // and the fix silently does not happen.
+    else if (arg !== '-' && arg.startsWith('-')) unknown.push(arg);
     else paths.push(arg);
   }
 
-  return { lang, write, json, strict, paths };
+  return { lang, write, json, strict, help, paths, unknown };
 }
 
 /** Read a path, or stdin for `-`. stdin is here because the inputs this meets
@@ -105,6 +119,15 @@ function main(argv: readonly string[]): number {
     console.log(USAGE);
     return 0;
   }
+  // Bare, because the version is the first thing anyone types after installing a
+  // CLI and the second thing they quote in a bug report. The pack ids come with
+  // it: a findings count is comparable only against the pack that produced it, so
+  // the two versions are one answer rather than two.
+  if (verb === '-v' || verb === '--version' || verb === 'version') {
+    console.log(`typocheck ${version}`);
+    for (const p of packs) console.log(`  ${p.id}`);
+    return 0;
+  }
   if (verb === 'langs') {
     for (const p of packs) console.log(`${p.lang.padEnd(6)} ${p.id.padEnd(14)} ${p.standard}`);
     return 0;
@@ -115,6 +138,17 @@ function main(argv: readonly string[]): number {
   }
 
   const opts = parse(argv.slice(1));
+  if (opts.help) {
+    console.log(USAGE);
+    return 0;
+  }
+  if (opts.unknown.length) {
+    console.error(
+      `typocheck: unknown option ${opts.unknown.map((u) => `'${u}'`).join(', ')}. ` +
+        "Try 'typocheck --help'.\nA bare - is stdin; everything else starting with a dash is a flag.",
+    );
+    return 2;
+  }
   if (!opts.lang) {
     console.error(
       `typocheck: --lang is required. One of: ${packs.map((p) => p.lang).join(', ')}\n` +
