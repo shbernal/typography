@@ -25,7 +25,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out typography
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       # Pinned to a commit rather than to `v5`, which is a moving tag a third
       # party can repoint. `actions/*` are GitHub's own and stay on tags; this is
@@ -33,12 +33,12 @@ jobs:
       # publishes. Dependabot's `github-actions` ecosystem updates a pin like this
       # and puts the version in the PR, so the cost is a review rather than drift.
       - name: Set up pnpm
-        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
         with:
           version: 11.11.0
 
       - name: Set up Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out typography
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       # Pinned to a commit rather than to `v5`, which is a moving tag a third
       # party can repoint. `actions/*` are GitHub's own and stay on tags; this is
@@ -67,12 +67,12 @@ jobs:
       # publishes. Dependabot's `github-actions` ecosystem updates a pin like this
       # and puts the version in the PR, so the cost is a review rather than drift.
       - name: Set up pnpm
-        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
         with:
           version: 11.11.0
 
       - name: Set up Node 24 to build
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
@@ -91,7 +91,7 @@ jobs:
       # 22.13, so with the cache on, pinning this to the actual floor of `>=22`
       # would kill the setup step before the smoke test it is setting up can run.
       - name: Set up Node 22 to run
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version: 22
           package-manager-cache: false
