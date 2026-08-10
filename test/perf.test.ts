@@ -81,15 +81,19 @@ for (const { name, text } of SHAPES) {
 
 /** How long a batch of repeats must run before its timing is worth reading.
  *
- * A single `check` of the smaller input below costs about 0.4 ms in the German
- * packs, which is beneath what a loaded shared runner resolves, so timing one
- * call there measures the scheduler and not the rules. An earlier version of
- * this test did exactly that and floored the result at 1 ms to keep the division
- * safe, which meant `de-DE` and `de-CH` were never actually being checked: their
- * true cost sat under the floor, the ratio came out below 1, and the assertion
- * passed without having measured anything. Repeating the call into a batch this
- * long and dividing back out measures the same quantity with the noise averaged
- * down, and gives every pack a baseline that means something. */
+ * A single `check` of the smaller input below costs about 0.05 ms in the German
+ * packs, which is far beneath what a loaded shared runner resolves, so timing one
+ * call there measures the scheduler and not the rules. An earlier version of this
+ * test timed one call of a much larger input and floored the result at 1 ms to
+ * keep the division safe, which meant `de-DE` and `de-CH` were never actually
+ * being checked: their cost sat under the floor, the ratio came out below 1, and
+ * the assertion passed without having measured anything. Repeating the call into
+ * a batch this long and dividing back out measures the same quantity with the
+ * noise averaged down, and gives every pack a baseline that means something.
+ *
+ * It also decouples precision from size, which is what lets the inputs below be
+ * small. Resolution now comes from the repeat count and not from handing the
+ * rules a bigger string. */
 const BATCH_MS = 25;
 
 /** How many batches of each size to take, alternating between the two sizes.
@@ -99,8 +103,9 @@ const BATCH_MS = 25;
  * step, a co-tenant waking up, a GC cycle - undiluted into the ratio, because it
  * moves one measurement and not the other. Sampling both across the same window
  * moves them together. Measured over fifteen trials of all four packs, that took
- * the worst ratio seen from 4.8x down to 3.7x, against a bound of 5x, and every
- * pack's median onto 3.1x, which is what linear looks like at this geometry. */
+ * the worst ratio seen from 4.8x down to 3.9x, against a bound of 5x, and put
+ * every pack's median between 3.1x and 3.3x, which is what linear looks like
+ * here. */
 const ROUNDS = 3;
 
 /** Cost of one call, from a batch of `runs` of them. */
@@ -147,8 +152,20 @@ test('cost grows no faster than the text does', () => {
   // it inside the measured region charged the rules for the string builder too,
   // and charged the larger size three times as much of it as the smaller one,
   // which is a growing cost per character that has nothing to do with the rules.
-  const small = line(20_000);
-  const large = line(60_000);
+  //
+  // Both are small on purpose, and both stay small. The comparison assumes the
+  // only thing that changes between them is how much text there is, and a buffer
+  // large enough to fall out of cache breaks that: the same linear rule reads a
+  // bigger string more slowly per character, and the ratio reports it as
+  // superlinear. At 20,000 against 60,000 that is not hypothetical. CI's Linux
+  // runner scored `de-DE` at 5.0x, 0.42 ms against 2.09 ms per run, and this
+  // repository's development machine scored `fr` at 4.7x, both on rules that had
+  // not changed. At the sizes below every pack sits near 3.1x on both. The
+  // budgets at the top of this file are where the 20,000-character shapes are
+  // exercised, and they are the right instrument for it, because an absolute
+  // budget does not care how the cost is divided up.
+  const small = line(5_000);
+  const large = line(15_000);
 
   for (const pack of packs) {
     // Warm the JIT on a shape it will meet in the measured runs, so the first
