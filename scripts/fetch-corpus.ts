@@ -30,6 +30,21 @@ const USER_AGENT =
 /** Milliseconds between requests to one host. Politeness, not performance. */
 const DELAY = 400;
 
+/** How many times to re-ask after a transient refusal, and how long to wait
+ * before each. Growing, because the thing being waited out is a rate limiter.
+ *
+ * This is not defensive programming for its own sake. The first scheduled run of
+ * the corpus workflow got 17 `503 Service Unavailable` responses out of 116 from
+ * one publisher, purely for asking 116 times in a row from a data centre. Every
+ * URL was live and the list had not rotted. */
+const RETRY_DELAYS = [2_000, 8_000, 20_000];
+
+/** Statuses worth asking again about. A 404 is an answer and re-asking is rude;
+ * a 429 or a 5xx is the server saying "not now". */
+function transient(status: number): boolean {
+  return status === 408 || status === 429 || status >= 500;
+}
+
 interface FetchSpec {
   readonly urls: string;
   readonly format: 'html' | 'xml' | 'wp-json';
@@ -147,9 +162,27 @@ export function toText(markup: string, region?: RegExp): string {
 const sleep = (ms: number): Promise<void> => new Promise((done) => setTimeout(done, ms));
 
 async function get(url: string): Promise<string> {
-  const response = await fetch(url, { headers: { 'user-agent': USER_AGENT } });
-  if (!response.ok) throw new Error(`${response.status} ${response.statusText} for ${url}`);
-  return response.text();
+  // Retries a refusal that says "not now" and nothing else. A 404 throws on the
+  // first attempt, because that is the answer this script exists to surface: the
+  // URL list has rotted and somebody has to go and look.
+  for (let attempt = 0; ; attempt++) {
+    let response: Response;
+    try {
+      response = await fetch(url, { headers: { 'user-agent': USER_AGENT } });
+    } catch (error) {
+      // A socket that never opened is the same kind of event as a 503.
+      if (attempt >= RETRY_DELAYS.length) throw error;
+      await sleep(RETRY_DELAYS[attempt]!);
+      continue;
+    }
+    if (response.ok) return response.text();
+    if (!transient(response.status) || attempt >= RETRY_DELAYS.length)
+      throw new Error(`${response.status} ${response.statusText} for ${url}`);
+    console.error(
+      `  ${response.status} ${response.statusText}, retrying in ${RETRY_DELAYS[attempt]! / 1000}s: ${url}`,
+    );
+    await sleep(RETRY_DELAYS[attempt]!);
+  }
 }
 
 function readUrls(file: string): string[] {
@@ -188,13 +221,20 @@ async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
   let written = 0;
   let characters = 0;
   let empty = 0;
+  let failed = 0;
 
   for (const [at, url] of urls.entries()) {
     let body: string;
     try {
       body = await get(url);
     } catch (error) {
+      // Counted, not just logged. A document that does not arrive makes the
+      // corpus smaller than the list it was built from, and a rebuild that
+      // returns 10% less text and exits 0 is worse than one that fails: the
+      // corpus looks fine, the fingerprint moves, and the obvious next move is
+      // to re-baseline the gate against text that was never missing.
       console.error(`  ${spec.id}: ${(error as Error).message}`);
+      failed++;
       await sleep(DELAY);
       continue;
     }
@@ -230,9 +270,17 @@ async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
 
   console.log(
     `${spec.id}: ${written} documents, ${characters} characters` +
-      (empty ? `, ${empty} empty extraction(s)` : ''),
+      (empty ? `, ${empty} empty extraction(s)` : '') +
+      (failed ? `, ${failed} document(s) that did not arrive` : ''),
   );
-  if (empty) process.exitCode = 1;
+  if (empty || failed) {
+    if (failed)
+      console.error(
+        `  ${spec.id} is short ${failed} of the ${urls.length} documents its list names. ` +
+          'Do not re-baseline the gate from this build.',
+      );
+    process.exitCode = 1;
+  }
 }
 
 async function main(): Promise<void> {

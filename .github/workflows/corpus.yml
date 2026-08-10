@@ -57,8 +57,15 @@ jobs:
       # Failing here means the URL lists have rotted: a document 404s, or moved,
       # or now needs a session. `fetch-corpus.ts` also exits non-zero when a
       # document downloads but extracts to nothing, which is what an interstitial
-      # or a paywall looks like from here and is the failure that would otherwise
-      # quietly shrink a corpus instead of breaking it.
+      # or a paywall looks like from here, and when a document does not arrive at
+      # all - both being ways a corpus quietly comes back smaller than the list
+      # it was built from.
+      #
+      # Being throttled is not that, and is not a failure. The first run of this
+      # workflow drew 17 `503 Service Unavailable` responses out of 116 from one
+      # publisher for no reason except asking 116 times in a row from a data
+      # centre. Those are retried with growing backoff, which is why this step is
+      # slow. A run that is short after the retries is a real event.
       - name: Rebuild every corpus from the frozen URL lists
         run: node scripts/fetch-corpus.ts --refresh
 
