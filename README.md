@@ -193,7 +193,7 @@ over `ANY_SPACE*BREAKABLE ANY_SPACE*` can split a run of spaces at every positio
 in it, and one padded 3,000-space line took 15 seconds to check.
 
 Node 24 for development (the sources run under type stripping); the published
-package runs on Node 20.
+package runs on Node 22.
 
 ## Contributing, and the report worth most
 

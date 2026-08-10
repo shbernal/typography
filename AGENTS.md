@@ -18,7 +18,7 @@ no deference to prior architecture unless the maintainer asks for it.
 Node 24 for development: the sources run directly under Node's type stripping,
 which is why `erasableSyntaxOnly` is on and why relative imports keep their `.ts`
 extension. `rewriteRelativeImportExtensions` turns them into `.js` on the way into
-`dist/`. The **published** package targets Node 20, and `scripts/smoke-dist.mjs`
+`dist/`. The **published** package targets Node 22, and `scripts/smoke-dist.mjs`
 in CI is what backs that claim.
 
 ```powershell

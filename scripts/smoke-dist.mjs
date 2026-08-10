@@ -2,7 +2,7 @@
 //
 // Plain `.mjs` on purpose: the test suite runs the TypeScript sources under
 // Node's type stripping, which needs Node 24, so it cannot be the thing that
-// backs `engines.node: >=20`. This can. It is deliberately thin - the rules are
+// backs `engines.node: >=22`. This can. It is deliberately thin - the rules are
 // tested elsewhere - and checks only that the published entry point loads,
 // reports, and exits the way a caller depends on.
 

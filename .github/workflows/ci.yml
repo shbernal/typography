@@ -51,7 +51,7 @@ jobs:
       - name: Build
         run: pnpm build
 
-  # `engines.node` claims >= 20, and the check job above cannot back that claim:
+  # `engines.node` claims >= 22, and the check job above cannot back that claim:
   # it runs the sources under Node's type stripping, which needs 24. So this job
   # builds `dist/` and exercises the built CLI on the oldest supported runtime.
   # Without it the engines field is an aspiration.
@@ -83,16 +83,18 @@ jobs:
           pnpm build
 
       # `package-manager-cache` defaults to true, which makes this step run
-      # `pnpm store path` under the Node it just installed. pnpm 11 requires Node
-      # 22.13, so on the one runtime this job exists to test, the setup step dies
-      # before the smoke test it is setting up can run. Nothing is being installed
-      # here - `dist/` was built two steps ago and the smoke test has no
-      # dependencies - so there is no cache to want.
-      - name: Set up Node 20 to run
+      # `pnpm store path` under the Node it just installed. Nothing is being
+      # installed here - `dist/` was built two steps ago and the smoke test has no
+      # dependencies - so there is no cache to want, and turning it off is what
+      # keeps this step free to name any runtime the engines field admits. That
+      # freedom is load-bearing rather than tidy: pnpm 11 itself requires Node
+      # 22.13, so with the cache on, pinning this to the actual floor of `>=22`
+      # would kill the setup step before the smoke test it is setting up can run.
+      - name: Set up Node 22 to run
         uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           package-manager-cache: false
 
-      - name: Smoke the built CLI on Node 20
+      - name: Smoke the built CLI on Node 22
         run: node scripts/smoke-dist.mjs
