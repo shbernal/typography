@@ -17,7 +17,8 @@
 //   node scripts/fetch-corpus.ts --only aepd-faq-es
 //   node scripts/fetch-corpus.ts --refresh       # re-fetch what is already there
 
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -216,11 +217,108 @@ function nameFor(url: string, index: number): string {
   return `${String(index).padStart(4, '0')}-${tail || 'document'}.txt`;
 }
 
+// --- what a build actually produced ---------------------------------------
+
+/** One document, described rather than redistributed.
+ *
+ * `gates/corpora/` is ignored because these are somebody else's published works,
+ * so the only thing a rebuild on another machine can compare against is what
+ * this repo commits *about* them. Until now that was one fingerprint per corpus,
+ * which can say a corpus moved and cannot say which document moved. The first
+ * real disagreement was exactly that shape: `theconversation-fr` rebuilds 76
+ * characters shorter from a data centre than from a residential connection, both
+ * numbers stable, and nobody could localise it further than "somewhere in 43
+ * documents".
+ *
+ * A character count and a hash per document are metadata rather than text, so
+ * they are this repo's to commit, and they turn that question into a line of
+ * output naming the file. */
+interface DocumentRecord {
+  readonly name: string;
+  readonly characters: number;
+  readonly sha: string;
+}
+
+function manifestFor(id: string): string {
+  return join(REPO, 'gates', `documents-${id}.json`);
+}
+
+/** Reads a corpus back off disk. Sorted, because `readdirSync` order is the
+ * filesystem's business and a manifest that reordered itself between a Linux
+ * runner and a Windows laptop would be a diff about nothing. */
+function describe(dir: string): DocumentRecord[] {
+  return readdirSync(dir)
+    .filter((name) => name.endsWith('.txt'))
+    .sort()
+    .map((name) => {
+      const text = readFileSync(join(dir, name), 'utf8');
+      return {
+        name,
+        characters: text.length,
+        sha: createHash('sha256').update(text).digest('hex').slice(0, 16),
+      };
+    });
+}
+
+/** Says what moved since the committed manifest, and writes the new one.
+ *
+ * This reports and never fails. `gate-findings.ts --verify` is the gate and it
+ * already fails when a corpus stops matching its baseline; what was missing was
+ * anything to *read* once it did. A second gate over the same fact would only be
+ * a second red step saying the same thing.
+ *
+ * `write` is false when the build came back short. Regenerating a manifest from
+ * an incomplete fetch is the same trap as re-baselining a gate from one: it
+ * records the documents that failed to arrive as the new truth, and it does it
+ * without saying so. */
+function reconcile(id: string, records: DocumentRecord[], write: boolean): void {
+  const out = manifestFor(id);
+  const committed = existsSync(out)
+    ? (JSON.parse(readFileSync(out, 'utf8')) as { documents: DocumentRecord[] }).documents
+    : undefined;
+
+  if (committed) {
+    const before = new Map(committed.map((doc) => [doc.name, doc]));
+    const after = new Map(records.map((doc) => [doc.name, doc]));
+    const moved: string[] = [];
+
+    for (const [name, now] of after) {
+      const then = before.get(name);
+      if (!then) {
+        moved.push(`    + ${name}: ${now.characters} characters, not in the manifest`);
+        continue;
+      }
+      if (then.sha === now.sha) continue;
+      const delta = now.characters - then.characters;
+      moved.push(
+        `    ~ ${name}: ${then.characters} -> ${now.characters} characters` +
+          (delta === 0
+            ? ' (same length, different text)'
+            : ` (${delta > 0 ? '+' : ''}${String(delta)})`),
+      );
+    }
+    for (const name of before.keys())
+      if (!after.has(name)) moved.push(`    - ${name}: in the manifest, not in this build`);
+
+    if (moved.length) {
+      console.log(`  ${moved.length} document(s) differ from gates/documents-${id}.json:`);
+      for (const line of moved) console.log(line);
+    }
+  }
+
+  if (write) writeFileSync(out, `${JSON.stringify({ corpus: id, documents: records }, null, 2)}\n`);
+}
+
 async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
   if (!spec.fetch) return;
   const dir = join(REPO, 'gates', 'corpora', spec.id);
   if (existsSync(dir) && !refresh) {
     console.log(`${spec.id}: already present, skipping (--refresh to re-fetch)`);
+    // The manifest describes what is on disk, and what is on disk did not
+    // change by being skipped. Running this over an existing corpus is also how
+    // the manifests were first written, without re-asking eight publishers for
+    // documents already sitting in `gates/corpora/`.
+    reconcile(spec.id, describe(dir), true);
     return;
   }
   rmSync(dir, { recursive: true, force: true });
@@ -283,6 +381,9 @@ async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
       (empty ? `, ${empty} empty extraction(s)` : '') +
       (failed ? `, ${failed} document(s) that did not arrive` : ''),
   );
+
+  reconcile(spec.id, describe(dir), !empty && !failed);
+
   if (empty || failed) {
     if (failed)
       console.error(

@@ -1,0 +1,200 @@
+{
+  "corpus": "openedition-journals-fr",
+  "documents": [
+    {
+      "name": "0000-rfsic-18795.txt",
+      "characters": 53796,
+      "sha": "aab23559809f2966"
+    },
+    {
+      "name": "0001-rfsic-18845.txt",
+      "characters": 50392,
+      "sha": "d23a88866e3b028e"
+    },
+    {
+      "name": "0002-rfsic-18863.txt",
+      "characters": 46523,
+      "sha": "42cec44fce88b284"
+    },
+    {
+      "name": "0003-rfsic-18869.txt",
+      "characters": 52443,
+      "sha": "bc6c5802e7ecd4bb"
+    },
+    {
+      "name": "0004-rfsic-19150.txt",
+      "characters": 44305,
+      "sha": "a733ef6b2e6c1120"
+    },
+    {
+      "name": "0005-rfsic-19197.txt",
+      "characters": 64797,
+      "sha": "f469d354998b6286"
+    },
+    {
+      "name": "0006-rfsic-19254.txt",
+      "characters": 52126,
+      "sha": "f6cf086f067102c1"
+    },
+    {
+      "name": "0007-rfsic-19339.txt",
+      "characters": 47137,
+      "sha": "896a0be97b0d7d73"
+    },
+    {
+      "name": "0008-rfsic-19360.txt",
+      "characters": 51198,
+      "sha": "99adf3de2a99db3b"
+    },
+    {
+      "name": "0009-rfsic-19458.txt",
+      "characters": 21163,
+      "sha": "bb6dc375cca7e3d1"
+    },
+    {
+      "name": "0010-rfsic-19633.txt",
+      "characters": 43502,
+      "sha": "68dcecfc1fa8d399"
+    },
+    {
+      "name": "0011-rfsic-19687.txt",
+      "characters": 47439,
+      "sha": "c6df4ebdd3417ca7"
+    },
+    {
+      "name": "0012-rfsic-19731.txt",
+      "characters": 7240,
+      "sha": "489b4c21c4ba4a52"
+    },
+    {
+      "name": "0013-questionsdecommunication-43180.txt",
+      "characters": 74108,
+      "sha": "22a42b19d7b8de13"
+    },
+    {
+      "name": "0014-questionsdecommunication-43230.txt",
+      "characters": 56868,
+      "sha": "2b4b9b7a58e2b8db"
+    },
+    {
+      "name": "0015-questionsdecommunication-43242.txt",
+      "characters": 84025,
+      "sha": "e0a8fd3ec2698800"
+    },
+    {
+      "name": "0016-questionsdecommunication-43559.txt",
+      "characters": 69275,
+      "sha": "19cdf58465011426"
+    },
+    {
+      "name": "0017-questionsdecommunication-43695.txt",
+      "characters": 54849,
+      "sha": "6369264dc554a459"
+    },
+    {
+      "name": "0018-questionsdecommunication-43865.txt",
+      "characters": 85545,
+      "sha": "44cf95178c5b7b38"
+    },
+    {
+      "name": "0019-questionsdecommunication-43926.txt",
+      "characters": 5010,
+      "sha": "7d52235293cb7e58"
+    },
+    {
+      "name": "0020-questionsdecommunication-43928.txt",
+      "characters": 51094,
+      "sha": "d66111f90c9e71a4"
+    },
+    {
+      "name": "0021-questionsdecommunication-44231.txt",
+      "characters": 33336,
+      "sha": "9239aa3dea9b6330"
+    },
+    {
+      "name": "0022-questionsdecommunication-43167.txt",
+      "characters": 60384,
+      "sha": "78c1ea3e2965bb4f"
+    },
+    {
+      "name": "0023-questionsdecommunication-43307.txt",
+      "characters": 104574,
+      "sha": "45d59ba2968ea74d"
+    },
+    {
+      "name": "0024-questionsdecommunication-43355.txt",
+      "characters": 59340,
+      "sha": "124111388886a143"
+    },
+    {
+      "name": "0025-questionsdecommunication-43477.txt",
+      "characters": 84735,
+      "sha": "12207eb141f7788e"
+    },
+    {
+      "name": "0026-terrain-29023.txt",
+      "characters": 69970,
+      "sha": "1d480a18492c5866"
+    },
+    {
+      "name": "0027-terrain-27843.txt",
+      "characters": 59623,
+      "sha": "aa2d98676f48d530"
+    },
+    {
+      "name": "0028-terrain-28855.txt",
+      "characters": 71659,
+      "sha": "4f55c7172d09da8d"
+    },
+    {
+      "name": "0029-terrain-27929.txt",
+      "characters": 79127,
+      "sha": "50ef39bdd1a626da"
+    },
+    {
+      "name": "0030-terrain-27941.txt",
+      "characters": 59015,
+      "sha": "e60c0a9a95f25190"
+    },
+    {
+      "name": "0031-terrain-28209.txt",
+      "characters": 27296,
+      "sha": "3c0850a986bfd248"
+    },
+    {
+      "name": "0032-terrain-27994.txt",
+      "characters": 39066,
+      "sha": "ee9a6f7df8193aac"
+    },
+    {
+      "name": "0033-terrain-28274.txt",
+      "characters": 48114,
+      "sha": "3082cfef022ad461"
+    },
+    {
+      "name": "0034-terrain-28377.txt",
+      "characters": 49443,
+      "sha": "2e4b4f1e3d2b4430"
+    },
+    {
+      "name": "0035-terrain-28451.txt",
+      "characters": 32562,
+      "sha": "0ac2fe6f94f20f79"
+    },
+    {
+      "name": "0036-terrain-28540.txt",
+      "characters": 23133,
+      "sha": "579db4e4cc949287"
+    },
+    {
+      "name": "0037-terrain-28638.txt",
+      "characters": 14022,
+      "sha": "f84f0dba633377b6"
+    },
+    {
+      "name": "0038-terrain-28687.txt",
+      "characters": 29025,
+      "sha": "3024361e71ca0f9a"
+    }
+  ]
+}

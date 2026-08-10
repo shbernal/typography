@@ -127,6 +127,13 @@ The consequence for anyone rebuilding: matching seven of eight fingerprints is t
 expected result off a residential connection, and matching six on a data centre is
 not evidence of anything having changed.
 
+Both of those were diagnosed at the granularity of a whole corpus, because a whole
+corpus was all the committed evidence could describe. `gates/documents-*.json`
+exists because of the second one: 76 characters somewhere in 43 documents is a
+question the fingerprint poses and cannot answer. The next rebuild that disagrees
+prints the file name and the delta, so the same investigation is a line of CI
+output rather than a hypothesis.
+
 ## What is committed, and what is not
 
 The corpora are third-party published works and are not this repo's to
@@ -137,6 +144,14 @@ redistribute, so `gates/corpora/` is ignored. What is committed is:
 - **`scripts/fetch-corpus.ts`**, which turns a list into text.
 - **`gates/findings-*.json`**, the per-rule counts, exposure counts, samples and
   a corpus fingerprint, for every corpus.
+- **`gates/documents-*.json`**, a character count and a hash for each document in
+  each corpus. Metadata about somebody else's text rather than the text, so it is
+  this repo's to commit, and it is what makes a disagreement legible: the
+  fingerprint says a corpus moved, and this says which of its 300 documents did.
+  Written by `scripts/fetch-corpus.ts`, which prints the delta against it on
+  every rebuild and **declines to rewrite it from a build that came back short** -
+  regenerating it from an incomplete fetch would record the documents that failed
+  to arrive as the new truth, which is the same trap as re-baselining a gate.
 
 That combination is deliberate. A gate whose corpus cannot be rebuilt is a number
 nobody else can check, and a gate that ships the corpus is a redistribution
