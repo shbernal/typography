@@ -130,7 +130,7 @@ run past real published text:
 
 | | Evidence | Result |
 |---|---|---|
-| `fr` | 2,411,286 characters: three OpenEdition journals and The Conversation France | 729 findings, 355 of them false and all from one check-only rule |
+| `fr` | 2,409,504 characters: three OpenEdition journals and The Conversation France | 708 findings, 355 of them false and all from one check-only rule |
 | `de-DE` | 2,393,884 characters: the BSI IT-Grundschutz-Kompendium 2023 | zero error-severity findings, 128 warnings, 18 of them mismatched quotation pairs |
 | `es` | 1,106,553 characters: Spain's official gazette, the data protection agency's FAQ, 300 FundéuRAE articles | one false positive, and it is an English phrase quoted inside Spanish |
 | `de-CH` | 311,131 characters: the Swiss Federal Constitution and 37 federal press releases | zero findings, over 38 Swiss guillemet pairs |

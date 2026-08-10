@@ -51,7 +51,8 @@
       "fetch": {
         "urls": "gates/sources/theconversation-fr.urls",
         "format": "html",
-        "region": "instapaper_body[^\"]*\"[^>]*>([\\s\\S]*?)<div class=\"grid-ten grid-prepend-two"
+        "region": "instapaper_body[^\"]*\"[^>]*>([\\s\\S]*?)<div class=\"grid-ten grid-prepend-two",
+        "drop": "<hr\\s*/?>\\s*<p>\\s*<em>\\s*<strong>\\s*À lire aussi\\s*:[\\s\\S]*?</strong>\\s*</em>\\s*</p>\\s*<hr\\s*/?>"
       },
       "exposes": [
         "U+00AB «",
@@ -60,7 +61,7 @@
         "U+00A0 NBSP",
         "U+2019 ’"
       ],
-      "note": "The Conversation France. Academic authors edited by a newsroom, which is a different register from the journals: direct questions and exclamations, the interrogative punctuation formal academic prose barely contains. This is where fr.space-before-high-punctuation meets real question marks. English-language articles in the French feed were dropped by checking the extracted text, since English prose manufactures French findings the publisher never wrote."
+      "note": "The Conversation France. Academic authors edited by a newsroom, which is a different register from the journals: direct questions and exclamations, the interrogative punctuation formal academic prose barely contains. This is where fr.space-before-high-punctuation meets real question marks. English-language articles in the French feed were dropped by checking the extracted text, since English prose manufactures French findings the publisher never wrote. The drop removes the inline 'À lire aussi :' callouts, 19 of them across 10 of the 43 documents and 1782 characters. They are the CMS speaking rather than an author or a sub-editor, and the phrase sets U+0020 before its colon, so 19 of the 25 fr.space-before-colon findings this corpus used to report were the template making the same mistake nineteen times. They also cost two real findings: the headline each callout reproduces carries a correct no-break space in seven of the eight sampled, and the eighth does not. That is the trade, and it is worth taking because the callouts are also where this corpus stopped being reproducible: it rebuilt 76 characters shorter from a data centre than from a maintainer's connection, every per-document delta a multiple of four, and the number of callouts in each document was its delta divided by four. Which four characters differ is still unknown, which is why the whole block goes rather than the phrase alone. The pattern is anchored to the structure as well as the phrase so that a restyle stops it matching: the blocks come back, the fingerprint moves, and the gate says so."
     },
     {
       "id": "bsi-kompendium-2023-de",

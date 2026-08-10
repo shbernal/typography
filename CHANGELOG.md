@@ -47,8 +47,8 @@ First cut.
 - **`gates/`**, the release gates, and every language has been through one:
   - `fr` reproduces the implementation it was extracted from byte for byte over
     11,058 real values, 827 of which that implementation rewrites, **and** has
-    been run past 2,411,286 characters of published French from three OpenEdition
-    journals and The Conversation France: 729 findings, 355 of them false and all
+    been run past 2,409,504 characters of published French from three OpenEdition
+    journals and The Conversation France: 708 findings, 355 of them false and all
     of those from one check-only rule firing on foreign-language titles in
     bibliographies.
   - `de-DE` over 2,393,884 characters of the BSI IT-Grundschutz-Kompendium 2023:

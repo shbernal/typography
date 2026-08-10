@@ -64,6 +64,7 @@ interface FetchSpec {
   readonly urls: string;
   readonly format: 'html' | 'xml' | 'wp-json';
   readonly region?: string;
+  readonly drop?: string;
 }
 
 interface CorpusSpec {
@@ -147,7 +148,7 @@ function decodeEntities(value: string): string {
   });
 }
 
-export function toText(markup: string, region?: RegExp): string {
+export function toText(markup: string, region?: RegExp, drop?: RegExp): string {
   let value = markup.replace(/\r\n?/g, '\n');
   value = value.replace(/<!--[\s\S]*?-->/g, '');
   value = value.replace(/<(script|style|noscript|svg|head)\b[^>]*>[\s\S]*?<\/\1>/gi, '');
@@ -157,6 +158,26 @@ export function toText(markup: string, region?: RegExp): string {
     if (!kept.length) return '';
     value = kept.join('\n\n');
   }
+
+  // `region` says where the article is. `drop` says which parts of it the
+  // newsroom's template wrote rather than the author, and it runs second because
+  // what it removes is inside what `region` kept.
+  //
+  // This is a sharp tool and the only thing keeping it honest is that it must be
+  // narrow. A corpus of professionally typeset text is only evidence for as long
+  // as nobody is choosing which sentences it contains, and a `drop` wide enough
+  // to catch prose would let a finding be removed instead of explained. So the
+  // patterns here are written to match a specific piece of furniture and to stop
+  // matching entirely if it changes, rather than to match approximately: when a
+  // publisher restyles the thing, the block comes back, the fingerprint moves and
+  // `gate-findings.ts --verify` fails with a human reading the delta. Silently
+  // dropping more is the failure this cannot be allowed to have; dropping less is
+  // merely loud.
+  //
+  // A newline, not an empty string, for the same reason `BLOCK` becomes one:
+  // splicing the two sides together would weld the last word before the block to
+  // the first word after it and manufacture a finding nobody wrote.
+  if (drop) value = value.replace(drop, '\n');
 
   value = value.replace(BLOCK, '\n');
   value = value.replace(/<[^>]+>/g, '');
@@ -329,6 +350,7 @@ async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
   mkdirSync(dir, { recursive: true });
 
   const region = spec.fetch.region ? new RegExp(spec.fetch.region, 'g') : undefined;
+  const drop = spec.fetch.drop ? new RegExp(spec.fetch.drop, 'g') : undefined;
   const urls = readUrls(join(REPO, spec.fetch.urls));
   let written = 0;
   let characters = 0;
@@ -366,7 +388,7 @@ async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
     }
 
     for (const document of documents) {
-      const text = toText(document.markup, region);
+      const text = toText(document.markup, region, drop);
       // An empty extraction means the region selector missed, and a corpus
       // quietly short of the documents it claims is the failure this counts.
       if (text.trim().length === 0) {
@@ -417,4 +439,15 @@ async function main(): Promise<void> {
   for (const spec of wanted) await fetchCorpus(spec, refresh);
 }
 
-await main();
+// Only when this file is the thing that was run. `toText` is exported so it can
+// be exercised directly, and `drop` is the first part of it that has to be: it is
+// a regular expression written against somebody else's markup, and the way to
+// find out whether it still matches should not be a rebuild that asks eight
+// publishers for 241 documents. Until this guard existed, importing the module
+// for that started a corpus build as a side effect of the import.
+//
+// `import.meta.main` would say this in one word and is not available on the Node
+// 22 this package declares support for, where it reads `undefined` and the script
+// would do nothing at all when run. A comparison that is merely verbose beats one
+// that silently no-ops on the oldest runtime we promise.
+if (resolve(process.argv[1] ?? '') === fileURLToPath(import.meta.url)) await main();

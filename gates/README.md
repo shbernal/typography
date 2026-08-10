@@ -115,24 +115,31 @@ was never missing. A document that does not arrive is now counted and fails the
 run, and the request rate was slowed from 400 ms to 1.5 s, which is the cause
 rather than the symptom.
 
-**The publisher serves you something else.** `theconversation-fr` rebuilds to
-403,951 characters in CI and 404,027 here, over the same 43 documents, and both
-numbers are stable across runs. 76 characters, deterministic, and not a revision:
-a fresh local re-fetch is byte-identical to the baseline. The likeliest reading is
-content that varies by where the request comes from. It is filed as a known
-difference rather than corrected, because the committed baseline describes the
-text as published to a reader in Europe, and a CI runner is not that.
+**The publisher serves you the same page differently.** `theconversation-fr` used
+to rebuild to 403,951 characters in CI and 404,027 here, over the same 43
+documents, both numbers stable across runs. 76 characters, deterministic, and not
+a revision: a fresh local re-fetch was byte-identical to the baseline.
 
-The consequence for anyone rebuilding: matching seven of eight fingerprints is the
-expected result off a residential connection, and matching six on a data centre is
-not evidence of anything having changed.
+`gates/documents-*.json` turned that into ten file names, and the ten deltas were
+all multiples of four. The number of `À lire aussi :` callouts in each of those
+documents is its delta divided by four, in all ten, and there are none in the
+other 33. Those callouts are the newsroom's template rather than anyone's prose,
+and the phrase sets a plain space before its colon, so they were also
+manufacturing 19 of the 25 `fr.space-before-colon` findings this corpus reported:
+the same mistake nineteen times, by a CMS, in a corpus whose whole purpose is to
+show what people who set French properly actually do. They are now removed at
+extraction by the `drop` in `gates/corpora.json`, which costs 1,782 characters and
+two genuine findings, both in a headline a callout reproduces. Which four
+characters differ is still unknown, which is why the whole block goes rather than
+the phrase alone.
 
 Both of those were diagnosed at the granularity of a whole corpus, because a whole
 corpus was all the committed evidence could describe. `gates/documents-*.json`
 exists because of the second one: 76 characters somewhere in 43 documents is a
-question the fingerprint poses and cannot answer. The next rebuild that disagrees
-prints the file name and the delta, so the same investigation is a line of CI
-output rather than a hypothesis.
+question the fingerprint poses and cannot answer. It answered it on its first use,
+which is the argument for it. A rebuild that disagrees now prints the file name
+and the delta, and the investigation is a line of CI output rather than a
+hypothesis.
 
 ## What is committed, and what is not
 
@@ -222,7 +229,7 @@ Kompendium carries both halves at once: 2.4M characters of one register, and 544
 
 ## `fr`, reviewed 2026-08-10 against two corpora
 
-2,411,286 characters, and this is the review that changed what the package can
+2,409,504 characters, and this is the review that changed what the package can
 claim about French. Until it ran, French had only the reproduction gate, which
 compares the pack to its own predecessor over translation output. Nothing had
 ever asked what the pack does to French that a French publisher set.
@@ -230,46 +237,51 @@ ever asked what the pack does to French that a French publisher set.
 | Corpus | What it is | Values | Characters |
 |---|---|---|---|
 | `openedition-journals-fr` | Articles from three OpenEdition journals: `rfsic`, `questionsdecommunication`, `terrain` | 39 | 2,007,259 |
-| `theconversation-fr` | The Conversation France, academic authors edited by a newsroom | 43 | 404,027 |
+| `theconversation-fr` | The Conversation France, academic authors edited by a newsroom | 43 | 402,245 |
 
 Both qualify on the test this file insists on. Across 2.4M characters there are
-19,401 curly apostrophes against 183 straight, and six straight double quotes in
+19,389 curly apostrophes against 183 straight, and six straight double quotes in
 total. This is French set by people who were paying attention, so every finding
 is a suspected false positive by construction.
 
 | Rule | OpenEdition | The Conversation | Verdict |
 |---|---|---|---|
 | `fr.apostrophe` | 71 | 109 | true positives |
-| `fr.space-before-colon` | 38 | 25 | true positives |
-| `fr.space-before-high-punctuation` | 9 | 11 | true positives |
+| `fr.space-before-colon` | 38 | 6 | true positives |
+| `fr.space-before-high-punctuation` | 9 | 9 | true positives |
 | `fr.guillemet-open` | 51 | 2 | true positives |
 | `fr.guillemet-close` | 48 | 2 | true positives |
 | `fr.mixed-no-break-space` | 2 | 0 | true positives |
 | `fr.missing-space-before-high-punctuation` | 355 | 0 | **355 false** |
 | `fr.straight-double-quote` | 6 | 0 | domain judgement |
 
-729 findings, 355 of them false, and every false one from a single check-only
-rule. Those are the numbers for `fr@0.2.0`. The numbers for `fr@0.1.0` over the
-identical corpora were **7,188 findings, 6,817 false**, and the next section is
-about what was between them, because the diagnosis is more useful than the totals.
+708 findings, 355 of them false, and every false one from a single check-only
+rule. Those are the numbers for `fr@0.2.0`.
+
+The numbers for `fr@0.1.0` over the same corpora were **7,188 findings, 6,817
+false**, left as they were measured, which was before the `theconversation-fr`
+callouts were excluded. Everything else in this section is a property of the text
+rather than of a pack version, so it is recomputed against the corpus as it now
+stands. The next section is about what was between the two versions, because the
+diagnosis is more useful than the totals.
 
 ### The guillemet rules fired on every guillemet in well-set French
 
-At `fr@0.1.0`, `fr.guillemet-open` fired on all 3,308 opening guillemets in the
-corpus and `fr.guillemet-close` on 3,257 of 3,258 closing ones. Not on a subset.
+At `fr@0.1.0`, `fr.guillemet-open` fired on all 3,305 opening guillemets in the
+corpus and `fr.guillemet-close` on 3,254 of 3,255 closing ones. Not on a subset.
 On essentially every one.
 
 What is actually inside them:
 
 | Inside the guillemet | Opening | Closing | Is it a defect? |
 |---|---|---|---|
-| U+00A0 no-break space | 3,255 | 3,207 | this is the question |
+| U+00A0 no-break space | 3,252 | 3,204 | this is the question |
 | plain space | 41 | 42 | yes, it permits a line break |
 | U+2009 thin space | 11 | 7 | yes, breaking |
 | nothing at all | 1 | 1 | yes |
 | U+202F narrow no-break | 0 | 1 | no, and it is the only one that did not fire |
 
-So 103 findings were real defects and 6,462 were the pack objecting to U+00A0 and
+So 103 findings were real defects and 6,456 were the pack objecting to U+00A0 and
 wanting U+202F. The rule matched `«` followed by *any* of the three spaces and
 rewrote to U+202F, which meant `normalize` silently retyped the inside of every
 quotation in a correctly set French document.
@@ -312,7 +324,7 @@ and the repair was made to depend on the document:
   on a near-even split harmonising would silently retype half the document.
 
 The colon stayed a fixed U+00A0, because nothing about it is in dispute: the
-Lexique specifies the word space and the corpora use it 2,458 times with no
+Lexique specifies the word space and the corpora use it 2,450 times with no
 counter-example.
 
 The result is the table above. The guillemet rules now report 103 findings, which
