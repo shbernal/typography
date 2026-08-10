@@ -82,10 +82,17 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm build
 
+      # `package-manager-cache` defaults to true, which makes this step run
+      # `pnpm store path` under the Node it just installed. pnpm 11 requires Node
+      # 22.13, so on the one runtime this job exists to test, the setup step dies
+      # before the smoke test it is setting up can run. Nothing is being installed
+      # here - `dist/` was built two steps ago and the smoke test has no
+      # dependencies - so there is no cache to want.
       - name: Set up Node 20 to run
         uses: actions/setup-node@v5
         with:
           node-version: 20
+          package-manager-cache: false
 
       - name: Smoke the built CLI on Node 20
         run: node scripts/smoke-dist.mjs
