@@ -25,18 +25,18 @@ jobs:
       id-token: write # trusted publishing and provenance
     steps:
       - name: Check out typography
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       # Pinned to a commit. This job holds an OIDC token that can publish to npm
       # under this package's name, so a third-party action resolved through a
       # moving tag is the one supply-chain step that matters here.
       - name: Set up pnpm
-        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
         with:
           version: 11.11.0
 
       - name: Set up Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
