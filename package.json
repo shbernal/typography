@@ -1,6 +1,6 @@
 {
   "name": "@shbernal/typography",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Orthotypography rules for French, Spanish and German as data: check text against a national standard, or fix the subset that is safe to fix unattended.",
   "keywords": [
     "typography",

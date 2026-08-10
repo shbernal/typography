@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.1.1
+
+No change to the packs, the CLI or anything else inside the tarball: `0.1.1`
+installs as `0.1.0` did. What changed is where the tarball comes from.
+
+- **Releases publish from CI**, on a published GitHub Release, over npm trusted
+  publishing. The registry authenticates the workflow over OIDC, so there is no
+  token in the repository to leak or rotate, and the tarball carries build
+  provenance that ties it to the run and the commit that produced it.
+- **`0.1.0` has no provenance attestation, and cannot be given one.** It was
+  published by hand, and npm only generates provenance from a CI provider it
+  recognises. That is the whole reason this release exists: the first version
+  published this way had to be published the other way, since a trusted publisher
+  cannot be configured for a package the registry does not have yet. Anyone
+  verifying the supply chain should start at `0.1.1`.
+
 ## 0.1.0
 
 First cut.
