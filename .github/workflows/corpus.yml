@@ -29,6 +29,17 @@ on:
     # also what re-enables the schedule.
     - cron: '0 4 1 * *'
   workflow_dispatch:
+    # A scheduled run rebuilds everything, because it is asking whether anything
+    # moved. A dispatched one is usually asking about something that already did,
+    # and that question is about one corpus: `theconversation-fr` disagreed on 76
+    # characters, and answering it by re-asking eight publishers for all 241
+    # documents spends the politeness this workflow is otherwise careful with -
+    # for seven corpora nobody is currently asking about.
+    inputs:
+      corpus:
+        description: One corpus id, e.g. theconversation-fr. Blank rebuilds all eight.
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -77,8 +88,17 @@ jobs:
       # publisher for no reason except asking 116 times in a row from a data
       # centre. Those are retried with growing backoff, which is why this step is
       # slow. A run that is short after the retries is a real event.
+      #
+      # `corpus` arrives through the environment rather than being interpolated
+      # into the command, because `${{ }}` substitutes into the script *text* and
+      # a dispatch input is somebody's typing. `${ONLY:+...}` then expands to
+      # nothing at all when it is blank, which is what a scheduled run sees, so
+      # the default path is the full rebuild with no argument. An id that matches
+      # no corpus exits 2 rather than quietly rebuilding everything.
       - name: Rebuild every corpus from the frozen URL lists
-        run: node scripts/fetch-corpus.ts --refresh
+        env:
+          ONLY: ${{ inputs.corpus }}
+        run: node scripts/fetch-corpus.ts --refresh ${ONLY:+--only "$ONLY"}
 
       # Failing here means the corpora rebuilt but no longer say what
       # `gates/*.json` records. On a scheduled run the rules have not changed, so
@@ -86,8 +106,18 @@ jobs:
       # edition, a corrected typo, a re-typeset page. That is a real event and
       # wants a human: the committed counts describe text that no longer exists,
       # and re-baselining without reading the delta would launder the change.
+      #
+      # Both gates read all eight corpora and only one was fetched, so on a
+      # targeted run they would report the other seven absent and exit 1. That is
+      # a true statement and useless output: it buries the per-document delta
+      # printed above under seven lines of "you did not ask for this one". The
+      # gate belongs to the full rebuild; a targeted run is an investigation, and
+      # what it is investigating has already been printed by the time these would
+      # run.
       - name: Verify the committed findings against the rebuilt corpora
+        if: ${{ !inputs.corpus }}
         run: node scripts/gate-findings.ts --verify
 
       - name: Say what was actually measured
+        if: ${{ !inputs.corpus }}
         run: node scripts/gate-findings.ts
