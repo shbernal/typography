@@ -1,17 +1,25 @@
-name: Release
+name: Publish
 
-# Publishes to npm on a `v*` tag, using npm trusted publishing. There is no
-# NPM_TOKEN in this repository and there should never be one: the registry
-# authenticates the workflow itself over OIDC, and the tarball carries build
-# provenance, so a package on npm can be traced back to the run and the commit
-# that produced it.
+# Publishes to npm when a GitHub Release is published, using npm trusted
+# publishing. There is no NPM_TOKEN in this repository and there should never be
+# one: the registry authenticates the workflow itself over OIDC, and the tarball
+# carries build provenance, so a package on npm can be traced back to the run and
+# the commit that produced it.
 #
-# Before the first release this needs a trusted publisher configured on the npm
-# package, pointing at this repository and this workflow file name.
+# This needs a trusted publisher configured on the npm package, pointing at this
+# repository and this file's name. npm matches on the filename, so renaming this
+# file breaks publishing until the npm setting is renamed with it.
+#
+# The trigger is the Release rather than the tag it points at, so that pushing a
+# tag is not on its own enough to publish: the release is a second, deliberate
+# step, and it is the one a human takes after reading the tag. `workflow_dispatch`
+# is the escape hatch for re-running a release that failed after the tag was
+# already correct; dispatch it from the tag, not from a branch, or the tag check
+# below will refuse it.
 
 on:
-  push:
-    tags: ['v*']
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
@@ -53,7 +61,8 @@ jobs:
       # The tag is the only thing that says which version this is, and
       # package.json is the only thing that decides what gets published. A
       # release where they disagree is the one nobody notices until it is on the
-      # registry.
+      # registry. On a `release` event GITHUB_REF_NAME is the tag the release
+      # points at, which is what this reads.
       - name: Refuse a tag that disagrees with package.json
         run: node scripts/check-release-tag.mjs
 

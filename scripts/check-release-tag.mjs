@@ -7,7 +7,8 @@
 // quietly under the wrong number, or ships with the changelog still saying
 // "Unreleased", and is discovered by somebody installing it.
 //
-// Run in CI on a tag push. Run by hand it checks GITHUB_REF_NAME or argv[2], and
+// Run in CI on a published release, where GITHUB_REF_NAME is the tag the release
+// points at. Run by hand it checks GITHUB_REF_NAME or argv[2], and
 // says nothing useful without one, which is the correct outcome outside a
 // release.
 
