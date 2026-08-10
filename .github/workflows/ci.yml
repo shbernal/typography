@@ -27,7 +27,7 @@ jobs:
       - name: Check out typography
         uses: actions/checkout@v7
 
-      # Pinned to a commit rather than to `v5`, which is a moving tag a third
+      # Pinned to a commit rather than to `v6`, which is a moving tag a third
       # party can repoint. `actions/*` are GitHub's own and stay on tags; this is
       # the only action here from anyone else, and it runs in the same job that
       # publishes. Dependabot's `github-actions` ecosystem updates a pin like this
@@ -61,7 +61,7 @@ jobs:
       - name: Check out typography
         uses: actions/checkout@v7
 
-      # Pinned to a commit rather than to `v5`, which is a moving tag a third
+      # Pinned to a commit rather than to `v6`, which is a moving tag a third
       # party can repoint. `actions/*` are GitHub's own and stay on tags; this is
       # the only action here from anyone else, and it runs in the same job that
       # publishes. Dependabot's `github-actions` ecosystem updates a pin like this
