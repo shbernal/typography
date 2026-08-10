@@ -27,17 +27,27 @@ const MANIFEST = join(REPO, 'gates', 'corpora.json');
 const USER_AGENT =
   'shbernal-typography-corpus/0.1 (release gate; +https://github.com/shbernal/typography)';
 
-/** Milliseconds between requests to one host. Politeness, not performance. */
-const DELAY = 400;
+/** Milliseconds between requests to one host. Politeness, not performance, and
+ * the number is set by the least tolerant publisher rather than by what the rest
+ * would put up with.
+ *
+ * 400 was too fast for one of them. At that rate the AEPD refused 17 of 116
+ * requests from a GitHub runner, and with retries it still refused 7. A monthly
+ * job has no deadline, so the whole corpus set taking half an hour costs nothing
+ * and asking a data protection authority for 116 pages in 46 seconds costs
+ * goodwill this repo is spending on somebody else's servers. */
+const DELAY = 1_500;
 
 /** How many times to re-ask after a transient refusal, and how long to wait
  * before each. Growing, because the thing being waited out is a rate limiter.
  *
- * This is not defensive programming for its own sake. The first scheduled run of
- * the corpus workflow got 17 `503 Service Unavailable` responses out of 116 from
- * one publisher, purely for asking 116 times in a row from a data centre. Every
- * URL was live and the list had not rotted. */
-const RETRY_DELAYS = [2_000, 8_000, 20_000];
+ * This is not defensive programming for its own sake. The first run of the corpus
+ * workflow got 17 `503 Service Unavailable` responses out of 116 from one
+ * publisher, purely for asking 116 times in a row from a data centre. Every URL
+ * was live and the list had not rotted. Three retries recovered 10 of the 17,
+ * which is why the ladder now runs to 90 seconds and why `DELAY` went up: a
+ * retry ladder treats the symptom, and the request rate is the cause. */
+const RETRY_DELAYS = [2_000, 8_000, 20_000, 45_000, 90_000];
 
 /** Statuses worth asking again about. A 404 is an answer and re-asking is rude;
  * a 429 or a 5xx is the server saying "not now". */

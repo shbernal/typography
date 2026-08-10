@@ -98,6 +98,35 @@ French *reproduction* gate cannot run at all. That last limit is real and the
 honest thing is to state it rather than let a failing gate imply a broken
 checkout. An unrun gate said plainly is fine.
 
+## Two ways a rebuild disagrees with the baseline, neither of which is drift
+
+The monthly `Corpus` workflow rebuilds all eight and verifies them. Its first two
+runs turned up both of the ways that can fail without anything having changed,
+and both are recorded here because the obvious response to either - re-baseline
+and move on - would quietly rewrite what the numbers in this file describe.
+
+**The publisher throttles you.** The AEPD refused 17 of 116 requests with `503`
+from a GitHub runner, and 7 even after three retries. Every URL was live; the
+same list from a laptop returns all 116 documents, byte for byte the committed
+baseline. The fetcher used to log each refusal and carry on, so the corpus came
+back a sixth short and the script exited 0 - a corpus that looks fine, a
+fingerprint that has moved, and every incentive to re-baseline against text that
+was never missing. A document that does not arrive is now counted and fails the
+run, and the request rate was slowed from 400 ms to 1.5 s, which is the cause
+rather than the symptom.
+
+**The publisher serves you something else.** `theconversation-fr` rebuilds to
+403,951 characters in CI and 404,027 here, over the same 43 documents, and both
+numbers are stable across runs. 76 characters, deterministic, and not a revision:
+a fresh local re-fetch is byte-identical to the baseline. The likeliest reading is
+content that varies by where the request comes from. It is filed as a known
+difference rather than corrected, because the committed baseline describes the
+text as published to a reader in Europe, and a CI runner is not that.
+
+The consequence for anyone rebuilding: matching seven of eight fingerprints is the
+expected result off a residential connection, and matching six on a data centre is
+not evidence of anything having changed.
+
 ## What is committed, and what is not
 
 The corpora are third-party published works and are not this repo's to
