@@ -72,11 +72,24 @@ unambiguous defect, and inserting the `¿` means deciding where the interrogativ
 have produced it. So report those to the user and ask. Never rewrite them
 yourself, and never suggest a `sed` that does.
 
+`fr.mixed-no-break-space` is the other kind: the document uses U+00A0 in some
+guillemets and U+202F in others. Both are admissible French and using both is
+not, so the finding is real, but which one the document should settle on belongs
+to whoever wrote it. Report the count and ask; do not harmonise on your own.
+
 ### 3. `--write` is a separate decision from checking
 
 Default to `check`. Rewriting somebody's file needs them to have asked for it.
 `fix` without `--write` prints exactly what it would have done, so run that first
 and show it.
+
+**French no longer has the exception it used to have.** At `fr@0.1.0` the
+guillemet rules fired on every guillemet in 2.4 million characters of published
+French, wanting U+202F where French publishers use U+00A0. Since `fr@0.2.0` they
+accept either no-break space and repair only spacing that is wrong under both
+readings, in whichever width the document already uses. `fix --lang fr` is safe
+on well-set text. If a report you are reading is stamped `fr@0.1.0`, it predates
+this and its guillemet findings should be ignored.
 
 ### 4. State the language; do not sniff it
 

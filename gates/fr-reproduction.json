@@ -1,6 +1,6 @@
 {
   "gate": "fr-reproduction",
-  "pack": "fr@0.1.0",
+  "pack": "fr@0.2.0",
   "prior": "translation-agents/src/core/typography.ts::normalizeFrenchTypography",
   "totals": {
     "rows": 5550,

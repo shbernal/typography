@@ -32,9 +32,9 @@ quotes, code tokens and anything next to a digit.
 ### `de.space-before-punctuation` (not fixable)
 
 German takes no space before `; : ! ?`. Reported rather than fixed, because
-deleting the space corrupts `a ? b : c` in a code block. Over 986,380 characters
-of published federal German this rule fired **zero** times, which is the number
-that matters: it is silent on text somebody set properly.
+deleting the space corrupts `a ? b : c` in a code block. Over 2,393,884
+characters of published federal German this rule fired **zero** times, which is
+the number that matters: it is silent on text somebody set properly.
 
 ### `de.straight-double-quote` (warning, not fixable)
 
@@ -81,7 +81,13 @@ rewrite, which is the behaviour to expect if a document turns out to be mixed.
 
 ## Note on evidence
 
-`de-DE` was reviewed against 986,380 characters of published German source text:
-zero error-severity findings, 13 warnings. **`de-CH` has no corpus.** Its rules
-are the shared ones plus two guillemet rules, so the German review covers most of
-it, and most of it is not a gate.
+`de-DE` was reviewed against 2,393,884 characters of the BSI
+IT-Grundschutz-Kompendium 2023: zero error-severity findings, 128 warnings, 18 of
+them quotation pairs opened with `„` and closed with a straight quote.
+
+`de-CH` was reviewed against 311,131 characters, the Swiss Federal Constitution
+and 37 federal press releases: zero findings. **Read that zero carefully.** The
+Constitution contains no quotation marks at all, and the press releases carry 38
+Swiss guillemet pairs, which is an order of magnitude less exposure than the
+German corpus gives the German rules. `de-CH`'s quotation rules are evidenced
+rather than well evidenced.

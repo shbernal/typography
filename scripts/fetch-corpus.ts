@@ -39,14 +39,28 @@ interface FetchSpec {
 interface CorpusSpec {
   readonly id: string;
   readonly lang: string;
-  readonly source: 'registry' | 'text';
   readonly fetch?: FetchSpec;
 }
 
 // --- HTML and XML to text -------------------------------------------------
 
+/** Elements after which a newline has to appear, or two words weld together and
+ * manufacture a finding the publisher never wrote.
+ *
+ * The tail of the list is not HTML. `texto` and `parrafo` are the Boletín
+ * Oficial del Estado's, and everything from `para` on is DocBook, taken from the
+ * element inventory of the one DocBook source here rather than from the schema:
+ * the BSI Kompendium is served from a version-pinned URL, so its inventory is
+ * fixed and a longer list would be guesswork. `emphasis` and `link` are
+ * deliberately absent, being inline.
+ *
+ * Adding the DocBook names does not disturb the HTML corpora. Most are not HTML
+ * elements at all; `title` only ever occurs inside `<head>`, which is stripped
+ * whole; and `thead`, `tbody` and `colgroup` wrap `tr`, which is already here, so
+ * the extra newline lands next to one that already existed and the empty line
+ * between them is dropped below. */
 const BLOCK =
-  /<\/?(?:p|div|br|li|ul|ol|tr|td|th|table|h[1-6]|section|article|header|footer|nav|blockquote|dd|dt|dl|figure|figcaption|main|aside|hr|form|option|select|button|label|texto|parrafo)\b[^>]*>/gi;
+  /<\/?(?:p|div|br|li|ul|ol|tr|td|th|table|h[1-6]|section|article|header|footer|nav|blockquote|dd|dt|dl|figure|figcaption|main|aside|hr|form|option|select|button|label|texto|parrafo|para|simpara|title|listitem|itemizedlist|orderedlist|chapter|book|info|index|informaltable|colgroup|thead|tbody)\b[^>]*>/gi;
 
 /** Named entities that appear in the sources we read. Numeric ones are general. */
 const NAMED: Record<string, string> = {

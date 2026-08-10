@@ -12,6 +12,7 @@ export { es } from './es.ts';
 export { fr } from './fr.ts';
 export {
   composeNormalize,
+  conformRule,
   detectRule,
   excerptAt,
   type Finding,
@@ -23,5 +24,6 @@ export {
   replaceRule,
   reveal,
   type Severity,
+  THIN,
   type TypographyPack,
 } from './pack.ts';

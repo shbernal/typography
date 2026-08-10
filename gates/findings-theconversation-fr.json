@@ -1,0 +1,120 @@
+{
+  "gate": "findings",
+  "corpus": "theconversation-fr",
+  "note": "The Conversation France. Academic authors edited by a newsroom, which is a different register from the journals: direct questions and exclamations, the interrogative punctuation formal academic prose barely contains. This is where fr.space-before-high-punctuation meets real question marks. English-language articles in the French feed were dropped by checking the extracted text, since English prose manufactures French findings the publisher never wrote.",
+  "pack": "fr@0.2.0",
+  "standard": "Imprimerie nationale",
+  "units": 43,
+  "characters": 404027,
+  "unitsWithFindings": 17,
+  "fingerprint": "4bf11107eb7ec0a7",
+  "exposure": {
+    "U+00AB «": 206,
+    "U+00BB »": 206,
+    "U+201E „": 0,
+    "U+201C “": 1,
+    "U+201D ”": 1,
+    "U+00BF ¿": 0,
+    "U+00A1 ¡": 0,
+    "?": 99,
+    "!": 15,
+    ";": 50,
+    ":": 366,
+    "\" straight": 0,
+    "' straight": 109,
+    "U+2019 ’": 3403,
+    "U+00A0 NBSP": 1423,
+    "U+202F NNBSP": 0
+  },
+  "rules": {
+    "fr.apostrophe": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 109,
+      "units": 11,
+      "samples": [
+        "0005-e-photographique-oublie-de-la-physique-des-particules-283940.txt  \"ccasion que j<RSQUO>ai invité l'artiste Hugo Deverchère à\"",
+        "0011-es-microplastiques-surtout-lorsquils-sont-tres-chauds-287210.txt  \"t il est très difficile d'évaluer avec précision la\"",
+        "0011-es-microplastiques-surtout-lorsquils-sont-tres-chauds-287210.txt  \" aussi marqué<NBSP>?\\nGrâce à l'imagerie à haute résoluti\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"olescents ? Sans prôner l'abstinence, une étude men\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"s parents consomment de l'alcool contribue à façonn\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"e pratique <LAQUO> normale <RAQUO>.\\nC'est vendredi soir. Vous v\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"s de choses que vous ne l'imaginez.\\nMa nouvelle étu\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"bitudes de consommation d'alcool que les parents do\""
+      ]
+    },
+    "fr.space-before-colon": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 25,
+      "units": 11,
+      "samples": [
+        "0000-om-ce-que-les-sciences-sociales-doivent-a-edgar-morin-289070.txt  \"versitaires.\\nÀ lire aussi :\\nEntretien avec Edgar<NBSP>Mo\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \" une période bien précise : lorsque les enfants ont\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"nstat général est le même : ce que les enfants obse\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \" c'est le message de fond : à quelle fréquence l'al\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"teurs peuvent l'expliquer : l'évolution des normes \"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"s plaident notamment pour :\\nmaintenir une consommat\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"façonner le décor de fond : ce message discret mais\"",
+        "0020-e-pourquoi-peter-thiel-voit-le-pape-comme-lantechrist-288158.txt  \" d<RSQUO>ailleurs.\\nÀ lire aussi :\\nL<RSQUO>Europe vue par J.<NBSP>D.<NBSP>\""
+      ]
+    },
+    "fr.space-before-high-punctuation": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 11,
+      "units": 3,
+      "samples": [
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"re devant ses adolescents ? Sans prôner l'abstinenc\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"ique ou normes familiales ?\\nLes résultats plaident \"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"œur de chaque célébration ? La première réponse à u\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"se à une mauvaise journée ? Ou apparaît-il simpleme\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"er une place particulière ?\\nComment les adolescents\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"peuvent faire les parents ?\\nL'objectif n'est pas d'\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \" pour les moins de 18 ans ;\\nne pas fournir d'alcool\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"problèmes liés à l'alcool ;\\nfixer des règles claire\""
+      ]
+    },
+    "fr.guillemet-open": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 2,
+      "units": 1,
+      "samples": [
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"èrent comme une pratique <LAQUO> normale <RAQUO>.\\nC'est vendredi\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \" qu'est une consommation <LAQUO> normale <RAQUO>.\\nCela ne signif\""
+      ]
+    },
+    "fr.guillemet-close": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 2,
+      "units": 1,
+      "samples": [
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"me une pratique <LAQUO> normale <RAQUO>.\\nC'est vendredi soir. Vo\"",
+        "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"ne consommation <LAQUO> normale <RAQUO>.\\nCela ne signifie pas qu\""
+      ]
+    },
+    "fr.mixed-no-break-space": {
+      "fixable": false,
+      "severity": "warning",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "fr.missing-space-before-high-punctuation": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    },
+    "fr.straight-double-quote": {
+      "fixable": false,
+      "severity": "warning",
+      "findings": 0,
+      "units": 0,
+      "samples": []
+    }
+  }
+}

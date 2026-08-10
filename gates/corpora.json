@@ -4,15 +4,12 @@
     "these are third-party published works, and what this repo commits is the per-rule",
     "counts plus a fingerprint, so a release review is a delta rather than a re-triage.",
     "",
-    "`registry` corpora are read out of a translation-harness-format registry, resolved",
-    "against --consumer, on the machine running the gate. Today that tree is private, so",
-    "a registry corpus is NOT rebuildable by anyone else and the gate says so rather than",
-    "failing as though the checkout were broken. `text` corpora are read from",
-    "gates/corpora/<id>/, which is gitignored. A `text` corpus with a `fetch` block is",
-    "rebuildable: `node scripts/fetch-corpus.ts` reads the frozen URL list under",
-    "gates/sources/ and writes the documents. A gate whose corpus cannot be rebuilt is",
-    "a number nobody else can check, which is why five of the six are, and why the one",
-    "that is not is named in gates/README.md instead of averaged into the claim.",
+    "Every corpus is rebuildable. `node scripts/fetch-corpus.ts` reads the frozen URL",
+    "list under gates/sources/ and writes the documents into gates/corpora/<id>/, which",
+    "is gitignored. That is the point: a gate whose corpus cannot be rebuilt is a number",
+    "nobody else can check. It was seven of eight until the de-DE corpus stopped being a",
+    "private registry extract and became the BSI's own published XML; there is now no",
+    "corpus here that a checkout plus a network cannot reproduce, and no --consumer flag.",
     "",
     "A corpus qualifies only if it is professionally typeset. That is the whole",
     "subtlety of this gate and the easiest thing to get wrong: sloppy text makes",
@@ -21,32 +18,69 @@
     "positive by construction, and the false-positive rate is the failure mode these",
     "rules actually have.",
     "",
-    "Corpora are chosen per rule, not per language. Two of these exist only because",
+    "Corpora are chosen per rule, not per language. Three of these exist only because",
     "one rule needed material the other corpora do not contain: aepd-faq-es is where",
-    "es.unpaired-question meets several hundred correctly opened interrogatives, and",
-    "admin-ch-medien-de-ch is where the Swiss guillemet rules meet Swiss guillemets.",
-    "Their partners cover scale and register instead."
+    "es.unpaired-question meets several hundred correctly opened interrogatives,",
+    "admin-ch-medien-de-ch is where the Swiss guillemet rules meet Swiss guillemets,",
+    "and theconversation-fr is where fr.space-before-high-punctuation meets question",
+    "marks, which formal academic French barely uses. Their partners cover scale and",
+    "register instead."
   ],
   "corpora": [
     {
-      "id": "grundschutz-2023-de",
+      "id": "openedition-journals-fr",
+      "lang": "fr",
+      "fetch": {
+        "urls": "gates/sources/openedition-journals-fr.urls",
+        "format": "html",
+        "region": "<div id=\"text\"[^>]*>([\\s\\S]*?)<div id=\"quotation\""
+      },
+      "exposes": [
+        "U+00AB «",
+        "U+00BB »",
+        "U+00A0 NBSP",
+        "U+2019 ’",
+        ";",
+        ":"
+      ],
+      "note": "Articles from three OpenEdition journals: Revue francaise des sciences de l'information et de la communication, Questions de communication, and Terrain. Academic French set properly by the platform, which is what qualifies it: guillemets carry a real no-break space and apostrophes are U+2019, so a finding here is a suspected false positive rather than a recall test. Three journals so that one copy editor's habits do not stand in for published French."
+    },
+    {
+      "id": "theconversation-fr",
+      "lang": "fr",
+      "fetch": {
+        "urls": "gates/sources/theconversation-fr.urls",
+        "format": "html",
+        "region": "instapaper_body[^\"]*\"[^>]*>([\\s\\S]*?)<div class=\"grid-ten grid-prepend-two"
+      },
+      "exposes": [
+        "U+00AB «",
+        "U+00BB »",
+        "?",
+        "U+00A0 NBSP",
+        "U+2019 ’"
+      ],
+      "note": "The Conversation France. Academic authors edited by a newsroom, which is a different register from the journals: direct questions and exclamations, the interrogative punctuation formal academic prose barely contains. This is where fr.space-before-high-punctuation meets real question marks. English-language articles in the French feed were dropped by checking the extracted text, since English prose manufactures French findings the publisher never wrote."
+    },
+    {
+      "id": "bsi-kompendium-2023-de",
       "lang": "de-DE",
-      "source": "registry",
-      "path": "data/work/grundschutz-2023-de/registry.sqlite3",
-      "column": "source_json",
+      "fetch": {
+        "urls": "gates/sources/bsi-kompendium-2023-de.urls",
+        "format": "xml"
+      },
       "exposes": [
         "U+201E „",
         "U+201C “",
         "\" straight",
-        ":"
+        ":",
+        "?"
       ],
-      "rebuildable": false,
-      "note": "BSI IT-Grundschutz-Kompendium 2023, German source text. Published by a federal agency and edited to a house standard, which is what makes it usable here. The BSI ships the Kompendium as a document set rather than as pages a URL list could freeze, so this one is read from a private registry and cannot be rebuilt by a contributor."
+      "note": "BSI IT-Grundschutz-Kompendium, Edition 2023, from the agency's own DocBook XML. Published by a federal agency and edited to a house standard, which is what makes it usable here. No region selector: the whole document is BSI's text. This replaced a private registry extract of the same Kompendium, which held a quarter of the text and a sixth of the German quotation marks; the XML is the publisher's structured original, so the spacing and the quotation marks are exactly as BSI set them."
     },
     {
       "id": "boe-lopdgdd-2018-es",
       "lang": "es",
-      "source": "text",
       "fetch": {
         "urls": "gates/sources/boe-lopdgdd-2018-es.urls",
         "format": "xml",
@@ -62,7 +96,6 @@
     {
       "id": "aepd-faq-es",
       "lang": "es",
-      "source": "text",
       "fetch": {
         "urls": "gates/sources/aepd-faq-es.urls",
         "format": "html",
@@ -78,7 +111,6 @@
     {
       "id": "fundeu-rae-es",
       "lang": "es",
-      "source": "text",
       "fetch": {
         "urls": "gates/sources/fundeu-rae-es.urls",
         "format": "wp-json"
@@ -94,7 +126,6 @@
     {
       "id": "fedlex-bv-2024-de-ch",
       "lang": "de-CH",
-      "source": "text",
       "fetch": {
         "urls": "gates/sources/fedlex-bv-2024-de-ch.urls",
         "format": "html",
@@ -110,7 +141,6 @@
     {
       "id": "admin-ch-medien-de-ch",
       "lang": "de-CH",
-      "source": "text",
       "fetch": {
         "urls": "gates/sources/admin-ch-medien-de-ch.urls",
         "format": "html",

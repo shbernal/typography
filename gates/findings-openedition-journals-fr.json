@@ -1,0 +1,151 @@
+{
+  "gate": "findings",
+  "corpus": "openedition-journals-fr",
+  "note": "Articles from three OpenEdition journals: Revue francaise des sciences de l'information et de la communication, Questions de communication, and Terrain. Academic French set properly by the platform, which is what qualifies it: guillemets carry a real no-break space and apostrophes are U+2019, so a finding here is a suspected false positive rather than a recall test. Three journals so that one copy editor's habits do not stand in for published French.",
+  "pack": "fr@0.2.0",
+  "standard": "Imprimerie nationale",
+  "units": 39,
+  "characters": 2007259,
+  "unitsWithFindings": 34,
+  "fingerprint": "f456da594dc8040e",
+  "exposure": {
+    "U+00AB «": 3102,
+    "U+00BB »": 3052,
+    "U+201E „": 1,
+    "U+201C “": 345,
+    "U+201D ”": 336,
+    "U+00BF ¿": 2,
+    "U+00A1 ¡": 0,
+    "?": 362,
+    "!": 86,
+    ";": 631,
+    ":": 3424,
+    "\" straight": 6,
+    "' straight": 74,
+    "U+2019 ’": 15998,
+    "U+00A0 NBSP": 14451,
+    "U+202F NNBSP": 11
+  },
+  "rules": {
+    "fr.apostrophe": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 71,
+      "units": 13,
+      "samples": [
+        "0003-rfsic-18869.txt  \"e/Statut\\nSecteur\\nNiveau d'études\\nEM58RM\\nH, 58\\nRespo\"",
+        "0003-rfsic-18869.txt  \"e/Statut\\nSecteur\\nNiveau d'études\\nAH53D\\nH, 53\\nDirect\"",
+        "0003-rfsic-18869.txt  \"our les jeunes).\\nRisque d'un marché saturé d'exécut\"",
+        "0003-rfsic-18869.txt  \"sque d'un marché saturé d'exécutants moyens<NBSP>; seule\"",
+        "0003-rfsic-18869.txt  \"cutants moyens<NBSP>; seules l'originalité et l'émotion \"",
+        "0003-rfsic-18869.txt  \"seules l'originalité et l'émotion sauveront les age\"",
+        "0003-rfsic-18869.txt  \"e/Statut\\nSecteur\\nNiveau d'études\\nFM26DC\\nH, 26\\nCo-fo\"",
+        "0003-rfsic-18869.txt  \"\\nFM31DE\\nH, 31\\nDirecteur d'agence\\nÉvénementiel/RP\\nBa\""
+      ]
+    },
+    "fr.space-before-colon": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 38,
+      "units": 9,
+      "samples": [
+        "0004-rfsic-19150.txt  \"e https://www.make.com/en : Permet aux utilisateurs\"",
+        "0004-rfsic-19150.txt  \"nts. Voir<NBSP>: (...)\\n13 Make : plateforme no-code d<RSQUO>au\"",
+        "0004-rfsic-19150.txt  \"e https://www.make.com/en : Permet aux utilisateurs\"",
+        "0004-rfsic-19150.txt  \"<NBSP>: https://n8n.io\\n13 Make : plateforme no-code d<RSQUO>au\"",
+        "0007-rfsic-19339.txt  \"s | IA et éducation (2/2) : du dilemme moral au mal\"",
+        "0007-rfsic-19339.txt  \"s générateurs de texte IA : Comparatif 2025 - Tech&\"",
+        "0007-rfsic-19339.txt  \"d<RSQUO>inspiration inépuisable : en quelques secondes, e\"",
+        "0007-rfsic-19339.txt  \"s | IA et éducation (2/2) : du dilemme moral au mal\""
+      ]
+    },
+    "fr.space-before-high-punctuation": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 9,
+      "units": 6,
+      "samples": [
+        "0011-rfsic-19687.txt  \"tue dans la communication ? Le cas d<RSQUO>un processus d\"",
+        "0011-rfsic-19687.txt  \"ance, coll. <LAQUO> Que sais-je ? <RAQUO>, 6e éd., 2014, p. 23-\"",
+        "0011-rfsic-19687.txt  \"ce que la justice sociale ? Reconnaissance et redis\"",
+        "0011-rfsic-19687.txt  \"tions <RAQUO>, ¿ Interrogations ? Revue pluridisciplinair\"",
+        "0014-questionsdecommunication-43230.txt  \"ont-ils complètement cons ? <RAQUO> (4<NBSP>juillet 2021, 411<NBSP>\"",
+        "0023-questionsdecommunication-43307.txt  \"centers (Hu, 2015<NBSP>: 10-11<THINSP>; Starosielski, 2015<NBSP>: 2-\"",
+        "0024-questionsdecommunication-43355.txt  \"de ces nouveaux militants ? Quel est le processus e\"",
+        "0025-questionsdecommunication-43477.txt  \"t ist Zeit für Widerstand ! (C<RSQUO>est le moment de rés\""
+      ]
+    },
+    "fr.guillemet-open": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 51,
+      "units": 7,
+      "samples": [
+        "0011-rfsic-19687.txt  \"minologique de parler de <LAQUO> personnes autistes <RAQUO> ou <LAQUO>\"",
+        "0011-rfsic-19687.txt  \" personnes autistes <RAQUO> ou <LAQUO> d<RSQUO>autistes <RAQUO> afin d<RSQUO>é (..\"",
+        "0011-rfsic-19687.txt  \"ipateurs\\n2 Littéralement <LAQUO> lieu sûr <RAQUO>. Une safe plac\"",
+        "0011-rfsic-19687.txt  \"Laurent A. et Vabres P., <LAQUO> Maladies rares et conséqu\"",
+        "0011-rfsic-19687.txt  \"p. 133-146.\\nBagatell N., <LAQUO> From cure to community: T\"",
+        "0011-rfsic-19687.txt  \"on J.-L. et Galibert O., <LAQUO> Pour une mise en critique\"",
+        "0011-rfsic-19687.txt  \"1\\nChamak B. et Cohen D., <LAQUO> Transformations des repré\"",
+        "0011-rfsic-19687.txt  \"vington J. et Muloin C., <LAQUO> Le soutien social en lign\""
+      ]
+    },
+    "fr.guillemet-close": {
+      "fixable": true,
+      "severity": "error",
+      "findings": 48,
+      "units": 10,
+      "samples": [
+        "0000-rfsic-18795.txt  \"vidus. Le <LAQUO><NBSP>reengineering<RAQUO><NBSP>organisationnel, tel que\"",
+        "0003-rfsic-18869.txt  \"ns le groupe <LAQUO><NBSP>annonceurs <RAQUO>).\\n19Toutefois, les catég\"",
+        "0006-rfsic-19254.txt  \"ser feito por não humanos <RAQUO> (Mémoire de master, Univ\"",
+        "0011-rfsic-19687.txt  \"r de <LAQUO> personnes autistes <RAQUO> ou <LAQUO> d<RSQUO>autistes <RAQUO> afin d\"",
+        "0011-rfsic-19687.txt  \"utistes <RAQUO> ou <LAQUO> d<RSQUO>autistes <RAQUO> afin d<RSQUO>é (...)\\n2Dès lors\"",
+        "0011-rfsic-19687.txt  \" Littéralement <LAQUO> lieu sûr <RAQUO>. Une safe place ou safe \"",
+        "0011-rfsic-19687.txt  \"la différence d<RSQUO>apparence <RAQUO>, in Maladies rares, Toul\"",
+        "0011-rfsic-19687.txt  \"forming notions of autism <RAQUO>, Ethos, vol. 38, n° 1, 2\""
+      ]
+    },
+    "fr.mixed-no-break-space": {
+      "fixable": false,
+      "severity": "warning",
+      "findings": 2,
+      "units": 2,
+      "samples": [
+        "0026-terrain-29023.txt  \"dans une forêt japonaise.<NNBSP><RAQUO> Bien qu<RSQUO>il existe certa\"",
+        "0033-terrain-28274.txt  \"ir pratiquant d<RSQUO>ultrafond<NNBSP>?<NBSP><RAQUO>, Terrains travaux, no\""
+      ]
+    },
+    "fr.missing-space-before-high-punctuation": {
+      "fixable": false,
+      "severity": "error",
+      "findings": 355,
+      "units": 30,
+      "samples": [
+        "0000-rfsic-18795.txt  \"hard A., Hypercompetition: managing the dynamics of\"",
+        "0000-rfsic-18795.txt  \" “The Iron-Cage Revisited: Institutional Isomorphis\"",
+        "0000-rfsic-18795.txt  \"nçois, Lost in management: la vie quotidienne des e\"",
+        "0001-rfsic-18845.txt  \"The System of Professions: An Essay on the Division\"",
+        "0002-rfsic-18863.txt  \"ing managed by algorithms: According to a study of \"",
+        "0003-rfsic-18869.txt  \"n the creative industries: a review<NBSP><RAQUO>, Artificial I\"",
+        "0003-rfsic-18869.txt  \"y of the creative process: script roles in film pro\"",
+        "0003-rfsic-18869.txt  \"titution of Organizations? The Case of CCO Scholars\""
+      ]
+    },
+    "fr.straight-double-quote": {
+      "fixable": false,
+      "severity": "warning",
+      "findings": 6,
+      "units": 2,
+      "samples": [
+        "0020-questionsdecommunication-43928.txt  \" approaches? (RQ3)\\nWhere \\\"désinformation\\\" is undefi\"",
+        "0020-questionsdecommunication-43928.txt  \"Q3)\\nWhere \\\"désinformation\\\" is undefined, are there \"",
+        "0025-questionsdecommunication-43477.txt  \"uffe<NBSP>: <LAQUO><NBSP>Là, “mon gros” [\\\"Dicker\\\" en allemand], ça \"",
+        "0025-questionsdecommunication-43477.txt  \"<LAQUO><NBSP>Là, “mon gros” [\\\"Dicker\\\" en allemand], ça lui all\"",
+        "0025-questionsdecommunication-43477.txt  \"uffe<NBSP>: <LAQUO><NBSP>Là, “mon gros” [\\\"Dicker\\\" en allemand], ça \"",
+        "0025-questionsdecommunication-43477.txt  \"<LAQUO><NBSP>Là, “mon gros” [\\\"Dicker\\\" en allemand], ça lui all\""
+      ]
+    }
+  }
+}

@@ -16,6 +16,12 @@
 // which is the defect this whole package exists to catch one level down. So
 // `replaceRule` derives both behaviours from a single pattern, and there is
 // nothing to keep in agreement.
+//
+// There are three constructors rather than two because a standard can admit two
+// spellings of one thing. When it does, a rule with a literal replacement has to
+// pick one, and picking either retypes text that was already correct in the
+// other. `conformRule` is for that case: it matches only what is wrong under
+// *both* readings and spells the repair the way the text already spells it.
 
 /** How bad a finding is. Advisory: nothing in this package branches on it, but a
  * host filtering a report needs the axis and inventing it per host is worse. */
@@ -151,23 +157,37 @@ export function replaceRule(spec: {
 }
 
 /**
- * A rule that reports and does not rewrite.
+ * A rule that repairs to whichever admissible spelling the text already uses.
  *
- * Reach for this when the repair needs information the pattern does not have.
- * The Spanish opening-mark rules are the case that shaped the type: the defect
- * is unambiguous and its location is not.
+ * Reach for this when the standard admits two spellings of one thing and the
+ * defect is using neither. The French guillemet is the measured case: the
+ * Lexique typesets its own guillemets with U+202F while its own table specifies
+ * U+00A0, and two French publishers use U+00A0 for 6,254 of 6,256 guillemets
+ * across 2.4M characters. A rule with a literal replacement has to choose, and
+ * either choice rewrites correctly set text into the other convention. So the
+ * pattern matches only spacing that is wrong under *both* readings, and `choose`
+ * reads the text to decide which of the two the repair is spelled in.
+ *
+ * This is the one rule kind whose output depends on more than the match and its
+ * neighbours, which buys the property the alternative cannot have: `fix` never
+ * introduces a spelling the document was not already using.
+ *
+ * **`choose` must be stable under its own fix**, or `normalize` is not
+ * idempotent. A `choose` that counts spellings has to break a tie toward a fixed
+ * side, so that applying the fix moves the count further toward the side already
+ * chosen rather than away from it. `test/packs.test.ts` asserts idempotence per
+ * rule and per pack, and does not care why it holds.
  */
-export function detectRule(spec: {
+export function conformRule(spec: {
   id: string;
   summary: string;
   cite: string;
   severity?: Severity;
   pattern: RegExp;
-  /** Narrow the raw pattern matches. Use when a regex can express the candidate
-   * but not the defect, which is most of the time for a check-only rule. */
-  refine?: (match: RegExpExecArray, value: string) => Match | null;
+  /** The spelling this text should be repaired in. Called once per value. */
+  choose: (value: string) => string;
 }): Rule {
-  const { id, summary, cite, pattern, refine } = spec;
+  const { id, summary, cite, pattern, choose } = spec;
   assertGlobal(pattern, id);
   return {
     id,
@@ -175,9 +195,53 @@ export function detectRule(spec: {
     cite,
     severity: spec.severity ?? 'error',
     find: (value) => {
+      const replacement = choose(value);
+      return matches(pattern, value).filter(
+        (m) => value.slice(m.index, m.index + m.length) !== replacement,
+      );
+    },
+    // A replacer function rather than a replacement string, so a `$` in whatever
+    // `choose` returns is a dollar sign and not a substitution. `replaceRule` can
+    // reject that at construction; here the value does not exist until call time.
+    fix: (value) => {
+      const replacement = choose(value);
+      return value.replace(fresh(pattern), () => replacement);
+    },
+  };
+}
+
+/**
+ * A rule that reports and does not rewrite.
+ *
+ * Reach for this when the repair needs information the pattern does not have.
+ * The Spanish opening-mark rules are the case that shaped the type: the defect
+ * is unambiguous and its location is not.
+ */
+export function detectRule<S = undefined>(spec: {
+  id: string;
+  summary: string;
+  cite: string;
+  severity?: Severity;
+  pattern: RegExp;
+  /** Computed once per value, before any match is examined, and handed to every
+   * `refine` call. Reach for this when whether a match is a defect depends on
+   * the rest of the value: surveying the whole value inside `refine` is
+   * quadratic in its length, and a value here is a whole document. */
+  survey?: (value: string) => S;
+  refine?: (match: RegExpExecArray, value: string, survey: S) => Match | null;
+}): Rule {
+  const { id, summary, cite, pattern, survey, refine } = spec;
+  assertGlobal(pattern, id);
+  return {
+    id,
+    summary,
+    cite,
+    severity: spec.severity ?? 'error',
+    find: (value) => {
+      const surveyed = (survey ? survey(value) : undefined) as S;
       const out: Match[] = [];
       for (const m of value.matchAll(fresh(pattern))) {
-        const kept = refine ? refine(m, value) : { index: m.index, length: m[0].length };
+        const kept = refine ? refine(m, value, surveyed) : { index: m.index, length: m[0].length };
         if (kept) out.push(kept);
       }
       return out;
@@ -204,6 +268,11 @@ export const NO_BREAK = ' ';
  * and Unicode encodes them separately, so a pack that used one for both would be
  * wrong in a way no reader could see. */
 export const NARROW_NO_BREAK = ' ';
+/** U+2009, the thin space. The trap in this family: it is the right *width* and
+ * the wrong breaking behaviour, so a proof looks correct and the line comes
+ * apart in a browser. 18 of them sit inside guillemets in the French corpora,
+ * which is why the rules name it rather than treating it as an ordinary space. */
+export const THIN = String.fromCharCode(0x2009);
 /** U+2019, the right single quotation mark, used as the French apostrophe. */
 export const RIGHT_SINGLE_QUOTE = '’';
 
@@ -220,7 +289,7 @@ export function reveal(text: string): string {
   return JSON.stringify(text)
     .replaceAll(NO_BREAK, '<NBSP>')
     .replaceAll(NARROW_NO_BREAK, '<NNBSP>')
-    .replaceAll(' ', '<THINSP>')
+    .replaceAll(THIN, '<THINSP>')
     .replaceAll(RIGHT_SINGLE_QUOTE, '<RSQUO>')
     .replaceAll('«', '<LAQUO>')
     .replaceAll('»', '<RAQUO>');

@@ -67,13 +67,14 @@ you can rebuild them and compare fingerprints. `gates/README.md` records what
 each corpus is, what it exposes, and every finding class anyone has triaged.
 A rule change that moves a count is a change to that file too.
 
-**Two of the gates you cannot run, and that is expected rather than a broken
-checkout.** The `de-DE` corpus and the whole French reproduction gate read from a
-private working tree, so `gate-findings.ts` will report `grundschutz-2023-de` as
-absent and `gate-fr-reproduction.ts` will not start. Run what you can, say in the
-pull request what you could not run, and a maintainer runs the rest. An unrun
-gate stated plainly is fine; an unrun gate left unmentioned is not.
-`gates/README.md` has the table of which is which.
+**One gate you cannot run, and that is expected rather than a broken checkout.**
+The findings gate above runs anywhere: every corpus rebuilds from a committed URL
+list. The French *reproduction* gate does not, because it diffs the pack against
+a prior implementation that lives in a private working tree and is not published,
+so `gate-fr-reproduction.ts` will not start. Run what you can, say in the pull
+request what you could not run, and a maintainer runs the rest. An unrun gate
+stated plainly is fine; an unrun gate left unmentioned is not. `gates/README.md`
+explains why that one is different in kind from an unrebuildable corpus.
 
 If you add a language, it needs a corpus **before** the release, not after. A
 language whose rules have never met real published text has not been reviewed,

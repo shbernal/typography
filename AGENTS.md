@@ -29,11 +29,12 @@ pnpm gates:verify   # the release gates.
 ```
 
 The corpora are third-party text and are gitignored. `pnpm corpus` reconstructs
-four of the six from the committed URL lists. The other two, the `de-DE`
-`grundschutz-2023-de` registry and everything the French reproduction gate reads,
-live in the private consumer tree that `--consumer` points at, defaulting to
-`../translation-agents`. Off that machine those two cannot be run, which
-`gates/README.md` states in a table rather than leaving to be discovered.
+all eight corpora from the committed URL lists, so `pnpm gates:verify` needs a
+network and nothing else. The French *reproduction* gate is the exception and is
+different in kind: it reads both its corpora and the prior implementation it
+diffs against out of a private consumer tree at `../translation-agents`, so off
+that machine it cannot run at all. `gates/README.md` states this rather than
+leaving it to be discovered.
 
 ## The rules that must not be broken
 
@@ -93,12 +94,33 @@ how a corpus splits invisibly. Bumping a pack version is a CHANGELOG entry.
 ## The gates
 
 `gates/README.md` owns this and is worth reading before touching a rule. In
-short: French's gate is a byte-for-byte **reproduction** of the implementation it
-was extracted from; German's and Spanish's are a **findings triage** over
-professionally typeset text, because sloppy text measures recall (never in doubt)
-while typeset text measures the false-positive rate (the actual failure mode).
-Counts are committed, corpora are not, and every release after the first reviews
-a delta.
+short: French has a byte-for-byte **reproduction** gate against the
+implementation it was extracted from, and every language including French has a
+**findings triage** over professionally typeset text, because sloppy text
+measures recall (never in doubt) while typeset text measures the false-positive
+rate (the actual failure mode). Counts are committed, corpora are not, and every
+release after the first reviews a delta.
+
+**The French guillemet rules are settled, and the way they were settled is the
+precedent to follow.** At `fr@0.1.0` they fired on every guillemet in 2.4M
+characters of correctly set French, wanting U+202F where the publishers use
+U+00A0. The fix was not to pick the other width. The citation does not fix a
+width at all, so the rules were narrowed to the spacing that is wrong under
+either reading and given `conformRule`, which repairs in whichever width the
+document already uses. `fr.mixed-no-break-space` reports a document that uses
+both, and does not repair it, because choosing is the author's call.
+
+Two lessons that generalise, and neither is about French:
+
+- **A pack must not assert what its citation does not fix.** When a standard
+  admits two spellings, rule on what is wrong under both and preserve the rest.
+  Consistency within a document is honestly assertable; a house preference
+  dressed as a national standard is the thing this repo exists not to do.
+- **A reproduction gate constrains a rule only where its corpus exercises it.**
+  Narrowing these rules looked blocked by `gates/fr-reproduction`, which pins
+  `normalize` byte for byte. It was not: that corpus contains no guillemet the
+  prior implementation had to re-space, so the gate still reports 0 differences.
+  Measure before concluding a gate forbids a change.
 
 **A zero is not automatically a result.** A rule reports nothing either because
 the publisher set the text correctly or because the text contained nothing it
