@@ -28,15 +28,19 @@ const MANIFEST = join(REPO, 'gates', 'corpora.json');
 const USER_AGENT =
   'shbernal-typography-corpus/0.1 (release gate; +https://github.com/shbernal/typography)';
 
-/** Milliseconds between requests to one host. Politeness, not performance, and
- * the number is set by the least tolerant publisher rather than by what the rest
- * would put up with.
+/** Milliseconds between requests. Every request, not every request to a given
+ * host: corpora are fetched one after another and each one draws from a single
+ * publisher, so consecutive requests share a host except at the seven corpus
+ * boundaries, and keying this by hostname would buy about ten seconds across the
+ * whole run in exchange for carrying the state to do it.
  *
- * 400 was too fast for one of them. At that rate the AEPD refused 17 of 116
- * requests from a GitHub runner, and with retries it still refused 7. A monthly
- * job has no deadline, so the whole corpus set taking half an hour costs nothing
- * and asking a data protection authority for 116 pages in 46 seconds costs
- * goodwill this repo is spending on somebody else's servers. */
+ * Politeness, not performance, and the number is set by the least tolerant
+ * publisher rather than by what the rest would put up with. 400 was too fast for
+ * one of them: at that rate the AEPD refused 17 of 116 requests from a GitHub
+ * runner, and with retries it still refused 7. A monthly job has no deadline, so
+ * spending six minutes waiting across the 241 documents costs nothing, and asking
+ * a data protection authority for 116 pages in 46 seconds costs goodwill this
+ * repo is spending on somebody else's servers. */
 const DELAY = 1_500;
 
 /** How many times to re-ask after a transient refusal, and how long to wait

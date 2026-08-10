@@ -36,6 +36,17 @@ permissions:
 jobs:
   rebuild:
     runs-on: ubuntu-latest
+
+    # A normal run is about ten minutes: 241 documents at the 1.5 s request rate
+    # is six minutes of deliberate waiting, plus the fetching itself. The retry
+    # ladder is what makes the tail long rather than fat - five rungs running to
+    # 90 s, per document - so a publisher having a bad day can stretch this by
+    # hours while still eventually succeeding. GitHub's default would let it run
+    # for six of them before saying anything, and a job that hangs until the
+    # default kills it reports as the same red X as the drift this exists to
+    # catch. An hour is several times a healthy run and a fraction of that.
+    timeout-minutes: 60
+
     steps:
       - name: Check out typography
         uses: actions/checkout@v5
