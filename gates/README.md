@@ -54,7 +54,7 @@ rebuilt from frozen URL lists by `node scripts/fetch-corpus.ts`.
 | `aepd-faq-es` | `es` | the Spanish data protection agency's FAQ |
 | `fundeu-rae-es` | `es` | 300 FundéuRAE articles |
 | `fedlex-bv-2024-de-ch` | `de-CH` | the Swiss Federal Constitution, consolidated 2024 |
-| `admin-ch-medien-de-ch` | `de-CH` | 37 Swiss federal press releases |
+| `admin-ch-medien-de-ch` | `de-CH` | 36 Swiss federal press releases |
 
 This was seven of eight until the `de-DE` corpus changed. It had been a
 `registry.sqlite3` extract of the Kompendium in a private consumer tree, on the
@@ -157,45 +157,67 @@ which is the argument for it. A rebuild that disagrees now prints the file name
 and the delta, and the investigation is a line of CI output rather than a
 hypothesis.
 
-## And one that is drift, still open
+## And one that was drift: a publisher withdrew a document
 
-**A publisher withdrew a document.** Rebuilding `admin-ch-medien-de-ch` on
-2026-08-15 returned 110,484 characters against a committed 111,812, and
-`gates/documents-*.json` named the two files immediately:
+Rebuilding `admin-ch-medien-de-ch` on 2026-08-15 returned 110,484 characters
+against a committed 111,812, and `gates/documents-*.json` named the two files
+immediately:
 
-    ~ 0030-newnsb-m5dXtFD2sVP_nBvBol-Tm.txt: 1400 -> 75 characters (-1325)
-    ~ 0035-newnsb-wcH3pK00kcgQRVfxKbItB.txt: 2154 -> 2151 characters (-3)
+    ~ newnsb-m5dXtFD2sVP_nBvBol-Tm.txt: 1400 -> 75 characters (-1325)
+    ~ newnsb-wcH3pK00kcgQRVfxKbItB.txt: 2154 -> 2151 characters (-3)
 
 The 75 characters are `Diese Seite existiert nicht oder die Medienmitteilung
 wurde zurückgezogen.` The Swiss federal administration retracted that press
 release, and the URL serves the notice at the same address rather than a 404. The
 other document lost three characters, which is a sub-editor.
 
-This is the failure mode `corpus.yml` names as a page starting to serve an
-interstitial, and the fetcher does not catch it: it fails a document that
-extracts to nothing, and an error page is not nothing. There is no threshold that
-would have caught this one and not fired on a short press release.
+**The two things this taught are worth more than the incident.** A withdrawal
+served at `200` is invisible to every check the fetcher had: it fails a document
+that extracts to nothing, and an error page is not nothing. And no length
+threshold separates a notice from a short press release, so there is no number
+that would have caught this one without firing on real text. The general answer
+is neither a threshold nor a smarter emptiness test. It is that
+`gates/documents-*.json` already records what that document is supposed to
+contain, and comparing against it catches a withdrawal, a redirect, an
+interstitial and a sub-editor with one mechanism and no guessing. That is what
+the manifest is for now, and it is why this section is closed rather than
+mitigated.
 
-What it costs is specific. This corpus is here because it is the one that carries
-Swiss guillemets, and its exposure went from 38 `«` and 38 `»` to 36 of each,
-plus both of its straight apostrophes. The guillemets were in the withdrawn
-document and not the edited one, since two pairs is four characters and the
-edited one lost three. The apostrophes could be in either.
+**The decision taken: the URL is dropped from the frozen list.** An error page in
+a corpus whose stated qualification is professionally typeset published text
+violates that qualification, and 75 characters that expose nothing do not pay for
+the ambiguity of leaving it in.
 
-**The decision is open and the two options both cost something.** Dropping the
-URL from the frozen list means the corpus no longer contains a page that is not
-professionally typeset published text, which is the qualification `corpora.json`
-sets; it also renumbers `0031` through `0036`, because a document's name is its
-index in the list, so most of the manifest churns for one deletion. Keeping it
-means 75 characters of error page sit in the gate's text, contributing nothing
-and exposing nothing.
+The costs are separated rather than summed, because the withdrawal and the
+`de-CH@0.2.0` rule change had to land in one baseline cut: the corpus on disk was
+already in the post-withdrawal state and the withdrawn text is not recoverable,
+so there was no intermediate state to sequence them through. The attribution is
+therefore measured, over the same text, three times:
 
-Until it is decided, `gates/findings-admin-ch-medien-de-ch.json` is deliberately
-stale: it was not regenerated with the other two German baselines when `de-CH`
-moved to `@0.2.0`, because a baseline cut now would fold a withdrawn press
-release into a rule change and neither would be legible afterwards. So
-`pnpm gates:verify` reports that one corpus as moved, for two reasons at once,
-and will keep doing so until someone chooses.
+| | Documents | Characters | `«` | `»` | `'` | Findings |
+|---|---|---|---|---|---|---|
+| Committed baseline, `de-CH@0.1.0` | 37 | 111,812 | 38 | 38 | 2 | 0 |
+| After the withdrawal, `de-CH@0.1.0` | 37 | 110,484 | 36 | 36 | 0 | 0 |
+| After the withdrawal, `de-CH@0.2.0` | 37 | 110,484 | 36 | 36 | 0 | 0 |
+| After dropping the URL, `de-CH@0.2.0` | 36 | 110,409 | 36 | 36 | 0 | 0 |
+
+So: **the withdrawal cost 1,328 characters, two guillemet pairs and both straight
+apostrophes**; **the rule change cost nothing**, which is the same answer it gave
+on the other two German corpora and for the same reason, that this text has no
+space before punctuation anywhere; and **dropping the URL cost 75 characters and
+nothing else at all**, which is the whole argument for dropping it.
+
+That also settles a question this section used to leave open. The guillemets were
+attributable to the withdrawn document by arithmetic, two pairs being four
+characters against a three-character edit, and the apostrophes were not. Running
+the old pack over the post-withdrawal corpus answers it directly: both straight
+apostrophes went with the withdrawn press release, and `de.apostrophe` now meets
+23 curly apostrophes and no straight ones.
+
+The last of it is that the corpus is thin enough for one document to matter this
+much. 37 documents carrying the entire `de-CH` guillemet evidence base means one
+withdrawal moved that exposure by 5%, and no amount of pinning fixes that; see
+the note on `de-CH` exposure under "Gaps the corpora found".
 
 ## What is committed, and what is not
 
@@ -277,7 +299,7 @@ register, the other carries the characters the first one lacks:
 |---|---|---|
 | `fr` | `openedition-journals-fr`: 2.0M characters, 3,102 opening guillemets | `theconversation-fr`: 99 question marks, which formal academic French barely uses |
 | `es` | `boe-lopdgdd-2018-es`, `fundeu-rae-es` | `aepd-faq-es`: 332 correctly opened interrogatives |
-| `de-CH` | `fedlex-bv-2024-de-ch`: 722 no-break spaces, no quotation marks at all | `admin-ch-medien-de-ch`: 38 Swiss guillemet pairs |
+| `de-CH` | `fedlex-bv-2024-de-ch`: 722 no-break spaces, no quotation marks at all | `admin-ch-medien-de-ch`: 36 Swiss guillemet pairs |
 
 `de-DE` is the one language with a single corpus, and it can be because the
 Kompendium carries both halves at once: 2.4M characters of one register, and 544
@@ -540,34 +562,39 @@ Two languages, two publishers, one conclusion: the split is between the domain
 and the language, not between right and wrong, which is why the rule is a
 **warning** and is not fixable.
 
-## `de-CH`, reviewed 2026-08-09 against two corpora
+## `de-CH`, reviewed 2026-08-09, press releases recut 2026-08-15
 
-311,131 characters. Swiss German is not a dialect note here: Switzerland sets
+309,728 characters. Swiss German is not a dialect note here: Switzerland sets
 `«Wort»` where Germany sets `»Wort«`, and drops the eszett, so this is a separate
 pack and it needs separate evidence.
 
 | Corpus | What it is | Values | Characters |
 |---|---|---|---|
 | `fedlex-bv-2024-de-ch` | Swiss Federal Constitution, German, consolidated 2024 | 1 | 199,319 |
-| `admin-ch-medien-de-ch` | 37 press releases of the Swiss federal administration | 37 | 111,812 |
+| `admin-ch-medien-de-ch` | 36 press releases of the Swiss federal administration | 36 | 110,409 |
 
 **Every rule fired zero times over both.** The exposure is what makes that
 readable:
 
 | Rule | Findings | Exposure |
 |---|---|---|
-| `de.apostrophe` | 0 | 23 `’`, 2 straight apostrophes |
+| `de.apostrophe` | 0 | 23 `’`, no straight apostrophes |
 | `de.space-before-punctuation` | 0 | 660 `;`, 183 `:` |
 | `de.straight-double-quote` | 0 | no straight double quotes at all |
-| `de-CH.guillemet-open-space` | 0 | 38 `«` |
-| `de-CH.guillemet-close-space` | 0 | 38 `»` |
-| `de-CH.inward-guillemets` | 0 | 38 `»`, none of them opening |
+| `de-CH.guillemet-open-space` | 0 | 36 `«` |
+| `de-CH.guillemet-close-space` | 0 | 36 `»` |
+| `de-CH.inward-guillemets` | 0 | 36 `»`, none of them opening |
 
 The Constitution contributes 722 no-break spaces and not one quotation mark,
 which is precisely why it is not the only Swiss corpus. The press releases
-contribute the guillemets: 38 pairs, correctly set, none of them German-facing.
+contribute the guillemets: 36 pairs, correctly set, none of them German-facing.
 
-This is the weakest of the four language reviews and saying so is the point. 38
+The press-release numbers are one document lighter than the 2026-08-09 review
+recorded, and both straight apostrophes went with it. That is the withdrawal in
+the section above rather than a change of judgement, and every finding count is
+unmoved either way.
+
+This is the weakest of the four language reviews and saying so is the point. 36
 guillemet pairs is an order of magnitude less exposure than German's 1,063 curved
 quotes or Spanish's 1,068 guillemets, so `de-CH`'s quotation rules are evidenced
 rather than well evidenced. A Swiss corpus with heavier quotation would improve
@@ -582,7 +609,7 @@ the other direction, a German `»Wort«` appearing in Swiss text, but there is n
 what surfaced it. Adding the rule is a judgement about `de-CH`'s scope rather
 than a bug fix, so it is recorded here rather than made quietly.
 
-**`de-CH`'s quotation exposure is thin**, as the section above says: 38 pairs
+**`de-CH`'s quotation exposure is thin**, as the section above says: 36 pairs
 against `de-DE`'s 1,063 marks. This is a corpus problem rather than a rule
 problem, and it is the one place where a zero in this file should be read as
 weaker evidence than the other zeros.
