@@ -84,6 +84,7 @@
     "test": "node --test \"test/**/*.test.ts\"",
     "corpus": "node scripts/fetch-corpus.ts",
     "gates": "node scripts/gate-fr-reproduction.ts && node scripts/gate-findings.ts",
+    "gates:status": "node scripts/gates-status.ts",
     "gates:verify": "node scripts/gate-fr-reproduction.ts --verify && node scripts/gate-findings.ts --verify"
   },
   "devDependencies": {
