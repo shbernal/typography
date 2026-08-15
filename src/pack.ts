@@ -286,13 +286,27 @@ export const RIGHT_SINGLE_QUOTE = '’';
  * a consumer rediscovers painfully, so it ships.
  */
 export function reveal(text: string): string {
-  return JSON.stringify(text)
-    .replaceAll(NO_BREAK, '<NBSP>')
-    .replaceAll(NARROW_NO_BREAK, '<NNBSP>')
-    .replaceAll(THIN, '<THINSP>')
-    .replaceAll(RIGHT_SINGLE_QUOTE, '<RSQUO>')
-    .replaceAll('«', '<LAQUO>')
-    .replaceAll('»', '<RAQUO>');
+  return (
+    JSON.stringify(text)
+      .replaceAll(NO_BREAK, '<NBSP>')
+      .replaceAll(NARROW_NO_BREAK, '<NNBSP>')
+      .replaceAll(THIN, '<THINSP>')
+      .replaceAll(RIGHT_SINGLE_QUOTE, '<RSQUO>')
+      // The curved quotation marks, named for the same reason as the spaces and
+      // added when `nl` arrived. U+2018 and U+2019 differ by which way the mark
+      // curls, which at a report's font size is nothing, and `nl.apostrophe`
+      // converts one into the other while `nl.mixed-quotation-marks` reports
+      // which of them opened a quotation. Before this, an excerpt of `‘nee’`
+      // printed the closing mark as `<RSQUO>` and the opening one raw, so the
+      // one rule whose entire subject is telling two marks apart showed a
+      // reader only one of them.
+      .replaceAll('‘', '<LSQUO>')
+      .replaceAll('“', '<LDQUO>')
+      .replaceAll('”', '<RDQUO>')
+      .replaceAll('„', '<BDQUO>')
+      .replaceAll('«', '<LAQUO>')
+      .replaceAll('»', '<RAQUO>')
+  );
 }
 
 /** A revealed window around a match, for a report line. */

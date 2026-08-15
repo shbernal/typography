@@ -20,7 +20,7 @@ pnpm gates:verify   # the release gates
 ```
 
 The corpora are third-party text and are gitignored. `pnpm corpus` reconstructs
-all eight corpora from the committed URL lists, so `pnpm gates:verify` needs a
+all nine corpora from the committed URL lists, so `pnpm gates:verify` needs a
 network and nothing else. The French *reproduction* gate is the exception: it reads both
 its corpora and the prior implementation it diffs against out of a private
 consumer tree at `../translation-agents`, so off that machine it cannot run at
@@ -74,7 +74,7 @@ hostile is required to produce one; an indented block or a wrapped table will do
 without a `(?<!ANY_SPACE)` in front of it every character of a run starts a fresh
 scan that consumes to the end of it.
 
-Rules in three of the four packs had one or the other, and the German and
+Rules in three of the four packs then shipping had one or the other, and the German and
 Spanish ones were found only after the French one had been fixed and written up
 as French-only. So: write the exception as a lookahead at the position where the
 run starts, take the run once, and do not enumerate the defects as alternatives.
@@ -92,10 +92,28 @@ than a benchmark.
    comment density expected: every narrowing says what it is protecting.
 2. A tag is as specific as the convention requires, and no more.
 3. Register it in `src/check.ts`'s `packs` and add a subpath export in
-   `package.json`.
+   `package.json`. Re-export it from `src/index.ts` too.
 4. A corpus in `gates/corpora.json` **before** the release, not after. A language
    whose rules have never met real published text has not been reviewed,
    whatever the unit tests say.
+5. A `skills/typography-check/references/<primary-subtag>.md`, linked from
+   `SKILL.md`, and the language named in the skill's frontmatter description.
+   `test/skill.test.ts` derives all three from the registry and will fail until
+   they exist, which is the intended order: the pack first, then its documents.
+
+**Check what the standard declines to say, not only what it says.** `nl` is the
+worked example. Dutch has no rule about which quotation marks to use, so the pack
+has none, and the citation that says there is no rule is the same one that
+licenses `nl.mixed-quotation-marks`. A pack must not assert what its citation
+does not fix, and the absence of a rule is sometimes the most citable thing about
+a language.
+
+**Expect the new language to break a test that was never checking anything.**
+Adding `nl` exposed a skill test whose assertion passed for every pack as long as
+the description mentioned any one of three hardcoded languages. Anything in the
+suite that names `fr`, `es`, `de-DE` and `de-CH` in a literal is a candidate: it
+does not fail when a language is added, it just stops covering it. Derive from
+`packs` instead.
 
 ## Changing a rule
 

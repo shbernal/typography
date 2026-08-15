@@ -6,7 +6,7 @@ where to read before you touch a rule.
 
 ## What this project is
 
-Orthotypography rules for French, Spanish and German, published as
+Orthotypography rules for French, Spanish, German and Dutch, published as
 `@shbernal/typography`. A pack is a list of rules from a standards body; each
 rule cites its source. There is a library, a `typocheck` CLI, and a skill in
 `skills/` that ships from this same repo.
@@ -31,7 +31,7 @@ pnpm gates:verify   # the release gates
 here that needs the corpora on disk: how much of each corpus's declared exposure
 sits in a single document. Read it before concluding that a count is evidence.
 
-All eight corpora are gitignored and rebuildable from committed URL lists. The
+All nine corpora are gitignored and rebuildable from committed URL lists. The
 French *reproduction* gate is the exception: it reads a private tree at
 `../translation-agents`, so off that machine it cannot run at all.
 
@@ -51,7 +51,7 @@ French *reproduction* gate is the exception: it reads a private tree at
 - **A pattern must have one way to match, and a pattern that starts with a space
   quantifier must be anchored to the start of the run.** This one has cost real
   time: an ambiguous French guillemet rule took 15 seconds on a padded
-  3,000-space line, and three of the four packs had a version of the problem.
+  3,000-space line, and three of the four packs then shipping had a version of it.
   `docs/development.md` works through it; `test/perf.test.ts` holds every pack
   to linear time, including the two `withWidth` derives.
 - **Never paste an invisible character into a test or a doc.** U+0020, U+00A0,

@@ -9,6 +9,7 @@ owns the detail, including where the evidence is thin.
 | `fr` | 2,409,504 characters: three OpenEdition journals and The Conversation France | 708 findings, 355 of them false and all from one check-only rule |
 | `de-DE` | 2,393,884 characters: the BSI IT-Grundschutz-Kompendium 2023 | zero error-severity findings, 128 warnings, 18 of them mismatched quotation pairs |
 | `es` | 1,106,553 characters: Spain's official gazette, the data protection agency's FAQ, 300 FundéuRAE articles | one false positive, and it is an English phrase quoted inside Spanish |
+| `nl` | 880,407 characters: 300 Taaladvies.net advice articles | twelve findings, all twelve real, and ten are one smart-quote defect |
 | `de-CH` | 698,683 characters: the Swiss Federal Constitution and 153 federal press releases | eight findings over 198 Swiss guillemet pairs, six of them real |
 
 ## Why published text and not unit tests
@@ -83,6 +84,15 @@ not contain it.
   whole of that evidence. They were also thin, at 38 guillemet pairs against
   `de-DE`'s 1,063 curved quotes, until the corpus was taken to 153 documents and
   198 pairs on 2026-08-15; the single-publisher dependency is what remains.
+- `nl` is the thinnest row and new in kind. It has one corpus, which is also the
+  publisher of one of its two citations, so a Dutch rule cited to Taaladvies and
+  measured against Taaladvies has been checked for agreement with its author
+  rather than for correctness. The ten real findings are the partial answer,
+  since they are that publisher disagreeing with itself.
+- `nl.ij-capital` and `nl.apostrophe-after-symbol` have **no exposure at all**:
+  the Dutch corpus contains no IJ digraph and no digit-plus-apostrophe, so their
+  zeros are vacuous rather than clean. Both are cited and unit-tested and neither
+  has met a line of published Dutch.
 - `de-CH` has no rule for a German `„Wort“` appearing in Swiss text, though it
   has one for the opposite direction.
 - `de-CH.inward-guillemets` reads a footnote marker after a closing guillemet as

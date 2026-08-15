@@ -57,6 +57,12 @@ export const EXPOSURE: readonly (readonly [string, string])[] = [
   ['U+201E „', '„'],
   ['U+201C “', '“'],
   ['U+201D ”', '”'],
+  // The Dutch pack is the first to have a rule about which mark *opens* a
+  // quotation rather than about the space beside it, and U+2018 is one of the
+  // three it ballots over. Without it here, `taaladvies-nl` could report zero
+  // `nl.mixed-quotation-marks` findings with nothing in the exposure block to
+  // say whether the corpus contained a single quotation at all.
+  ['U+2018 ‘', '‘'],
   ['U+00BF ¿', '¿'],
   ['U+00A1 ¡', '¡'],
   ['?', '?'],

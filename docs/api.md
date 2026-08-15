@@ -11,10 +11,10 @@ const remaining = unfixable(findings);     // the ones needing a decision
 const cleaned = fr.normalize(text);        // only the safe subset
 ```
 
-Subpath exports are `/fr`, `/es`, `/de-DE` and `/de-CH`, so a consumer takes one
-language and not four. The root export carries the protocol, the runner and the
-registry, and importing it pulls all four packs, which costs a few kilobytes of
-regular expressions and no dependencies.
+Subpath exports are `/fr`, `/es`, `/de-DE`, `/de-CH` and `/nl`, so a consumer
+takes one language and not five. The root export carries the protocol, the runner
+and the registry, and importing it pulls all five packs, which costs a few
+kilobytes of regular expressions and no dependencies.
 
 ### The runner
 
@@ -62,6 +62,10 @@ import { NARROW_NO_BREAK, NO_BREAK, reveal } from '@shbernal/typography';
 reveal(`«${NARROW_NO_BREAK}mot${NO_BREAK}»`);
 // '"<LAQUO><NNBSP>mot<NBSP><RAQUO>"'
 
+// The curved quotation marks are named too, which matters most in Dutch: the
+// apostrophe and the opening single quote differ only by which way they curl.
+reveal('‘nee’');
+// '"<LSQUO>nee<RSQUO>"'
 ```
 
 ### French: corpus-wide width

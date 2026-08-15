@@ -14,6 +14,7 @@
     "U+201E „": 1,
     "U+201C “": 345,
     "U+201D ”": 336,
+    "U+2018 ‘": 29,
     "U+00BF ¿": 2,
     "U+00A1 ¡": 0,
     "?": 362,
@@ -54,9 +55,9 @@
         "questionsdecommunication-43180.txt  \", YouTube, 29<NBSP>janv. Accès : https://www.youtube.com\"",
         "questionsdecommunication-43559.txt  \"024, <LAQUO><NBSP>Enquête électorale : les ressorts du vote RN\"",
         "questionsdecommunication-43559.txt  \"ections législatives 2024 : le profil des électeurs\"",
-        "questionsdecommunication-43928.txt  \"polysémique. Quand je dis : ‘je vais<RSQUO> écouter ‘les \"",
+        "questionsdecommunication-43928.txt  \"polysémique. Quand je dis : <LSQUO>je vais<RSQUO> écouter <LSQUO>les \"",
         "questionsdecommunication-43928.txt  \"e caractéristique majeure : l<RSQUO>absence de définition\"",
-        "questionsdecommunication-43928.txt  \"polysémique. Quand je dis : ‘je vais<RSQUO> écouter ‘les \""
+        "questionsdecommunication-43928.txt  \"polysémique. Quand je dis : <LSQUO>je vais<RSQUO> écouter <LSQUO>les \""
       ]
     },
     "fr.space-before-high-punctuation": {
@@ -139,10 +140,10 @@
       "findings": 6,
       "units": 2,
       "samples": [
-        "questionsdecommunication-43477.txt  \"uffe<NBSP>: <LAQUO><NBSP>Là, “mon gros” [\\\"Dicker\\\" en allemand], ça \"",
-        "questionsdecommunication-43477.txt  \"<LAQUO><NBSP>Là, “mon gros” [\\\"Dicker\\\" en allemand], ça lui all\"",
-        "questionsdecommunication-43477.txt  \"uffe<NBSP>: <LAQUO><NBSP>Là, “mon gros” [\\\"Dicker\\\" en allemand], ça \"",
-        "questionsdecommunication-43477.txt  \"<LAQUO><NBSP>Là, “mon gros” [\\\"Dicker\\\" en allemand], ça lui all\"",
+        "questionsdecommunication-43477.txt  \"uffe<NBSP>: <LAQUO><NBSP>Là, <LDQUO>mon gros<RDQUO> [\\\"Dicker\\\" en allemand], ça \"",
+        "questionsdecommunication-43477.txt  \"<LAQUO><NBSP>Là, <LDQUO>mon gros<RDQUO> [\\\"Dicker\\\" en allemand], ça lui all\"",
+        "questionsdecommunication-43477.txt  \"uffe<NBSP>: <LAQUO><NBSP>Là, <LDQUO>mon gros<RDQUO> [\\\"Dicker\\\" en allemand], ça \"",
+        "questionsdecommunication-43477.txt  \"<LAQUO><NBSP>Là, <LDQUO>mon gros<RDQUO> [\\\"Dicker\\\" en allemand], ça lui all\"",
         "questionsdecommunication-43928.txt  \" approaches? (RQ3)\\nWhere \\\"désinformation\\\" is undefi\"",
         "questionsdecommunication-43928.txt  \"Q3)\\nWhere \\\"désinformation\\\" is undefined, are there \""
       ]

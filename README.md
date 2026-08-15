@@ -6,7 +6,7 @@
 [![npm](https://img.shields.io/npm/v/@shbernal/typography)](https://www.npmjs.com/package/@shbernal/typography)
 [![No dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
 
-Orthotypography for French, Spanish and German, as data rather than as advice.
+Orthotypography for French, Spanish, German and Dutch, as data rather than as advice.
 
 ```bash
 pnpm add @shbernal/typography
@@ -25,10 +25,10 @@ and `’` are a font away from each other.
 Three things follow, and they are what this package is:
 
 **Rules come from the body that decides them, and each one cites its source.**
-Imprimerie nationale for French, RAE for Spanish, Duden for German. A rule with
-no citation does not ship. That is the line between a national standard and a
-house style, and English gets no pack for exactly that reason: the Oxford comma
-is not a standard.
+Imprimerie nationale for French, RAE for Spanish, Duden for German, the
+Nederlandse Taalunie for Dutch. A rule with no citation does not ship. That is
+the line between a national standard and a house style, and English gets no pack
+for exactly that reason: the Oxford comma is not a standard.
 
 **Checking and fixing are different rule sets.** A Spanish sentence ending in `?`
 with no opening `¿` is unambiguously wrong and *not* safely fixable, because
@@ -43,7 +43,9 @@ so the French pack rules on the spacing that is wrong under both readings and
 keeps whichever width a document already uses. The first version did not, and it
 "corrected" 6,462 guillemets in 2.4M characters of professionally typeset
 French. [How that was found and fixed](docs/evidence.md) is the most useful thing
-in this repo.
+in this repo. Dutch is the same principle arrived at from the other side: its
+standard declines to choose between two systems of quotation mark, so the pack
+declines too, and reports only the documents that use both.
 
 ## What it is good for
 
@@ -68,14 +70,14 @@ the fact that these findings are invisible and must be quoted escaped.
 **Reading the rules.** A pack is a plain array of rules with summaries and
 citations. `import { fr } from '@shbernal/typography/fr'` and print it.
 
-## Four conventions, not one with a locale flag
+## Five conventions, not one with a locale flag
 
-| | French | Spanish | German (DE/AT) | German (CH) |
-|---|---|---|---|---|
-| Quotation marks | `« … »` | `«…»` | `»…«` | `«…»` |
-| Space inside them | **required**, U+00A0 or U+202F | forbidden | forbidden | forbidden |
-| Space before `; : ! ?` | **required** | forbidden | forbidden | forbidden |
-| Opening marks | none | `¿` `¡`, **paired** | none | none |
+| | French | Spanish | German (DE/AT) | German (CH) | Dutch |
+|---|---|---|---|---|---|
+| Quotation marks | `« … »` | `«…»` | `»…«` | `«…»` | **no rule** |
+| Space inside them | **required**, U+00A0 or U+202F | forbidden | forbidden | forbidden | n/a |
+| Space before `; : ! ?` | **required** | forbidden | forbidden | forbidden | forbidden |
+| Opening marks | none | `¿` `¡`, **paired** | none | none | none |
 
 French and Spanish use the identical pair of characters with opposite spacing.
 German points them the other way and Switzerland points them back. So there is
@@ -83,12 +85,24 @@ one module per convention, and **there is no bare `de`**: a pack id gets stamped
 onto a corpus, and a stamp that cannot tell a Swiss quotation from a German
 mistake is worse than no stamp at all.
 
+Dutch is the interesting column, and the blank is not a gap. The Taalunie's
+standard is a spelling standard and rules on neither spacing nor quotation marks,
+and its advice service says outright that there are no fixed rules for choosing
+between `‘…’` and `“…”` - and then recommends picking one and keeping to it. So
+`nl` asserts no system and instead reports a document that uses more than one.
+Its centre of gravity is the apostrophe, where Dutch is unusually demanding:
+`auto's`, `'s morgens`, `A4'tje`, `'s-Gravenhage`.
+
 ## Status
 
 `0.1.2`, and pre-1.0 is the accurate thing to say. Every language has been run
 past real published text: 2.4M characters of French, 2.4M of German, 1.1M of
-Spanish, 699k of Swiss German. French additionally reproduces the implementation
-it was extracted from byte for byte over 11,058 real values.
+Spanish, 880k of Dutch, 699k of Swiss German. French additionally reproduces the
+implementation it was extracted from byte for byte over 11,058 real values.
+
+Dutch is the newest and the thinnest: one corpus, which is also one of its two
+citations, and two of its rules have no exposure in it at all. That is recorded
+in [gates/README.md](gates/README.md) rather than smoothed over.
 
 [docs/evidence.md](docs/evidence.md) has the table, what each number is worth,
 and what is thin. Zero findings can mean the text was set correctly or that it

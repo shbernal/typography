@@ -110,7 +110,7 @@ const BATCH_MS = 25;
  * then the other puts anything that changes between the two phases - a frequency
  * step, a co-tenant waking up, a GC cycle - undiluted into the ratio, because it
  * moves one measurement and not the other. Sampling both across the same window
- * moves them together. Measured over fifteen trials of all four packs, that took
+ * moves them together. Measured over fifteen trials of the four packs then shipping, that took
  * the worst ratio seen from 4.8x down to 3.9x, against a bound of 5x, and put
  * every pack's median between 3.1x and 3.3x, which is what linear looks like
  * here. */

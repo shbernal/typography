@@ -152,6 +152,22 @@
         "U+00BB »"
       ],
       "note": "Press releases of the Swiss federal administration, German edition, set to the Federal Chancellery house standard. This is the corpus that carries Swiss guillemets, which the Constitution does not contain, and it is the only de-CH corpus carrying any quotation mark, any apostrophe or any question mark at all: every de-CH quotation rule and both shared German rules about quoting rest on this text alone. It was 36 documents until 2026-08-15, which was thin enough that one press release the publisher withdrew moved the guillemet exposure by 5%, and a quarter of that exposure sat in a single document. The 117 added are the same publisher, the same newsroom and the same house standard, taken in URL order from the Internet Archive's index of it and blind to what any of them says: picking press releases by whether they quote anything would make the guillemet count a property of the picking. Two documents were then dropped, one speech delivered in English and one in Slovenian, both published in the German newsroom and neither German prose. That is the same exclusion theconversation-fr makes and it costs the corpus its only findings from a foreign-language document, which is the point: this corpus measures what German rules do to German somebody set properly."
+    },
+    {
+      "id": "taaladvies-nl",
+      "lang": "nl",
+      "fetch": {
+        "urls": "gates/sources/taaladvies-nl.urls",
+        "format": "wp-json"
+      },
+      "exposes": [
+        "U+2018 ‘",
+        "U+2019 ’",
+        ":",
+        ";",
+        "?"
+      ],
+      "note": "Taaladvies.net, the advice service the Nederlandse Taalunie runs with the Instituut voor de Nederlandse Taal and Onze Taal. Same shape and same argument as fundeu-rae-es: the publisher's subject is correct Dutch, so its own typography is about as well set as published Dutch gets, and the 300 posts frozen into this list carry one straight apostrophe in 880,000 characters and no straight double quote at all. That absence is also why this corpus is here rather than a newspaper. NOS and VRT set their quotations with straight marks, so a Dutch news corpus would report a true positive on nearly every quotation, which measures recall rather than the false-positive rate these rules actually have; the official gazette is set properly and holds almost no apostrophes, two in twenty thousand characters, so it exposes nothing this pack is about; and DBNL is transcription rather than typesetting, which the header above disqualifies by name. What this corpus does not carry is the gap to close before nl ships, and it is visible in `exposes` by what is missing: no IJ digraph, so nl.ij-capital rests on no text at all, and no apostrophe after a digit, so nl.apostrophe-after-symbol rests on none either. Three of the 300 posts are about where a punctuation mark goes relative to a quotation mark, and so print quotation marks as their subject rather than to quote anything; they are kept, because dropping them before measuring would be picking by content."
     }
   ]
 }

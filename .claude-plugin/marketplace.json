@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "shbernal-typography",
-  "description": "Orthotypography checkers for French, Spanish and German.",
+  "description": "Orthotypography checkers for French, Spanish, German and Dutch.",
   "owner": {
     "name": "shbernal",
     "url": "https://github.com/shbernal"
@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "typography-check",
-      "description": "Check or fix French, Spanish and German orthotypography against Imprimerie nationale, RAE and Duden.",
+      "description": "Check or fix French, Spanish, German and Dutch orthotypography against Imprimerie nationale, RAE, Duden and the Taalunie.",
       "category": "writing",
       "tags": ["typography", "i18n", "l10n", "french", "spanish", "german"],
       "source": {

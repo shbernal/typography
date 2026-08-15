@@ -2,6 +2,72 @@
 
 ## Unreleased
 
+**A fifth pack: `nl@0.1.0`, Dutch, per the Nederlandse Taalunie.** Subpath export
+`@shbernal/typography/nl`. Seven rules, two of them fixable.
+
+- **It has no rule about which quotation marks Dutch uses, and that is the
+  point.** The Taalunie's Technische Handleiding is a spelling standard and rules
+  on neither spacing nor quotation marks. Taaladvies.net, which covers both, says
+  there are no fixed rules for choosing between `‘…’` and `“…”` and then
+  recommends picking one system and keeping to it. So `nl` asserts no system and
+  ships `nl.mixed-quotation-marks`, which reports a document using more than one.
+
+  This is `fr.mixed-no-break-space` reached from the other direction, and it is
+  the second instance of that shape, which is what makes it a pattern rather than
+  a French one-off. French had to *infer* its consistency claim from a standard
+  that specifies one width and typesets another; Dutch is told in a sentence.
+
+- **There is no `withStyle`, and the reason is measured.** `src/index.ts` had said
+  that if a second language ever admitted two spellings, that is when `withWidth`
+  would be generalised. A second language now does, and only half of the shape
+  travelled. Imposing one no-break space is a substitution; imposing one quotation
+  system is not, because U+2019 is the closing single quotation mark *and* the
+  apostrophe. In the Taalunie's own 427,000-character document there are 537 of
+  them, of which 144 close a quotation and 393 are apostrophes, so a harmoniser
+  would retype 393 apostrophes as closing double quotes.
+
+- **`nl.apostrophe` also converts U+2018**, which no other pack does. Between two
+  letters a left single quotation mark cannot be opening anything, so it can only
+  be a smart-quote pass that turned the wrong way.
+
+- **`nl.apostrophe-elision` is the rule no other language here needs.** Dutch
+  elides at the *front* of a word - `'s morgens`, `'t huis`, `'s-Gravenhage` - and
+  that is the one position where an apostrophe and an opening single quotation
+  mark are the same character in the same place. It is safe to fix only because
+  the elided words are a closed set and a space or hyphen has to close them:
+  `'strand'` fails on the second test and is left alone.
+
+- **The gate found the defect the design had split along.** Against 880,407
+  characters of Taaladvies.net, `nl.apostrophe` reports **zero** and
+  `nl.apostrophe-elision` reports **ten**, every one of them U+2018 where U+2019
+  belongs and every one word-initial. Three of the five documents carry the
+  correct form within a line of the wrong one. That is a smart-quote algorithm,
+  which has a letter to look at mid-word and nothing to look at at the start of
+  one - so the two rules turn out to divide along the seam of the actual defect,
+  which was not designed in.
+
+- **One corpus: `taaladvies-nl`**, 300 posts, 880,407 characters, one straight
+  apostrophe in the lot. Newspapers were measured and rejected because NOS and
+  VRT set quotations with straight marks; the official gazette because it holds
+  two apostrophes in twenty thousand characters; DBNL because it is transcription.
+  `nl.ij-capital` and `nl.apostrophe-after-symbol` have no exposure in it at all
+  and are shipped unevidenced, which `gates/README.md` records rather than hides.
+
+- **`reveal` now names the curved quotation marks**, `<LSQUO>`, `<LDQUO>`,
+  `<RDQUO>` and `<BDQUO>`, alongside the spaces and `<RSQUO>` it already named.
+  Dutch is what made this necessary and it was always wrong: an excerpt of
+  `‘nee’` printed the closing mark as `<RSQUO>` and the opening one raw, so the
+  one rule whose whole subject is telling two marks apart showed a reader only
+  one of them. Report excerpts change; no finding count does. The French corpus
+  samples move too, which is the same defect having been present all along.
+
+- **A test that had never checked anything.** `test/skill.test.ts` asserted that
+  the skill description names every language the tool ships, with an `||` clause
+  that passed whenever the description mentioned any one of French, Spanish or
+  German. Adding Dutch is what exposed it: `nl` shipped and the test stayed green.
+  The language list, the reference files and the pack-id pattern are now all
+  derived from the registry, so a sixth pack fails these before its docs exist.
+
 Two pack versions move: **`de-DE@0.2.0`** and **`de-CH@0.2.0`**. A German corpus
 checked under `@0.1.0` and one checked under `@0.2.0` were asked different
 questions about the same text, so the counts are not comparable and the stamp

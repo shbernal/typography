@@ -14,13 +14,17 @@ import { deCH } from './de-CH.ts';
 import { deDE } from './de-DE.ts';
 import { es } from './es.ts';
 import { fr } from './fr.ts';
+import { nl } from './nl.ts';
 import { excerptAt, type Finding, type TypographyPack } from './pack.ts';
 
 /** Every pack this package ships, in tag order.
  *
  * There is no bare `de`. German is two conventions and a tag that named neither
- * would be a stamp that lies about which one a corpus was set in. */
-export const packs: readonly TypographyPack[] = [deCH, deDE, es, fr];
+ * would be a stamp that lies about which one a corpus was set in. `nl` is bare
+ * for the same test read the other way: the Taalunie's spelling binds the
+ * Netherlands, Flanders and Suriname, so there is one convention for the tag to
+ * name. */
+export const packs: readonly TypographyPack[] = [deCH, deDE, es, fr, nl];
 
 /**
  * The pack for a BCP 47 tag, or undefined.

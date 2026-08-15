@@ -6,7 +6,7 @@ this file exists to prevent.
 | Gate | Language | Question | Script |
 |---|---|---|---|
 | Reproduction | `fr` | Does the pack produce byte-for-byte what the prior implementation produced? | `scripts/gate-fr-reproduction.ts` |
-| Findings | `fr`, `de-DE`, `de-CH`, `es` | Run over real published text, how many findings, and how many are false? | `scripts/gate-findings.ts` |
+| Findings | `fr`, `de-DE`, `de-CH`, `es`, `nl` | Run over real published text, how many findings, and how many are false? | `scripts/gate-findings.ts` |
 
 French has a prior implementation with output already in a corpus, so it can be
 diffed against something that exists. German and Spanish have neither, so there
@@ -42,8 +42,8 @@ could not. The reproduction gate cannot run in CI at all, for the reason below.
 
 ## Every corpus is rebuildable
 
-A gate you cannot re-run is worth less than one you can, so all eight corpora are
-rebuilt from frozen URL lists by `node scripts/fetch-corpus.ts`. 263 of the 357
+A gate you cannot re-run is worth less than one you can, so all nine corpora are
+rebuilt from frozen URL lists by `node scripts/fetch-corpus.ts`. 263 of the 360
 URLs are read from an archived capture rather than from the live page; see "Where
 the bytes come from" for which, and for what a frozen URL does not freeze.
 
@@ -57,6 +57,7 @@ the bytes come from" for which, and for what a frozen URL does not freeze.
 | `fundeu-rae-es` | `es` | 300 FundéuRAE articles |
 | `fedlex-bv-2024-de-ch` | `de-CH` | the Swiss Federal Constitution, consolidated 2024 |
 | `admin-ch-medien-de-ch` | `de-CH` | 153 Swiss federal press releases |
+| `taaladvies-nl` | `nl` | 300 Taaladvies.net advice articles |
 
 This was seven of eight until the `de-DE` corpus changed. It had been a
 `registry.sqlite3` extract of the Kompendium in a private consumer tree, on the
@@ -102,7 +103,7 @@ checkout. An unrun gate said plainly is fine.
 
 ## Two ways a rebuild disagrees with the baseline, neither of which is drift
 
-CI rebuilds all eight and verifies them. Its first two
+CI rebuilds all nine and verifies them. Its first two
 runs turned up both of the ways that can fail without anything having changed,
 and both are recorded here because the obvious response to either - re-baseline
 and move on - would quietly rewrite what the numbers in this file describe.
@@ -787,6 +788,97 @@ pairs is within sight of German's 1,063 curved quotes and Spanish's 1,068
 guillemets, where 36 was an order of magnitude short, and the largest share of it
 held by any single document fell from 25% to 8%.
 
+## `nl`, reviewed 2026-08-15 against `taaladvies-nl`
+
+880,407 characters, 300 advice articles from the service the Nederlandse Taalunie
+runs with the Instituut voor de Nederlandse Taal and Onze Taal. Twelve findings.
+
+| Rule | Findings | Values |
+|---|---|---|
+| `nl.apostrophe-elision` | 10 | 5 |
+| `nl.mixed-quotation-marks` | 2 | 2 |
+| every other `nl` rule | 0 | 0 |
+
+**All twelve are real, and the ten are one mechanism.** Every
+`nl.apostrophe-elision` finding is U+2018 where U+2019 belongs, and every one of
+them is word-initial: `‘k eens lekker`, `‘s-Hertogenbosch`, `‘r`, `‘ns`. Three of
+the five documents carry the correct U+2019 form of the same word within a line
+or two of the wrong one, and one prints `‘ns / ’s` in a single list.
+
+That pattern is a smart-quote pass, not a typist. An algorithm deciding whether
+`'` opens a quotation or stands in for a letter looks at what precedes it, and at
+the start of a word there is nothing there, so it turns the mark the wrong way.
+It is also exactly why `nl.apostrophe` reports **zero** across the same 880,407
+characters: mid-word the algorithm has a letter to look at and gets it right. The
+pack's two apostrophe rules split along the seam of the defect rather than along
+a grammatical category, and that was not designed in. The corpus found it.
+
+Worth stating plainly, because it is the strongest evidence this gate has
+produced for any pack: the Taalunie's own advice service mis-sets the Dutch
+word-initial apostrophe, in prose whose subject is correct Dutch.
+
+**The two `nl.mixed-quotation-marks` are both genuine mixtures.** One document
+opens two quotations with `“` and one with `‘`; the other does the reverse, two
+`‘` against one `“`. In each the minority mark is reported and the majority is
+left alone, which is the behaviour the rule claims. Against 863 `‘` and 3 `“` in
+the corpus overall, Taaladvies is overwhelmingly consistent and these are the two
+places it is not.
+
+**The zeros are worth reading individually**, since a zero is only evidence where
+the corpus exposes the rule:
+
+- `nl.space-before-punctuation`: 0 against 1,805 colons, 1,776 semicolons and 605
+  question marks. That is a real zero and a strong one. An earlier hand-rolled
+  extraction of the same posts reported 121 findings here, every one of them
+  manufactured by replacing inline tags with spaces so that `<b>ANS</b>:` became
+  `ANS :`. The number in the table is from `fetch-corpus.ts`, which does not do
+  that. The lesson is the one this file keeps relearning: a finding count is a
+  property of the extraction as much as of the rules.
+- `nl.straight-double-quote`: 0 against 0 straight double quotes. Vacuous, and
+  the exposure block says so.
+- `nl.ij-capital` and `nl.apostrophe-after-symbol`: 0 against **no exposure at
+  all**. Neither an IJ digraph nor a digit-plus-apostrophe occurs in this corpus.
+  These two rules are currently unevidenced; see the gaps below.
+
+**Fragility.** The best-distributed corpus here. Exposure spreads across 199 to
+291 of the 300 documents and the largest single document holds 1% to 4% of any
+declared mark, against 8% for `admin-ch-medien-de-ch` and 100% for the
+single-document corpora.
+
+### Why this corpus and not a newspaper
+
+Measured before it was chosen, and three obvious candidates failed the "well set"
+bar in three different ways:
+
+- **NOS and VRT set quotations with straight marks.** A Dutch news corpus would
+  report a true positive on nearly every quotation, which measures recall. Nobody
+  doubts recall.
+- **The official gazette is set properly and has no apostrophes**, two in twenty
+  thousand characters. It would expose nothing this pack is about, and this pack
+  is mostly about apostrophes.
+- **DBNL is transcription rather than typesetting**, 1,188 straight double quotes
+  in one text, and is disqualified by name further up this file.
+
+The Taalunie's own newsroom was measured too and rejected on the same bar: 19
+straight apostrophes against 11 curly across 45,590 characters, and no
+word-initial elision at all.
+
+### The citation weakness, recorded rather than hidden
+
+Two `nl` rules cite Taaladvies.net, which states that its advice has "geen kracht
+van wet of ander bindend karakter". That is weaker than the Lexique, the
+Ortografía or the Duden, and it is weaker on purpose: the Taalunie's Technische
+Handleiding is a spelling standard and rules on neither spacing nor quotation
+marks, so Taaladvies is the most authoritative statement that exists on Dutch
+punctuation because the treaty body declined to make one.
+
+The corpus and the citation are the same publisher, which is a real circularity
+and the same one `fundeu-rae-es` has for Spanish. It is worth naming: a rule
+cited to Taaladvies, measured against Taaladvies, reporting zero, has been
+checked for agreement with its author rather than for correctness. The ten
+findings above are the answer to that in this particular case, since they are the
+publisher disagreeing with itself.
+
 ## Gaps the corpora found and the packs do not close
 
 **`de-CH` has no rule for `„Wort“`.** `admin-ch-medien-de-ch` contains one `„`,
@@ -803,6 +895,22 @@ gone. One finding in 698,683 characters, check-only, so the cost is a glance;
 narrowing it to letters would stop it catching `»2. Weltkrieg«`, which is a real
 German setting. Recorded rather than fixed because the trade is a judgement and
 neither side of it is obviously right.
+
+**Two `nl` rules have no corpus at all.** `nl.ij-capital` and
+`nl.apostrophe-after-symbol` report zero against zero exposure: `taaladvies-nl`
+contains no IJ digraph and no digit-plus-apostrophe. Both rules are cited to the
+Technische Handleiding and unit-tested, and neither has been in front of a line
+of published Dutch. This is the sharper version of the single-corpus weakness
+below, and closing it needs a second `nl` corpus with place names and dates in it
+rather than more of the same publisher. Recorded here because a zero with no
+exposure is not a result, and the table above would otherwise read as though
+seven Dutch rules had been measured.
+
+**`nl` has one corpus, and it is also one of its two citations.** See the
+circularity note in the `nl` section. `de-DE` is single-corpus by design and the
+Kompendium can carry it alone; `nl` is single-corpus because a second qualifying
+Dutch source has not been found yet, which is a different situation wearing the
+same shape.
 
 **Six rules rest on a single corpus each.** `exposes` says which characters a
 corpus is here for, and comparing those declarations across the corpora of one
@@ -827,7 +935,10 @@ spread their declared marks across nearly every document at 6% to 10%. Three do
 not: `fundeu-rae-es` holds 29% of its 38 `¿` in one article, `aepd-faq-es` 22% of
 its straight quotes in one how-to page, and `admin-ch-medien-de-ch` 8% of its
 guillemets in one press release - which is the number that used to be 25%, and is
-what deepening that corpus was for.
+what deepening that corpus was for. `taaladvies-nl` is the other end of the
+scale at 1% to 4% across 199 to 291 of its 300 documents, which is what 300 short
+articles from one newsroom look like when every one of them is prose about
+language.
 
 ### Closed
 

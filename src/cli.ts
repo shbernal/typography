@@ -25,7 +25,7 @@ import type { Finding, TypographyPack } from './pack.ts';
 
 const version = (createRequire(import.meta.url)('../package.json') as { version: string }).version;
 
-const USAGE = `typocheck ${version} - orthotypography for French, Spanish and German
+const USAGE = `typocheck ${version} - orthotypography for French, Spanish, German and Dutch
 
   typocheck check --lang <tag> [options] <file...>
   typocheck fix   --lang <tag> [--write] [options] <file...>

@@ -1,6 +1,6 @@
 ---
 name: typography-check
-description: Check or fix French, Spanish and German orthotypography with the typocheck CLI - no-break spaces before French punctuation, guillemets and their spacing, the paired Spanish opening marks ¿ and ¡, German quotation marks, and straight apostrophes that should be U+2019. Use when validating or cleaning translated strings, a French, Spanish or German document, subtitle or UI copy, or when someone asks whether text follows Imprimerie nationale, RAE or Duden convention. Not a speller, grammar checker or style guide, and it does not translate.
+description: Check or fix French, Spanish, German and Dutch orthotypography with the typocheck CLI - no-break spaces before French punctuation, guillemets and their spacing, the paired Spanish opening marks ¿ and ¡, German quotation marks, Dutch apostrophes and mixed quotation systems, and straight apostrophes that should be U+2019. Use when validating or cleaning translated strings, a French, Spanish, German or Dutch document, subtitle or UI copy, or when someone asks whether text follows Imprimerie nationale, RAE, Duden or Taalunie convention. Not a speller, grammar checker or style guide, and it does not translate.
 ---
 
 # Typography check
@@ -42,7 +42,7 @@ Verbs and flags:
 |---|---|
 | `check` | report only. Never touches a file. The default thing to do. |
 | `fix --write` | apply the safe subset in place |
-| `--lang <tag>` | required: `fr`, `es`, `de-DE`, `de-CH` |
+| `--lang <tag>` | required: `fr`, `es`, `de-DE`, `de-CH`, `nl` |
 | `--json` | machine-readable findings |
 | `--strict` | make warnings fail too |
 | `langs` | list the packs and their standards |
@@ -60,7 +60,8 @@ sizes. If you paste raw output into a message, you will show the user two
 identical-looking strings and it will look completely fine.
 
 The tool already escapes them: `<NBSP>`, `<NNBSP>`, `<THINSP>`, `<RSQUO>`,
-`<LAQUO>`, `<RAQUO>`. **Quote the tool's excerpt, not the source text.**
+`<LSQUO>`, `<LDQUO>`, `<RDQUO>`, `<BDQUO>`, `<LAQUO>`, `<RAQUO>`. **Quote the
+tool's excerpt, not the source text.**
 
 ### 2. Some findings must not be fixed, and the report says which
 
@@ -77,6 +78,14 @@ yourself, and never suggest a `sed` that does.
 guillemets and U+202F in others. Both are admissible French and using both is
 not, so the finding is real, but which one the document should settle on belongs
 to whoever wrote it. Report the count and ask; do not harmonise on your own.
+
+`nl.mixed-quotation-marks` is the same kind with a sharper edge. Dutch has no
+rule about which quotation marks to use and an explicit recommendation to pick
+one system and keep to it, so the finding is about the document rather than about
+any one mark. **Do not harmonise it yourself even if the user asks for a quick
+substitution**: U+2019 is the closing single quotation mark *and* the apostrophe,
+so converting `‘…’` to `“…”` retypes every apostrophe in the text. In the
+Taalunie's own document that would be 393 of them.
 
 ### 3. `--write` is a separate decision from checking
 
@@ -130,6 +139,7 @@ or disputes a finding:
 - [references/fr.md](references/fr.md) - Imprimerie nationale
 - [references/es.md](references/es.md) - RAE
 - [references/de.md](references/de.md) - Duden, both regions
+- [references/nl.md](references/nl.md) - Nederlandse Taalunie
 
 ## What this is not
 
