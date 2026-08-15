@@ -85,9 +85,9 @@ rewrite, which is the behaviour to expect if a document turns out to be mixed.
 IT-Grundschutz-Kompendium 2023: zero error-severity findings, 128 warnings, 18 of
 them quotation pairs opened with `„` and closed with a straight quote.
 
-`de-CH` was reviewed against 311,131 characters, the Swiss Federal Constitution
-and 37 federal press releases: zero findings. **Read that zero carefully.** The
-Constitution contains no quotation marks at all, and the press releases carry 38
-Swiss guillemet pairs, which is an order of magnitude less exposure than the
-German corpus gives the German rules. `de-CH`'s quotation rules are evidenced
-rather than well evidenced.
+`de-CH` was reviewed against 698,683 characters, the Swiss Federal Constitution
+and 153 federal press releases: eight findings, six of them real. The Constitution
+contains no quotation marks and no apostrophes at all, so every `de-CH` quotation
+rule rests on the press releases, which carry 198 Swiss guillemet pairs. The two
+false ones are a French attachment title inside a German page, and a footnote
+marker read as an opening guillemet.

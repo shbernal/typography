@@ -31,11 +31,28 @@ says so.
 
 - **The release gate does not see this change, and that is the honest report.**
   `de.space-before-punctuation` scored zero on all three German corpora before
-  it and scores zero after. The zero is a real one rather than a vacuous one -
-  the Kompendium exposes 647 colons, the Constitution 637 semicolons - so what
-  it says is that federal German publishers do not put a space before
-  punctuation at all, in prose or in a URL. The corpora do not contain the shape
-  this change is about, and the evidence for it is the constructed case above.
+  it and zero after. The zero was a real one rather than a vacuous one - the
+  Kompendium exposes 647 colons, the Constitution 637 semicolons - so what it
+  said is that federal German publishers do not put a space before punctuation.
+  The corpora do not contain the shape this change is about, and the evidence
+  for it is the constructed case above.
+
+  It has since stopped being zero, for a reason that has nothing to do with a
+  URL. Deepening `admin-ch-medien-de-ch` from 36 press releases to 153 turned up
+  one finding, `Résumé : Cinquième rapport`, which is a French attachment title
+  sitting in an otherwise German page. French takes that space and German does
+  not, and the rule cannot see that the sentence changed language, which is why
+  it ships as `find` with no `fix`.
+
+- **`de-CH` has four and a half times the evidence it had.**
+  `admin-ch-medien-de-ch` went from 36 press releases to 153 and from 38 Swiss
+  guillemet pairs to 198, which is a corpus change and not a rule change: no
+  pack version moves for it and nothing was re-measured except by having more to
+  measure. The zeros did not survive. Eight findings over 698,683 characters of
+  federal Swiss German, six of them real, including French spacing inside Swiss
+  guillemets in a single sentence that also sets a second quotation correctly,
+  and a quotation opened with a straight `"` and closed with `»`.
+  `gates/README.md` reads all eight.
 
 ## 0.1.2
 

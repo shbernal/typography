@@ -2,9 +2,274 @@
   "corpus": "admin-ch-medien-de-ch",
   "documents": [
     {
+      "name": "newnsb--DS8cZ8ZIL0SidDpBwjRL.txt",
+      "characters": 3779,
+      "sha": "b47e0f18ad436c23"
+    },
+    {
+      "name": "newnsb--K0zZGz0WHc0mBBcvlStF.txt",
+      "characters": 6170,
+      "sha": "6a3d344aa94e12a7"
+    },
+    {
+      "name": "newnsb--L7PdfPMHTgqLJyBqF5by.txt",
+      "characters": 790,
+      "sha": "2dac224e492be932"
+    },
+    {
+      "name": "newnsb--PyADFB0yjQiVlbL9CP_z.txt",
+      "characters": 3659,
+      "sha": "f84b717069a4b311"
+    },
+    {
+      "name": "newnsb--Qj0rmKkKM0G.txt",
+      "characters": 1708,
+      "sha": "f03d01099cef1906"
+    },
+    {
+      "name": "newnsb--ZuXOVyTRsS0auMSsi-Na.txt",
+      "characters": 3092,
+      "sha": "e3d4735258c2f7df"
+    },
+    {
+      "name": "newnsb--aO-8gN6UQWJ70E9yMnU0.txt",
+      "characters": 3643,
+      "sha": "ef5acdf5c3443317"
+    },
+    {
+      "name": "newnsb--c5l4GMnmdTSs4Q0asIPw.txt",
+      "characters": 5197,
+      "sha": "6f6212bff037004b"
+    },
+    {
+      "name": "newnsb--kkfbu4nv218.txt",
+      "characters": 2610,
+      "sha": "d541d70a40e2be1a"
+    },
+    {
+      "name": "newnsb--pxZQoiKQLWJAq-Hj-bnL.txt",
+      "characters": 3867,
+      "sha": "41defd016af8c15f"
+    },
+    {
+      "name": "newnsb--uu4JD7NIwBcJtosyhJJy.txt",
+      "characters": 203,
+      "sha": "6f21b85cbba848d3"
+    },
+    {
+      "name": "newnsb--vbSMQwry06iCR89upt44.txt",
+      "characters": 4055,
+      "sha": "c45ff96b45f0c483"
+    },
+    {
+      "name": "newnsb--yNZ1tD0lWovYtv7X5YWp.txt",
+      "characters": 2453,
+      "sha": "7a49863a7b24e419"
+    },
+    {
+      "name": "newnsb-05OCMKFwymouJPy8DLkwm.txt",
+      "characters": 2560,
+      "sha": "cf4d894b9abb857d"
+    },
+    {
+      "name": "newnsb-06uaHOIkFcNkkgUt5vGn9.txt",
+      "characters": 2776,
+      "sha": "16856433b8bb9023"
+    },
+    {
+      "name": "newnsb-0E3f3Ht43grMZ1mJU2Eyg.txt",
+      "characters": 382,
+      "sha": "fef02a76f5769a18"
+    },
+    {
+      "name": "newnsb-0GrL4Q0yeik7OnQVPzxdz.txt",
+      "characters": 5987,
+      "sha": "ec14179c38e5fb54"
+    },
+    {
+      "name": "newnsb-0L6sb2rJFxkr.txt",
+      "characters": 2454,
+      "sha": "49887fe91720560c"
+    },
+    {
+      "name": "newnsb-0OlaFr19tVgt.txt",
+      "characters": 5230,
+      "sha": "a84b99dbb9fab338"
+    },
+    {
+      "name": "newnsb-0PNEf5nyXeOYeFWbSfG4v.txt",
+      "characters": 2020,
+      "sha": "0514c745f23299af"
+    },
+    {
+      "name": "newnsb-0TRBnCC9uSrdVZhFORMiT.txt",
+      "characters": 1885,
+      "sha": "1eb106c3bfa6b70a"
+    },
+    {
+      "name": "newnsb-0XrcqnanekrPpkNJlBTyJ.txt",
+      "characters": 10406,
+      "sha": "a76a5b8801cb2378"
+    },
+    {
+      "name": "newnsb-0bGH8AbVoh0is8U0H7UPm.txt",
+      "characters": 494,
+      "sha": "8b826bd152ab1c3c"
+    },
+    {
+      "name": "newnsb-0dogvtfvortB.txt",
+      "characters": 278,
+      "sha": "c86efd6a8e665d65"
+    },
+    {
+      "name": "newnsb-0iXB9WzWdC5g1QL75rlu9.txt",
+      "characters": 14052,
+      "sha": "521a7999453439e3"
+    },
+    {
+      "name": "newnsb-0mF5H1UkzAnjcdjXGMVhf.txt",
+      "characters": 3233,
+      "sha": "71c961b5f906a1a1"
+    },
+    {
+      "name": "newnsb-0mMCm8x_-bp6O2T1Ew_WE.txt",
+      "characters": 2503,
+      "sha": "f3d2655411f822ad"
+    },
+    {
+      "name": "newnsb-0nqKkZfM7h5QRVg5m6Oaa.txt",
+      "characters": 4526,
+      "sha": "1fde1fdeb95457cc"
+    },
+    {
+      "name": "newnsb-0oWuu8LZli5y.txt",
+      "characters": 5209,
+      "sha": "82db234e9d550996"
+    },
+    {
+      "name": "newnsb-0pq81hB_JD5bYeTepExPw.txt",
+      "characters": 510,
+      "sha": "451bfdecb203ad3a"
+    },
+    {
       "name": "newnsb-0rQrhc3V1QAxBeFXqHLUu.txt",
       "characters": 5450,
       "sha": "13b4f78a3cf2f553"
+    },
+    {
+      "name": "newnsb-0vkJwFZtbF9R6b1gYHFwY.txt",
+      "characters": 5586,
+      "sha": "c8c2475d536c21db"
+    },
+    {
+      "name": "newnsb-0x0fdVaborNCilTCosvky.txt",
+      "characters": 5632,
+      "sha": "75111f30a1b437a9"
+    },
+    {
+      "name": "newnsb-18zSBA7x6UsB0f7jkVnO_.txt",
+      "characters": 1875,
+      "sha": "0b63b7778b0baff9"
+    },
+    {
+      "name": "newnsb-1CjmpBBHQaMV82PjKEpcL.txt",
+      "characters": 3141,
+      "sha": "81d2115033186577"
+    },
+    {
+      "name": "newnsb-1I3vYy3qWFZhMyy8nU0RX.txt",
+      "characters": 1972,
+      "sha": "2cdb8f1fb50a6ffb"
+    },
+    {
+      "name": "newnsb-1SPdOzJNFw1Fn9b2YSgor.txt",
+      "characters": 2971,
+      "sha": "a5c5ebbbc8c0225d"
+    },
+    {
+      "name": "newnsb-1TGP_Esi2BcQb_lwT6W18.txt",
+      "characters": 12019,
+      "sha": "75523f95aebda7de"
+    },
+    {
+      "name": "newnsb-1TaV1R7jYaKtrgCFUW-8B.txt",
+      "characters": 3370,
+      "sha": "61228e00e5021de6"
+    },
+    {
+      "name": "newnsb-1W41p-ZLO8VOvi-6pC6V5.txt",
+      "characters": 8386,
+      "sha": "3cf46d84ba24b2cc"
+    },
+    {
+      "name": "newnsb-1Wb1Q-KB-Z1a0rUg60G-h.txt",
+      "characters": 2200,
+      "sha": "12f96fa1fc044a32"
+    },
+    {
+      "name": "newnsb-1YsXu8Ku_fjsEph3gSrMp.txt",
+      "characters": 4101,
+      "sha": "0535c5fd49953a01"
+    },
+    {
+      "name": "newnsb-1euurbFDbkuCAVNfOk9O2.txt",
+      "characters": 1140,
+      "sha": "bfbf71ccd7d1f881"
+    },
+    {
+      "name": "newnsb-1qIx-8jjt9q5-qfFKHqCS.txt",
+      "characters": 5074,
+      "sha": "871164b5d903d516"
+    },
+    {
+      "name": "newnsb-1rxs8YVJAO43Fmnyf5mbH.txt",
+      "characters": 4239,
+      "sha": "544e209bdde02a63"
+    },
+    {
+      "name": "newnsb-1tiFWx9a1jtIyeHOfRXTh.txt",
+      "characters": 2368,
+      "sha": "507c868325a9e4a3"
+    },
+    {
+      "name": "newnsb-1vzaUqVfBEQqw2kIZBnV2.txt",
+      "characters": 3351,
+      "sha": "2653083333b67fb8"
+    },
+    {
+      "name": "newnsb-2-YfSCkZSpHqbXoscreMT.txt",
+      "characters": 2031,
+      "sha": "3dd73cddf8223c7e"
+    },
+    {
+      "name": "newnsb-2IWlmxi1-GFiE3ZSCQeDb.txt",
+      "characters": 3127,
+      "sha": "c432854cf2f669a5"
+    },
+    {
+      "name": "newnsb-2JavBFfXrDc4Mh2Ly6c7z.txt",
+      "characters": 3072,
+      "sha": "078d401d42c81862"
+    },
+    {
+      "name": "newnsb-2KSlb9dY1bQ2GNC2FpszG.txt",
+      "characters": 9062,
+      "sha": "d7f26bdcaa2cafe5"
+    },
+    {
+      "name": "newnsb-2SbZPapqS97DauwwlTo5m.txt",
+      "characters": 1490,
+      "sha": "0046255cfc04188f"
+    },
+    {
+      "name": "newnsb-2VPWG78YrVs4eAVeiklQx.txt",
+      "characters": 3228,
+      "sha": "5d68a18f33273ee2"
+    },
+    {
+      "name": "newnsb-2Vc9Edfe2Me9.txt",
+      "characters": 4021,
+      "sha": "1136ff76fa9fd47d"
     },
     {
       "name": "newnsb-2XR4cr60LmaOfMN7Fll2n.txt",
@@ -12,9 +277,24 @@
       "sha": "d24d95e2f7bcb4e1"
     },
     {
+      "name": "newnsb-2Xu-em5GR4wXsf7hLl8wW.txt",
+      "characters": 2553,
+      "sha": "3bbdad855e6e9531"
+    },
+    {
       "name": "newnsb-2blhtByCphEXKAWUAAwtR.txt",
       "characters": 3784,
       "sha": "d4585d235ffaa95e"
+    },
+    {
+      "name": "newnsb-2bmk5kzWdP5hAN5loIoKi.txt",
+      "characters": 2346,
+      "sha": "c8e4ee77f6d4085e"
+    },
+    {
+      "name": "newnsb-2fLAot_lUEG5UvQ2nfuSz.txt",
+      "characters": 267,
+      "sha": "7ec90761cd442992"
     },
     {
       "name": "newnsb-2iAmj7WTEEDAqazAiyeMD.txt",
@@ -22,14 +302,319 @@
       "sha": "a06584f49c11509c"
     },
     {
+      "name": "newnsb-2qF_iUawoTlOm3NtoCy6m.txt",
+      "characters": 1323,
+      "sha": "0df756348c458142"
+    },
+    {
+      "name": "newnsb-2uP12PfsFfAD4z_2_1Tk1.txt",
+      "characters": 3977,
+      "sha": "7386cdba3a24910e"
+    },
+    {
+      "name": "newnsb-314nB6nQ73y0Y4NXQj0pT.txt",
+      "characters": 5698,
+      "sha": "87519c247a8afa39"
+    },
+    {
+      "name": "newnsb-38dvE-KrGxcmzX4dFVS7j.txt",
+      "characters": 3842,
+      "sha": "df5c88ffb656300d"
+    },
+    {
+      "name": "newnsb-38fASiPwZcTUZzVsMFk22.txt",
+      "characters": 1538,
+      "sha": "7b327fb2c79a2c89"
+    },
+    {
+      "name": "newnsb-3AXArwRE6dEJuCZplPcJE.txt",
+      "characters": 2808,
+      "sha": "6043921216a09326"
+    },
+    {
+      "name": "newnsb-3JmisHZJj-IK27aaUB7-Z.txt",
+      "characters": 3649,
+      "sha": "127dcd114e74e53e"
+    },
+    {
+      "name": "newnsb-3LaV1wxDBbBQtMUk1PRlL.txt",
+      "characters": 2505,
+      "sha": "a29c376cc5dcff52"
+    },
+    {
+      "name": "newnsb-3Tho3cU_YwyodGMJTv0Jl.txt",
+      "characters": 6423,
+      "sha": "7832d6baaf2a8a39"
+    },
+    {
+      "name": "newnsb-3XTypWJNncPiKoOnlI7Qn.txt",
+      "characters": 2244,
+      "sha": "1421013370f251f5"
+    },
+    {
+      "name": "newnsb-3XwO8a-zw8w5-o3alTeG2.txt",
+      "characters": 1270,
+      "sha": "fb751c14cdcd17bc"
+    },
+    {
+      "name": "newnsb-3Yy3kCPb9pbdsuqzYWhaA.txt",
+      "characters": 3768,
+      "sha": "692a3d119c30a679"
+    },
+    {
+      "name": "newnsb-3_zPVxbSNG_C7Zs-_yTPf.txt",
+      "characters": 2925,
+      "sha": "0a1af555b9a5540d"
+    },
+    {
+      "name": "newnsb-3bBOJ_Hlr0i9FEX_Gy48M.txt",
+      "characters": 2180,
+      "sha": "9aab1dc5cbc91bec"
+    },
+    {
+      "name": "newnsb-3dsNJOhA89FC5ysu7QtDL.txt",
+      "characters": 9229,
+      "sha": "c031d11e98ddabe9"
+    },
+    {
+      "name": "newnsb-3rQRnBcg2zkMsLhP1mQ2S.txt",
+      "characters": 1994,
+      "sha": "6b843a081ed74db4"
+    },
+    {
+      "name": "newnsb-3uVJd6QzUPOHazMY7JV7B.txt",
+      "characters": 1636,
+      "sha": "7f94b7096f5d692a"
+    },
+    {
+      "name": "newnsb-3zY2kDv8ayn-S5lN7Knmp.txt",
+      "characters": 3042,
+      "sha": "d277c85ee6ebb3d3"
+    },
+    {
+      "name": "newnsb-4DDnYIHvYdNdvLxjol_gt.txt",
+      "characters": 1236,
+      "sha": "90327483761db92b"
+    },
+    {
+      "name": "newnsb-4Gcq4wCObUH5SlRVVRSKR.txt",
+      "characters": 1427,
+      "sha": "7f75542a33e93e24"
+    },
+    {
+      "name": "newnsb-4JS12mHBRUQGSowMBCMVo.txt",
+      "characters": 2459,
+      "sha": "becfaec079b8af60"
+    },
+    {
+      "name": "newnsb-4Oqat7crarPLD3GoZRRJK.txt",
+      "characters": 1186,
+      "sha": "701b60de1f6bceb2"
+    },
+    {
+      "name": "newnsb-4QQaZtyT4UdUfxowNZdux.txt",
+      "characters": 746,
+      "sha": "ef8f50c5d12a41e2"
+    },
+    {
+      "name": "newnsb-4SH56IOF88qH.txt",
+      "characters": 4502,
+      "sha": "bd7e9bd8c0169ebf"
+    },
+    {
+      "name": "newnsb-4UluEyG5O6i7bqANQFRri.txt",
+      "characters": 833,
+      "sha": "4743480fbac258e9"
+    },
+    {
+      "name": "newnsb-4WlI8R0w7PcfNqlTi_B_T.txt",
+      "characters": 512,
+      "sha": "92a9d426cb4a3a13"
+    },
+    {
+      "name": "newnsb-4ZNYpSk3J1-U.txt",
+      "characters": 3043,
+      "sha": "449844ee2bf68a1a"
+    },
+    {
+      "name": "newnsb-4ZcqaIFSv3jUM8nDFHI7H.txt",
+      "characters": 3281,
+      "sha": "a0453ede56d28ead"
+    },
+    {
+      "name": "newnsb-4gSp3q0wdSoxxWT01bOcH.txt",
+      "characters": 2162,
+      "sha": "b18af00ad6b6d30e"
+    },
+    {
+      "name": "newnsb-4j3hfwwf7LC5D13sAwqo5.txt",
+      "characters": 5165,
+      "sha": "70a7265d3d5c3441"
+    },
+    {
+      "name": "newnsb-4mdMVbqPTwY-5XoVHeNVP.txt",
+      "characters": 3210,
+      "sha": "a89929858cbee04b"
+    },
+    {
+      "name": "newnsb-4mzivVX5Ko4dpap06YtuI.txt",
+      "characters": 3720,
+      "sha": "441a32110edccbfb"
+    },
+    {
+      "name": "newnsb-4vdJyQ3uza9ASHDVx8q8q.txt",
+      "characters": 2502,
+      "sha": "932228f0896ffa3b"
+    },
+    {
+      "name": "newnsb-5-OQSM9rkYmUObfSyPr5K.txt",
+      "characters": 4861,
+      "sha": "f8d4c84ab3366f93"
+    },
+    {
       "name": "newnsb-519aut_S_ZQBMr3kOwiP3.txt",
       "characters": 3806,
       "sha": "e2fcf3f3fdfcf685"
     },
     {
+      "name": "newnsb-54sI0TLnWwRqmusz8fwjb.txt",
+      "characters": 415,
+      "sha": "1203ad7aa5b71d32"
+    },
+    {
+      "name": "newnsb-57WO45l1IaUQ.txt",
+      "characters": 3714,
+      "sha": "322319ccfc9349df"
+    },
+    {
+      "name": "newnsb-5D0KArthePZRFs4rVDZL5.txt",
+      "characters": 1004,
+      "sha": "55b9af37b9316cb1"
+    },
+    {
+      "name": "newnsb-5DQ_NyZpOPxiS1wyRTPkC.txt",
+      "characters": 938,
+      "sha": "7ae05b7b8c6a6b67"
+    },
+    {
+      "name": "newnsb-5GzojQxwvxs1eXgTlfwoT.txt",
+      "characters": 12672,
+      "sha": "071161e77f799414"
+    },
+    {
+      "name": "newnsb-5PO2y8QQei-r.txt",
+      "characters": 5737,
+      "sha": "86c2bc781e795616"
+    },
+    {
+      "name": "newnsb-5Xq3IZviEAf7z38oA5SNf.txt",
+      "characters": 2869,
+      "sha": "a15dce0afde0909a"
+    },
+    {
+      "name": "newnsb-5Yv2r3-tpJqb.txt",
+      "characters": 1701,
+      "sha": "65fb84709305a95e"
+    },
+    {
+      "name": "newnsb-5fRCo7uGj1yjroN4M3TB0.txt",
+      "characters": 1826,
+      "sha": "4c92cf0304fc6dfe"
+    },
+    {
+      "name": "newnsb-5ip-dQfCUO9cfOAiitkn8.txt",
+      "characters": 608,
+      "sha": "ae7ae29f56896290"
+    },
+    {
+      "name": "newnsb-5jMuPiRcSv0d-fvRWVloF.txt",
+      "characters": 2550,
+      "sha": "2b2090bc5426819f"
+    },
+    {
+      "name": "newnsb-5oOec_8ZQEV1X-55waGOg.txt",
+      "characters": 2748,
+      "sha": "f685220ffa059abd"
+    },
+    {
+      "name": "newnsb-615ilS8NGEw5dGO58YPCm.txt",
+      "characters": 3236,
+      "sha": "a6ddc0926e254158"
+    },
+    {
+      "name": "newnsb-64qCgj_HaHRIJkLgWWCP-.txt",
+      "characters": 4358,
+      "sha": "b34b591c48101b52"
+    },
+    {
+      "name": "newnsb-669so9rDJy0Blvc_12p0O.txt",
+      "characters": 3341,
+      "sha": "e6505c9f54d7ab0c"
+    },
+    {
+      "name": "newnsb-66VYsJf9n5dbavk-IhLan.txt",
+      "characters": 2311,
+      "sha": "79432c8172089cbe"
+    },
+    {
+      "name": "newnsb-6C6DzfzhbL2HIJb2Hvb0z.txt",
+      "characters": 4566,
+      "sha": "cfe1b899ff4e115d"
+    },
+    {
+      "name": "newnsb-6FKPS4DauZHEk2eUaf-eO.txt",
+      "characters": 558,
+      "sha": "c672d314c6a0f4e6"
+    },
+    {
+      "name": "newnsb-6IKO3j1UwPQCJ8ltD9R-V.txt",
+      "characters": 2565,
+      "sha": "21115ebfdcac0d4e"
+    },
+    {
+      "name": "newnsb-6Mu_eFAbNwTkd4YVMfqJm.txt",
+      "characters": 3575,
+      "sha": "82b63836d00c9602"
+    },
+    {
+      "name": "newnsb-6S3aNUhPuB_eBZlBTRMMR.txt",
+      "characters": 492,
+      "sha": "28b9f09881efd646"
+    },
+    {
+      "name": "newnsb-6TmEAde4htulaWG9CWYtK.txt",
+      "characters": 3883,
+      "sha": "e0bdbd9a26a0044d"
+    },
+    {
+      "name": "newnsb-6W4Sgl1AMtgno9RxQRhNA.txt",
+      "characters": 2363,
+      "sha": "7a9c1ff17a0fbadc"
+    },
+    {
+      "name": "newnsb-6YcBlslWoO0d2awCCSbZo.txt",
+      "characters": 3880,
+      "sha": "e4ca963286bb889b"
+    },
+    {
+      "name": "newnsb-6akMAWqdCsPqsbVJLaHyg.txt",
+      "characters": 2393,
+      "sha": "93bbf48306ba3262"
+    },
+    {
       "name": "newnsb-6fk33Y5utlU_IPa27LjGR.txt",
       "characters": 2202,
       "sha": "862e04b768887e6a"
+    },
+    {
+      "name": "newnsb-6iCD0Kqgr7lTwoKBVwYMJ.txt",
+      "characters": 4950,
+      "sha": "46213bd1e5909636"
+    },
+    {
+      "name": "newnsb-6m_yy2w_Wc17KvKg7BCtK.txt",
+      "characters": 4453,
+      "sha": "05d8a2fb8665cd61"
     },
     {
       "name": "newnsb-7DeLLYQqf_5cdckfbqu2D.txt",

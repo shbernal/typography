@@ -151,7 +151,7 @@
         "U+00AB «",
         "U+00BB »"
       ],
-      "note": "Press releases of the Swiss federal administration, German edition, set to the Federal Chancellery house standard. This is the corpus that carries Swiss guillemets, which the Constitution does not contain."
+      "note": "Press releases of the Swiss federal administration, German edition, set to the Federal Chancellery house standard. This is the corpus that carries Swiss guillemets, which the Constitution does not contain, and it is the only de-CH corpus carrying any quotation mark, any apostrophe or any question mark at all: every de-CH quotation rule and both shared German rules about quoting rest on this text alone. It was 36 documents until 2026-08-15, which was thin enough that one press release the publisher withdrew moved the guillemet exposure by 5%, and a quarter of that exposure sat in a single document. The 117 added are the same publisher, the same newsroom and the same house standard, taken in URL order from the Internet Archive's index of it and blind to what any of them says: picking press releases by whether they quote anything would make the guillemet count a property of the picking. Two documents were then dropped, one speech delivered in English and one in Slovenian, both published in the German newsroom and neither German prose. That is the same exclusion theconversation-fr makes and it costs the corpus its only findings from a foreign-language document, which is the point: this corpus measures what German rules do to German somebody set properly."
     }
   ]
 }

@@ -43,7 +43,7 @@ could not. The reproduction gate cannot run in CI at all, for the reason below.
 ## Every corpus is rebuildable
 
 A gate you cannot re-run is worth less than one you can, so all eight corpora are
-rebuilt from frozen URL lists by `node scripts/fetch-corpus.ts`. 141 of the 240
+rebuilt from frozen URL lists by `node scripts/fetch-corpus.ts`. 263 of the 357
 URLs are read from an archived capture rather than from the live page; see "Where
 the bytes come from" for which, and for what a frozen URL does not freeze.
 
@@ -56,7 +56,7 @@ the bytes come from" for which, and for what a frozen URL does not freeze.
 | `aepd-faq-es` | `es` | the Spanish data protection agency's FAQ |
 | `fundeu-rae-es` | `es` | 300 FundéuRAE articles |
 | `fedlex-bv-2024-de-ch` | `de-CH` | the Swiss Federal Constitution, consolidated 2024 |
-| `admin-ch-medien-de-ch` | `de-CH` | 36 Swiss federal press releases |
+| `admin-ch-medien-de-ch` | `de-CH` | 153 Swiss federal press releases |
 
 This was seven of eight until the `de-DE` corpus changed. It had been a
 `registry.sqlite3` extract of the Kompendium in a private consumer tree, on the
@@ -238,10 +238,12 @@ the old pack over the post-withdrawal corpus answers it directly: both straight
 apostrophes went with the withdrawn press release, and `de.apostrophe` now meets
 23 curly apostrophes and no straight ones.
 
-The last of it is that the corpus is thin enough for one document to matter this
+The last of it is that the corpus was thin enough for one document to matter this
 much. 37 documents carrying the entire `de-CH` guillemet evidence base means one
-withdrawal moved that exposure by 5%, and no amount of pinning fixes that; see
-the note on `de-CH` exposure under "Gaps the corpora found".
+withdrawal moved that exposure by 5%, and no amount of pinning fixes that: a pin
+tells you a document changed, not that the corpus could not afford to lose it.
+That is what `pnpm gates:status --fragility` measures and what deepening the
+corpus to 153 press releases closed; both are under "Gaps the corpora found".
 
 ## Where the bytes come from: captures where there are any
 
@@ -256,27 +258,37 @@ received rather than rewritten for a reader, so the `region` and `drop` selector
 match exactly what they match live. `scripts/fetch-corpus.ts` says the rest,
 including the one edge that costs an afternoon.
 
-**Coverage, measured over all 240 URLs and not assumed:**
+**Coverage, measured over all 357 URLs and not assumed:**
 
 | Corpus | Archived | Why the rest are not |
 |---|---|---|
 | `theconversation-fr` | 43 of 43 | |
 | `boe-lopdgdd-2018-es` | 1 of 1 | |
 | `fedlex-bv-2024-de-ch` | 1 of 1 | |
+| `admin-ch-medien-de-ch` | 125 of 153 | 28 have no capture that reproduces the pin, and the URLs added in the deepening below were chosen from the archive's own index, so this corpus is covered by construction |
 | `aepd-faq-es` | 80 of 116 | 30 captures predate the pins, some by two years, and there is no newer one |
 | `openedition-journals-fr` | 13 of 39 | 22 never captured; 4 captured an anti-bot challenge page, served at 200 |
-| `admin-ch-medien-de-ch` | 3 of 36 | 32 captures replay as `403`: the archive holds admin.ch's refusal, not the press release |
 | `bsi-kompendium-2023-de` | 0 of 1 | never captured |
 | `fundeu-rae-es` | 0 of 3 | never captured, which is a crawler not following a `wp-json` query |
 
 **Every timestamp committed here is one whose bytes reproduced the committed pin
-on this machine.** That is the only test that means anything, and it is why the
-table is 141 of 240 rather than the 207 the archive claims to hold: a capture
-that exists and a capture that is the document are different things, and the
+on this machine.** That is the only test that means anything: a capture that
+exists and a capture that is the document are different things, and the
 difference showed up as a 403, an interstitial and thirty stale revisions. A
 capture that could not be verified was not written down, so a mixed corpus is
 mixed in a way that is recorded rather than hoped for, and `pnpm gates:status`
 prints the split per corpus in its `source` column.
+
+**How the capture is found decides how much of it you get, and that was worth
+32 press releases.** The first pass took the newest capture of each URL, by
+asking for `web/2id_/<url>` and reading the redirect: one cheap request, no CDX
+API, and it is what the row above used to say `3 of 36`. The newest capture of an
+admin.ch page is usually the archive's copy of admin.ch refusing a crawler, so
+that method threw away the good older ones. Asking the CDX API for captures
+filtered to `statuscode:200` finds those instead, and 7 of the 12 it turned up for
+the original list reproduced pins that had been sitting there unmatched. The
+cheap probe is still the right first move; what it is not is an answer about
+coverage.
 
 **The trade, stated plainly.** This swaps a dependency on eight publishers for a
 dependency on one archive, and an archive is a single point of failure in a way
@@ -411,7 +423,7 @@ register, the other carries the characters the first one lacks:
 |---|---|---|
 | `fr` | `openedition-journals-fr`: 2.0M characters, 3,102 opening guillemets | `theconversation-fr`: 99 question marks, which formal academic French barely uses |
 | `es` | `boe-lopdgdd-2018-es`, `fundeu-rae-es` | `aepd-faq-es`: 332 correctly opened interrogatives |
-| `de-CH` | `fedlex-bv-2024-de-ch`: 722 no-break spaces, no quotation marks at all | `admin-ch-medien-de-ch`: 36 Swiss guillemet pairs |
+| `de-CH` | `fedlex-bv-2024-de-ch`: 722 no-break spaces, no quotation marks at all | `admin-ch-medien-de-ch`: 198 Swiss guillemet pairs |
 
 `de-DE` is the one language with a single corpus, and it can be because the
 Kompendium carries both halves at once: 2.4M characters of one register, and 544
@@ -674,43 +686,106 @@ Two languages, two publishers, one conclusion: the split is between the domain
 and the language, not between right and wrong, which is why the rule is a
 **warning** and is not fixable.
 
-## `de-CH`, reviewed 2026-08-09, press releases recut 2026-08-15
+## `de-CH`, reviewed 2026-08-09, press releases deepened 2026-08-15
 
-309,728 characters. Swiss German is not a dialect note here: Switzerland sets
+698,683 characters. Swiss German is not a dialect note here: Switzerland sets
 `«Wort»` where Germany sets `»Wort«`, and drops the eszett, so this is a separate
 pack and it needs separate evidence.
 
 | Corpus | What it is | Values | Characters |
 |---|---|---|---|
 | `fedlex-bv-2024-de-ch` | Swiss Federal Constitution, German, consolidated 2024 | 1 | 199,319 |
-| `admin-ch-medien-de-ch` | 36 press releases of the Swiss federal administration | 36 | 110,409 |
+| `admin-ch-medien-de-ch` | 153 press releases of the Swiss federal administration | 153 | 499,364 |
 
-**Every rule fired zero times over both.** The exposure is what makes that
-readable:
+**This review supersedes the 2026-08-09 one rather than continuing it.** That one
+read 37 press releases and reported zero findings from every rule, over 38
+guillemet pairs. The corpus is now 153 press releases and 198 pairs, and the
+zeros are gone:
 
-| Rule | Findings | Exposure |
-|---|---|---|
-| `de.apostrophe` | 0 | 23 `’`, no straight apostrophes |
-| `de.space-before-punctuation` | 0 | 660 `;`, 183 `:` |
-| `de.straight-double-quote` | 0 | no straight double quotes at all |
-| `de-CH.guillemet-open-space` | 0 | 36 `«` |
-| `de-CH.guillemet-close-space` | 0 | 36 `»` |
-| `de-CH.inward-guillemets` | 0 | 36 `»`, none of them opening |
+| Rule | Findings | Exposure | Verdict |
+|---|---|---|---|
+| `de.apostrophe` | 2 | 24 straight `'`, 100 `’` | true positives |
+| `de.space-before-punctuation` | 1 | 690 `;`, 460 `:` | **1 false** |
+| `de.straight-double-quote` | 1 | 1 straight `"` | true positive |
+| `de-CH.guillemet-open-space` | 1 | 198 `«` | true positive |
+| `de-CH.guillemet-close-space` | 2 | 199 `»` | true positives |
+| `de-CH.inward-guillemets` | 1 | 199 `»` | **1 false** |
 
-The Constitution contributes 722 no-break spaces and not one quotation mark,
-which is precisely why it is not the only Swiss corpus. The press releases
-contribute the guillemets: 36 pairs, correctly set, none of them German-facing.
+Eight findings over 698,683 characters of federal Swiss German, six of them real.
+Nothing about the pack changed to produce them; `de-CH@0.2.0` read 4.5 times as
+much of the same publisher.
 
-The press-release numbers are one document lighter than the 2026-08-09 review
-recorded, and both straight apostrophes went with it. That is the withdrawal in
-the section above rather than a change of judgement, and every finding count is
-unmoved either way.
+### The six that are real, and four of them are in two documents
 
-This is the weakest of the four language reviews and saying so is the point. 36
-guillemet pairs is an order of magnitude less exposure than German's 1,063 curved
-quotes or Spanish's 1,068 guillemets, so `de-CH`'s quotation rules are evidenced
-rather than well evidenced. A Swiss corpus with heavier quotation would improve
-it.
+**A postulate title set the French way.** One press release quotes two report
+titles in one sentence, `«Rückführbarkeit von Messergebnissen auf bekannte
+Referenzwerte im Gesundheitswesen»` closed up and correct, and then `« Durchsetzung
+zuverlässiger und richtiger Messwerte im Gesundheitswesen »` with a plain space
+inside each guillemet. Same paragraph, same author, both conventions. That is
+`de-CH.guillemet-open-space` and one of the two `de-CH.guillemet-close-space`, and
+it is the failure the pack exists for: French spacing inside Swiss German
+quotation marks, in text nobody would call badly set.
+
+The other close-space finding is the same defect in a narrower spelling:
+`«Das Weinjahr 2025` then a **U+202F narrow no-break space** and then `»`. Right
+width for French, wrong convention for Swiss German, and invisible on the page.
+It is written out here rather than quoted, because a U+202F pasted into a
+markdown file is indistinguishable from a space and this file would then be
+asserting the wrong thing.
+
+**A quotation opened straight and closed Swiss.** `"Strategie Digitale
+Souveränität der Schweiz»` is the corpus's only straight double quote, and it is
+half of a mismatched pair. This is the class the Kompendium produced 18 of, found
+here in one of one: the arithmetic says so as well, since 198 `«` against 199 `»`
+is 198 pairs plus this orphan.
+
+**Two `Z'graggen`.** A Swiss surname set with a straight apostrophe, twice in the
+same press release, in a document that gets its guillemets right. Duden sets
+`Z’graggen`, so both are fixable true positives.
+
+That last one is where the pack's narrowing earns its keep. The corpus contains
+24 straight apostrophes and 22 of them are the Swiss thousands separator:
+`98'200`, `100'000`, `2'324`. `de.apostrophe` requires a letter on **both** sides,
+so it reports the two names and none of the numbers. A rule matching a straight
+apostrophe anywhere would have produced 22 false positives on federal Swiss text
+and would have *repaired* them, turning `100'000` into `100’000`. The narrowing
+was written for `Ku'damm` and it holds a case nobody had thought of.
+
+### The two that are false, and neither is new in kind
+
+**`Résumé : Cinquième rapport du Gouvernement suisse`**, in the attachment list of
+an otherwise entirely German press release. French takes a space before its
+colon; German does not, and the rule cannot see that the sentence changed
+language. This is the third language to produce this same finding, after
+`es.unpaired-question` on an English phrase and 355
+`fr.missing-space-before-high-punctuation` on foreign titles, and it is why the
+rule ships as `find` with no `fix`. The comment above `de.space-before-punctuation`
+predicted it in as many words - "in German corpora this fires almost exclusively
+on text a French-speaking translator touched" - which is now evidence rather than
+a guess.
+
+**`der Parteien.»1 Trotz allem`**, where a correct closing guillemet is followed
+by a footnote marker. `de-CH.inward-guillemets` matches `»` followed by a letter
+or digit, on the reasoning that a `»` opening something is the German setting; a
+superscript `1` is a digit by the time the reader sees it. Check-only, so it
+costs a human one glance rather than a corrupted document, and narrowing it to
+exclude digits would stop it seeing `»2. Weltkrieg«`. Worth knowing about the
+extraction as well: `<sup>1</sup>` flattens to `1`, so the adjacency this rule
+matched is one no reader of the page has ever seen.
+
+### What each corpus contributes, and why there are two
+
+The Constitution contributes 722 no-break spaces, 637 semicolons and not one
+quotation mark, which is precisely why it is not the only Swiss corpus. The press
+releases contribute everything else: every guillemet, every apostrophe, every
+question mark and the one straight double quote in the language.
+
+That is also the standing weakness. `admin-ch-medien-de-ch` is the **only** `de-CH`
+corpus with any quotation mark at all, so six rules rest on one publisher; see
+"Gaps the corpora found" for the rest of that. It is no longer thin, though. 198
+pairs is within sight of German's 1,063 curved quotes and Spanish's 1,068
+guillemets, where 36 was an order of magnitude short, and the largest share of it
+held by any single document fell from 25% to 8%.
 
 ## Gaps the corpora found and the packs do not close
 
@@ -721,12 +796,51 @@ the other direction, a German `»Wort«` appearing in Swiss text, but there is n
 what surfaced it. Adding the rule is a judgement about `de-CH`'s scope rather
 than a bug fix, so it is recorded here rather than made quietly.
 
-**`de-CH`'s quotation exposure is thin**, as the section above says: 36 pairs
-against `de-DE`'s 1,063 marks. This is a corpus problem rather than a rule
-problem, and it is the one place where a zero in this file should be read as
-weaker evidence than the other zeros.
+**`de-CH.inward-guillemets` reads a footnote marker as an opening guillemet.**
+`»(?=[\p{L}\p{N}])` treats a `»` followed by a digit as German-facing, and a
+superscript footnote after a closing quotation is exactly that once the markup is
+gone. One finding in 698,683 characters, check-only, so the cost is a glance;
+narrowing it to letters would stop it catching `»2. Weltkrieg«`, which is a real
+German setting. Recorded rather than fixed because the trade is a judgement and
+neither side of it is obviously right.
+
+**Six rules rest on a single corpus each.** `exposes` says which characters a
+corpus is here for, and comparing those declarations across the corpora of one
+language says something else: which rules would have no evidence at all if one
+publisher were dropped.
+
+| Rule | Only exposed by | Exposure |
+|---|---|---|
+| every `de-CH` quotation rule, `de.apostrophe`, `de.straight-double-quote` | `admin-ch-medien-de-ch` | the Constitution has no quotation mark and no apostrophe at all |
+| `es.straight-double-quote` | `aepd-faq-es` | 162 straight quotes, and the other two Spanish corpora have none |
+| `es.unpaired-exclamation` | `fundeu-rae-es` | one `¡` and one `!` in 1.1M characters |
+| `fr.straight-double-quote` | `openedition-journals-fr` | six straight quotes, all in English abstracts |
+
+`de-DE` is not on that list only because it has one corpus by design, which the
+Kompendium can carry alone. The others are worth reading as the same kind of
+weakness the exposure block exists to make visible: a number that is real and
+comes from one place.
+
+**How much of that exposure sits in one document** is the finer-grained version
+of the same question, and `pnpm gates:status --fragility` prints it. Most corpora
+spread their declared marks across nearly every document at 6% to 10%. Three do
+not: `fundeu-rae-es` holds 29% of its 38 `¿` in one article, `aepd-faq-es` 22% of
+its straight quotes in one how-to page, and `admin-ch-medien-de-ch` 8% of its
+guillemets in one press release - which is the number that used to be 25%, and is
+what deepening that corpus was for.
 
 ### Closed
+
+**`de-CH`'s quotation exposure was thin**, at 36 guillemet pairs against
+`de-DE`'s 1,063 marks, which made every `de-CH` zero weaker evidence than the
+other zeros. Closed on 2026-08-15 by taking the corpus from 36 press releases to
+153 and the exposure to 198 pairs. It was not closed by picking press releases
+that quote things: the added URLs were taken in URL order from the archive's
+index of the same newsroom, blind to their contents, because a guillemet count
+that came from choosing documents by their guillemets would measure the choosing.
+The zeros did not survive it - six real findings appeared, and the section above
+reads them - which is the argument for the whole exercise rather than a mark
+against it.
 
 **The French guillemet rules**, which normalised U+00A0 to U+202F and accounted
 for 6,462 of the `fr@0.1.0` gate's 7,188 findings. Closed in `fr@0.2.0` by

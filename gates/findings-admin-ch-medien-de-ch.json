@@ -1,73 +1,87 @@
 {
   "gate": "findings",
   "corpus": "admin-ch-medien-de-ch",
-  "note": "Press releases of the Swiss federal administration, German edition, set to the Federal Chancellery house standard. This is the corpus that carries Swiss guillemets, which the Constitution does not contain.",
+  "note": "Press releases of the Swiss federal administration, German edition, set to the Federal Chancellery house standard. This is the corpus that carries Swiss guillemets, which the Constitution does not contain, and it is the only de-CH corpus carrying any quotation mark, any apostrophe or any question mark at all: every de-CH quotation rule and both shared German rules about quoting rest on this text alone. It was 36 documents until 2026-08-15, which was thin enough that one press release the publisher withdrew moved the guillemet exposure by 5%, and a quarter of that exposure sat in a single document. The 117 added are the same publisher, the same newsroom and the same house standard, taken in URL order from the Internet Archive's index of it and blind to what any of them says: picking press releases by whether they quote anything would make the guillemet count a property of the picking. Two documents were then dropped, one speech delivered in English and one in Slovenian, both published in the German newsroom and neither German prose. That is the same exclusion theconversation-fr makes and it costs the corpus its only findings from a foreign-language document, which is the point: this corpus measures what German rules do to German somebody set properly.",
   "pack": "de-CH@0.2.0",
   "standard": "Duden",
-  "units": 36,
-  "characters": 110409,
-  "unitsWithFindings": 0,
-  "fingerprint": "0d4f797ec3f2e83d",
+  "units": 153,
+  "characters": 499364,
+  "unitsWithFindings": 5,
+  "fingerprint": "3062e7284c71b5fb",
   "exposure": {
-    "U+00AB «": 36,
-    "U+00BB »": 36,
+    "U+00AB «": 198,
+    "U+00BB »": 199,
     "U+201E „": 1,
     "U+201C “": 0,
     "U+201D ”": 1,
     "U+00BF ¿": 0,
     "U+00A1 ¡": 0,
-    "?": 7,
-    "!": 1,
-    ";": 23,
-    ":": 90,
-    "\" straight": 0,
-    "' straight": 0,
-    "U+2019 ’": 23,
-    "U+00A0 NBSP": 37,
-    "U+202F NNBSP": 0
+    "?": 21,
+    "!": 10,
+    ";": 53,
+    ":": 367,
+    "\" straight": 1,
+    "' straight": 24,
+    "U+2019 ’": 100,
+    "U+00A0 NBSP": 70,
+    "U+202F NNBSP": 9
   },
   "rules": {
     "de.apostrophe": {
       "fixable": true,
       "severity": "error",
-      "findings": 0,
-      "units": 0,
-      "samples": []
+      "findings": 2,
+      "units": 1,
+      "samples": [
+        "newnsb-2VPWG78YrVs4eAVeiklQx.txt  \"g des Postulats 22.4411 Z'graggen <LAQUO>Digitale Souverä\"",
+        "newnsb-2VPWG78YrVs4eAVeiklQx.txt  \" des Postulates 22.4411 Z'graggen \\\"Strategie Digita\""
+      ]
     },
     "de.space-before-punctuation": {
       "fixable": false,
       "severity": "error",
-      "findings": 0,
-      "units": 0,
-      "samples": []
+      "findings": 1,
+      "units": 1,
+      "samples": [
+        "newnsb-5jMuPiRcSv0d-fvRWVloF.txt  \"47 kB19. Juni 2026\\nRésumé : Cinquième rapport du Go\""
+      ]
     },
     "de.straight-double-quote": {
       "fixable": false,
       "severity": "warning",
-      "findings": 0,
-      "units": 0,
-      "samples": []
+      "findings": 1,
+      "units": 1,
+      "samples": [
+        "newnsb-2VPWG78YrVs4eAVeiklQx.txt  \"ulates 22.4411 Z'graggen \\\"Strategie Digitale Souver\""
+      ]
     },
     "de-CH.guillemet-open-space": {
       "fixable": true,
       "severity": "error",
-      "findings": 0,
-      "units": 0,
-      "samples": []
+      "findings": 1,
+      "units": 1,
+      "samples": [
+        "newnsb-4QQaZtyT4UdUfxowNZdux.txt  \"r vom 13. September 2012 <LAQUO> Durchsetzung zuverlässige\""
+      ]
     },
     "de-CH.guillemet-close-space": {
       "fixable": true,
       "severity": "error",
-      "findings": 0,
-      "units": 0,
-      "samples": []
+      "findings": 2,
+      "units": 2,
+      "samples": [
+        "newnsb-0L6sb2rJFxkr.txt  \"ericht <LAQUO>Das Weinjahr 2025<NNBSP><RAQUO> zu finden.\\nObst- und Wei\"",
+        "newnsb-4QQaZtyT4UdUfxowNZdux.txt  \"werte im Gesundheitswesen <RAQUO> gutgeheissen.\\nWeitere In\""
+      ]
     },
     "de-CH.inward-guillemets": {
       "fixable": false,
       "severity": "error",
-      "findings": 0,
-      "units": 0,
-      "samples": []
+      "findings": 1,
+      "units": 1,
+      "samples": [
+        "newnsb-3dsNJOhA89FC5ysu7QtDL.txt  \"tungsbilanz der Parteien.<RAQUO>1 Trotz allem, in den 100\""
+      ]
     }
   }
 }
