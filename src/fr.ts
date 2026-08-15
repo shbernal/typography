@@ -456,12 +456,23 @@ function harmonizingRules(width: string): readonly Rule[] {
 }
 
 /**
- * A French pack that spells every no-break space the same way, for a host that
- * has surveyed its corpus and settled the question.
+ * A French pack that spells one width at every position where the width was ever
+ * in question, for a host that has surveyed its corpus and settled it.
  *
  * Use it with `surveyWidth`: survey the registry once, then normalize every
  * value under the one verdict. Per-value behaviour is unchanged for everyone
  * else, because this returns a new pack and does not touch `fr`.
+ *
+ * **The positions are the three on the ballot** - inside an opening guillemet,
+ * inside a closing one, and before `; ! ?` - and they are the three because they
+ * are exactly what `BALLOT` counts, so a corpus normalized here is consistent by
+ * the same measure `surveyWidth` reported it as split by. The space before a
+ * colon stays U+00A0 under either width, and is not an exception to tidy away
+ * later: it is the one position where nothing is in dispute, the Lexique
+ * specifies the word space and the corpora use it 2,458 times against no
+ * counter-example. Imposing U+202F there would be this pack asserting what its
+ * citation does not fix, in the one function whose whole subject is the
+ * difference between those two things.
  *
  * **The id is a different era stamp, and that is the load-bearing part.** A
  * corpus normalized by this pack has had correct text retyped into the imposed

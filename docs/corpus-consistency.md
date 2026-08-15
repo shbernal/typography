@@ -64,9 +64,9 @@ reimplementation would the first time a rule changed.
 
 ### `withWidth(width)`
 
-Returns a French pack that spells every no-break space the same way. The
-intended sequence is survey, decide, then normalize everything under the one
-verdict:
+Returns a French pack that spells one width at every position where the width
+was ever in question. The intended sequence is survey, decide, then normalize
+everything under the one verdict:
 
 ```ts
 const survey = surveyWidth(values);
@@ -85,7 +85,22 @@ It throws on any width other than U+00A0 and U+202F. U+2009 is the reason: it is
 the right width and it breaks lines, so a host that imposed it would be writing a
 defect into every value it owns.
 
-## Three things about `withWidth` that are not obvious
+## Four things about `withWidth` that are not obvious
+
+### The colon keeps U+00A0 under either width
+
+The positions it imposes on are the three on the ballot: inside an opening
+guillemet, inside a closing one, and before `; ! ?`. They are the three because
+they are exactly what the ballot counts, so a corpus normalized here is
+consistent by the same measure `surveyWidth` reported it as split by.
+
+The space before a colon is not one of them and does not become one. It is the
+one position where nothing is in dispute: the Lexique specifies the word space,
+and both corpora use it 2,458 times against no counter-example. So
+`withWidth(NARROW_NO_BREAK)` gives you `«<NNBSP>oui<NNBSP>»` and `voila<NNBSP>!`
+and still `dit<NBSP>:`, which looks like an exception and is the rule. Imposing
+U+202F there would be this pack asserting what its citation does not fix, in the
+one function whose whole subject is the difference between those two things.
 
 ### It rebuilds the patterns, and it has to
 

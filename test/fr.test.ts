@@ -203,6 +203,12 @@ test('the colon is not on the ballot', () => {
   // does not move it.
   assert.equal(surveyWidth([`voici${NBSP}: ici`]).full, 0);
   assert.equal(withWidth(NNBSP).normalize(`voici${NBSP}: ici`), `voici${NBSP}: ici`);
+  // Sharper, and the one that catches somebody harmonizing the colon to make
+  // the output look uniform: an imposed U+202F still *writes* U+00A0 here. The
+  // derived pack is not "one width everywhere", it is one width at the three
+  // positions the ballot counts, and the colon is not one of them because the
+  // Lexique fixes it.
+  assert.equal(withWidth(NNBSP).normalize('voici : ici'), `voici${NBSP}: ici`);
 });
 
 test('imposing a width harmonizes rows the shipped rules will not touch', () => {
