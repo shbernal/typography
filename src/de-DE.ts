@@ -17,7 +17,15 @@ import {
   type TypographyPack,
 } from './pack.ts';
 
-const VERSION = '0.1.0';
+/** Bumps when a rule changes, and never for a release that does not touch one.
+ *
+ * 0.2.0 put `de.space-before-punctuation` behind `looksMachine`, so it no longer
+ * reports a URL or a ternary. That rule is in `germanCommonRules`, which is why
+ * `de-CH` moves to 0.2.0 in the same breath: one rule changed and two packs
+ * contain it. A corpus checked under `de-DE@0.1.0` was told about its query
+ * strings and one under `de-DE@0.2.0` was not, so the two counts are not
+ * comparable and the stamp has to say so. */
+const VERSION = '0.2.0';
 
 const rules: readonly Rule[] = [
   ...germanCommonRules,

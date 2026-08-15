@@ -137,7 +137,7 @@ test('--strict is what makes a warning fail', () => {
 test('langs lists every pack with its standard', () => {
   const r = run(['langs']);
   assert.equal(r.status, 0);
-  assert.match(r.stdout, /de-CH@0\.1\.0\s+Duden/);
+  assert.match(r.stdout, /de-CH@0\.2\.0\s+Duden/);
   assert.match(r.stdout, /fr@0\.2\.0\s+Imprimerie nationale/);
 });
 

@@ -57,8 +57,29 @@ test('a space before punctuation is reported in both and fixed in neither', () =
   assert.equal(deCH.normalize('const y = a ? b : c;'), 'const y = a ? b : c;');
 });
 
+test('a space before punctuation in machine text is not reported', () => {
+  // The rule shipped without the filter its own comment cited, so it disagreed
+  // with the identical Spanish rule about a URL and about nothing else. This is
+  // the case that told them apart, and both packs are checked because the rule
+  // lives in `germanCommonRules` and a fix applied to one of them would be the
+  // kind of half-change the shared list exists to prevent.
+  const machine = 'Siehe https://beispiel.de/a ?b=1 und pfad/x : y hier.';
+  for (const ids of [idsDE, idsCH])
+    assert.deepEqual(
+      ids(machine).filter((id) => id === 'de.space-before-punctuation'),
+      [],
+    );
+  // And prose in the same value is still reported, so the filter narrowed the
+  // rule rather than switching it off.
+  assert.ok(idsDE(`${machine} Hallo ; Welt`).includes('de.space-before-punctuation'));
+});
+
 test('the two packs stamp two different eras', () => {
-  assert.equal(deDE.id, 'de-DE@0.1.0');
-  assert.equal(deCH.id, 'de-CH@0.1.0');
+  // Both moved to 0.2.0 together: `de.space-before-punctuation` is a common
+  // rule, so a change to it changes what both packs assert, and a stamp that
+  // moved on only one of them would say a de-CH corpus had been checked by
+  // rules it had not.
+  assert.equal(deDE.id, 'de-DE@0.2.0');
+  assert.equal(deCH.id, 'de-CH@0.2.0');
   assert.notEqual(deDE.id, deCH.id);
 });

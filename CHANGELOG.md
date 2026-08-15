@@ -1,5 +1,42 @@
 # Changelog
 
+## Unreleased
+
+Two pack versions move: **`de-DE@0.2.0`** and **`de-CH@0.2.0`**. A German corpus
+checked under `@0.1.0` and one checked under `@0.2.0` were asked different
+questions about the same text, so the counts are not comparable and the stamp
+says so.
+
+- **`de.space-before-punctuation` no longer reports machine text.** German takes
+  no space before `; : ! ?`, and `https://ejemplo.de/a ?b=1` is not German
+  taking one. Spanish has had that filter since it was written and German never
+  did, while the German rule's own comment cited the Spanish file for the
+  reasoning: on `Siehe https://beispiel.de/a ?b=1 und pfad/x : y hier.` Spanish
+  reported nothing and German reported twice. The rule is character for
+  character the Spanish one, so the two packs disagreed about a URL and about
+  nothing else, and neither answer was defensible as a *German* decision, since
+  no clause of the Duden says a query string is punctuated prose.
+
+  Both German packs move because the rule is in `germanCommonRules`. Nothing
+  Swiss changed and `de-CH` still moves, because what a stamp promises is that
+  two corpora carrying it were checked by the same rules.
+
+- **The heuristic is now one implementation, in `src/prose.ts`.** It was private
+  to `es.ts`, which is how it came to exist in one pack and not the other. It is
+  shared where `ANY_SPACE` is deliberately not: that constant encodes what a
+  standard requires and can be split the day RAE and Duden disagree, whereas no
+  standards body has an opinion about what a URL looks like, so there is nothing
+  here for a release to have to split. Internal, like `de-common.ts`; no subpath
+  export and no change to the public surface.
+
+- **The release gate does not see this change, and that is the honest report.**
+  `de.space-before-punctuation` scored zero on all three German corpora before
+  it and scores zero after. The zero is a real one rather than a vacuous one -
+  the Kompendium exposes 647 colons, the Constitution 637 semicolons - so what
+  it says is that federal German publishers do not put a space before
+  punctuation at all, in prose or in a URL. The corpora do not contain the shape
+  this change is about, and the evidence for it is the constructed case above.
+
 ## 0.1.2
 
 Additive. No pack version moves, no rule changes what it matches, and

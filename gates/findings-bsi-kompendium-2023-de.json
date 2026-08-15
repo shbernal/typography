@@ -2,7 +2,7 @@
   "gate": "findings",
   "corpus": "bsi-kompendium-2023-de",
   "note": "BSI IT-Grundschutz-Kompendium, Edition 2023, from the agency's own DocBook XML. Published by a federal agency and edited to a house standard, which is what makes it usable here. No region selector: the whole document is BSI's text. This replaced a private registry extract of the same Kompendium, which held a quarter of the text and a sixth of the German quotation marks; the XML is the publisher's structured original, so the spacing and the quotation marks are exactly as BSI set them.",
-  "pack": "de-DE@0.1.0",
+  "pack": "de-DE@0.2.0",
   "standard": "Duden",
   "units": 1,
   "characters": 2393884,

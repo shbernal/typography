@@ -19,7 +19,13 @@ import {
   type TypographyPack,
 } from './pack.ts';
 
-const VERSION = '0.1.0';
+/** Bumps when a rule changes, and never for a release that does not touch one.
+ *
+ * 0.2.0 for the change `de-DE.ts` describes: `de.space-before-punctuation` is a
+ * common rule, so putting it behind `looksMachine` moved both packs. Nothing
+ * Swiss changed, and the stamp still has to move, because what a stamp promises
+ * is that two corpora carrying it were checked by the same rules. */
+const VERSION = '0.2.0';
 
 const rules: readonly Rule[] = [
   ...germanCommonRules,

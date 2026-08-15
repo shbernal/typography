@@ -20,6 +20,7 @@ import {
   type Rule,
   replaceRule,
 } from './pack.ts';
+import { looksMachine } from './prose.ts';
 
 export const DUDEN = 'Duden, Die deutsche Rechtschreibung, Richtlinien';
 
@@ -68,8 +69,19 @@ export const germanCommonRules: readonly Rule[] = [
     // block. In German corpora this fires almost exclusively on text a
     // French-speaking translator touched, which makes it useful and still not
     // automatic.
+    //
+    // `looksMachine` is the other half of that, and this rule shipped without
+    // it while the paragraph above cited the file that has it. The pattern is
+    // character for character the Spanish one, so the two rules disagreed about
+    // a URL and about nothing else: on `Ver https://ejemplo.es/a ?b=1 y ruta/x
+    // : y aqui.` Spanish reported nothing and German reported twice. Neither
+    // reading was defensible as a *German* decision, since no clause of the
+    // Duden says a query string is punctuated prose.
     pattern: new RegExp(`\\p{L}${ANY_SPACE}+[;:!?]`, 'gu'),
-    refine: (match) => ({ index: match.index + 1, length: match[0].length - 2 }),
+    refine: (match, value) =>
+      looksMachine(value, match.index)
+        ? null
+        : { index: match.index + 1, length: match[0].length - 2 },
   }),
 
   detectRule({
