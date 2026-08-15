@@ -157,6 +157,46 @@ which is the argument for it. A rebuild that disagrees now prints the file name
 and the delta, and the investigation is a line of CI output rather than a
 hypothesis.
 
+## And one that is drift, still open
+
+**A publisher withdrew a document.** Rebuilding `admin-ch-medien-de-ch` on
+2026-08-15 returned 110,484 characters against a committed 111,812, and
+`gates/documents-*.json` named the two files immediately:
+
+    ~ 0030-newnsb-m5dXtFD2sVP_nBvBol-Tm.txt: 1400 -> 75 characters (-1325)
+    ~ 0035-newnsb-wcH3pK00kcgQRVfxKbItB.txt: 2154 -> 2151 characters (-3)
+
+The 75 characters are `Diese Seite existiert nicht oder die Medienmitteilung
+wurde zurückgezogen.` The Swiss federal administration retracted that press
+release, and the URL serves the notice at the same address rather than a 404. The
+other document lost three characters, which is a sub-editor.
+
+This is the failure mode `corpus.yml` names as a page starting to serve an
+interstitial, and the fetcher does not catch it: it fails a document that
+extracts to nothing, and an error page is not nothing. There is no threshold that
+would have caught this one and not fired on a short press release.
+
+What it costs is specific. This corpus is here because it is the one that carries
+Swiss guillemets, and its exposure went from 38 `«` and 38 `»` to 36 of each,
+plus both of its straight apostrophes. The guillemets were in the withdrawn
+document and not the edited one, since two pairs is four characters and the
+edited one lost three. The apostrophes could be in either.
+
+**The decision is open and the two options both cost something.** Dropping the
+URL from the frozen list means the corpus no longer contains a page that is not
+professionally typeset published text, which is the qualification `corpora.json`
+sets; it also renumbers `0031` through `0036`, because a document's name is its
+index in the list, so most of the manifest churns for one deletion. Keeping it
+means 75 characters of error page sit in the gate's text, contributing nothing
+and exposing nothing.
+
+Until it is decided, `gates/findings-admin-ch-medien-de-ch.json` is deliberately
+stale: it was not regenerated with the other two German baselines when `de-CH`
+moved to `@0.2.0`, because a baseline cut now would fold a withdrawn press
+release into a rule change and neither would be legible afterwards. So
+`pnpm gates:verify` reports that one corpus as moved, for two reasons at once,
+and will keep doing so until someone chooses.
+
 ## What is committed, and what is not
 
 The corpora are third-party published works and are not this repo's to
