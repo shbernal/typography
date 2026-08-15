@@ -100,6 +100,13 @@ jobs:
       # centre. Those are retried with growing backoff, which is why this step is
       # slow. A run that is short after the retries is a real event.
       #
+      # `--live` because this job's question is whether the publishers still
+      # serve these documents, and only the publishers can answer it. A default
+      # build now reads archived captures, which is what makes a rebuild
+      # reproducible and is exactly the wrong instrument here: asking the
+      # Internet Archive every month whether admin.ch has reorganised its
+      # permalinks would return a confident and permanent no.
+      #
       # `corpus` arrives through the environment rather than being interpolated
       # into the command, because `${{ }}` substitutes into the script *text* and
       # a dispatch input is somebody's typing. `${ONLY:+...}` then expands to
@@ -109,7 +116,7 @@ jobs:
       - name: Rebuild every corpus from the frozen URL lists
         env:
           ONLY: ${{ inputs.corpus }}
-        run: node scripts/fetch-corpus.ts --refresh ${ONLY:+--only "$ONLY"}
+        run: node scripts/fetch-corpus.ts --refresh --live ${ONLY:+--only "$ONLY"}
 
       # Failing here means the corpora rebuilt but no longer say what
       # `gates/*.json` records. On a scheduled run the rules have not changed, so

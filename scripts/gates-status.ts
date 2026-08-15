@@ -27,6 +27,7 @@ interface CorpusSpec {
   readonly id: string;
   readonly lang: string;
   readonly exposes?: readonly string[];
+  readonly fetch?: { readonly urls: string };
 }
 
 interface DocumentRecord {
@@ -52,6 +53,24 @@ interface Row {
   readonly findings?: Findings;
   readonly present: boolean;
   readonly pack: string;
+  readonly urls: number;
+  readonly archived: number;
+}
+
+/** How many of a corpus's URLs carry an archive timestamp, counted from the
+ * committed list rather than from anything fetched.
+ *
+ * A corpus rebuilt from captures reproduces or fails; one rebuilt live is a fresh
+ * sample of a moving web each time. Both are legitimate and the mixture is the
+ * thing that must not be silent, because a partly-archived corpus reads in every
+ * other report exactly like a fully archived one. */
+function coverage(spec: CorpusSpec): { urls: number; archived: number } {
+  if (!spec.fetch) return { urls: 0, archived: 0 };
+  const lines = readFileSync(join(REPO, spec.fetch.urls), 'utf8')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0 && !line.startsWith('#'));
+  return { urls: lines.length, archived: lines.filter((line) => /\s/.test(line)).length };
 }
 
 function readJson<T>(file: string): T | undefined {
@@ -78,8 +97,17 @@ function collect(): Row[] {
       findings: readJson<Findings>(join(REPO, 'gates', `findings-${spec.id}.json`)),
       present: existsSync(join(REPO, 'gates', 'corpora', spec.id)),
       pack: pack.id,
+      ...coverage(spec),
     };
   });
+}
+
+/** Where a rebuild of this corpus would read from. `archived` is the one that
+ * reproduces or fails; anything else is partly or wholly a fresh sample. */
+function origin(row: Row): string {
+  if (!row.urls) return '-';
+  if (!row.archived) return 'live';
+  return row.archived === row.urls ? 'archived' : `${row.archived}/${row.urls}`;
 }
 
 function main(): void {
@@ -90,10 +118,11 @@ function main(): void {
   const id = width((row) => row.spec.id, 'corpus');
   const lang = width((row) => row.spec.lang, 'lang');
   const baseline = width((row) => row.findings?.pack ?? '-', 'baseline');
+  const source = width(origin, 'source');
 
   console.log(
     `${'corpus'.padEnd(id)}  ${'lang'.padEnd(lang)}  ${'baseline'.padEnd(baseline)}  ` +
-      `${'docs'.padStart(5)}  ${'characters'.padStart(10)}  local`,
+      `${'docs'.padStart(5)}  ${'characters'.padStart(10)}  ${'source'.padEnd(source)}  local`,
   );
 
   let totalDocuments = 0;
@@ -109,6 +138,7 @@ function main(): void {
         `${(row.findings?.pack ?? '-').padEnd(baseline)}  ` +
         `${(row.documents ? grouped(documents) : '-').padStart(5)}  ` +
         `${(row.documents ? grouped(characters) : '-').padStart(10)}  ` +
+        `${origin(row).padEnd(source)}  ` +
         `${row.present ? 'present' : 'absent'}`,
     );
   }

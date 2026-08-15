@@ -15,6 +15,10 @@
 # once before it was frozen here, so none of them 404s on the next person to run
 # `pnpm corpus`.
 # Frozen 2026-08-10. format: html
+#
+# A second column is an Internet Archive capture: fixed bytes, so a rebuild
+# reproduces instead of resampling. A URL without one is fetched live, and
+# `--live` ignores the column entirely. gates/README.md has the coverage.
 https://journals.openedition.org/rfsic/18795
 https://journals.openedition.org/rfsic/18845
 https://journals.openedition.org/rfsic/18863
@@ -41,16 +45,16 @@ https://journals.openedition.org/questionsdecommunication/43167
 https://journals.openedition.org/questionsdecommunication/43307
 https://journals.openedition.org/questionsdecommunication/43355
 https://journals.openedition.org/questionsdecommunication/43477
-https://journals.openedition.org/terrain/29023
-https://journals.openedition.org/terrain/27843
-https://journals.openedition.org/terrain/28855
-https://journals.openedition.org/terrain/27929
-https://journals.openedition.org/terrain/27941
-https://journals.openedition.org/terrain/28209
-https://journals.openedition.org/terrain/27994
-https://journals.openedition.org/terrain/28274
-https://journals.openedition.org/terrain/28377
-https://journals.openedition.org/terrain/28451
-https://journals.openedition.org/terrain/28540
-https://journals.openedition.org/terrain/28638
-https://journals.openedition.org/terrain/28687
+https://journals.openedition.org/terrain/29023 20260520134704
+https://journals.openedition.org/terrain/27843 20260422201809
+https://journals.openedition.org/terrain/28855 20260313164218
+https://journals.openedition.org/terrain/27929 20260211012331
+https://journals.openedition.org/terrain/27941 20260206160602
+https://journals.openedition.org/terrain/28209 20260211012331
+https://journals.openedition.org/terrain/27994 20260211012331
+https://journals.openedition.org/terrain/28274 20260211012331
+https://journals.openedition.org/terrain/28377 20260214235325
+https://journals.openedition.org/terrain/28451 20260211012331
+https://journals.openedition.org/terrain/28540 20260211012338
+https://journals.openedition.org/terrain/28638 20260211012338
+https://journals.openedition.org/terrain/28687 20260211012331

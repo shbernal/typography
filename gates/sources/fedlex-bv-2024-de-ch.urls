@@ -13,4 +13,8 @@
 # The URL carries its consolidation date, so it is immutable.
 #
 # format: html   region: <body>
-https://www.fedlex.admin.ch/filestore/fedlex.data.admin.ch/eli/cc/1999/404/20240303/de/html/fedlex-data-admin-ch-eli-cc-1999-404-20240303-de-html.html
+#
+# A second column is an Internet Archive capture: fixed bytes, so a rebuild
+# reproduces instead of resampling. A URL without one is fetched live, and
+# `--live` ignores the column entirely. gates/README.md has the coverage.
+https://www.fedlex.admin.ch/filestore/fedlex.data.admin.ch/eli/cc/1999/404/20240303/de/html/fedlex-data-admin-ch-eli-cc-1999-404-20240303-de-html.html 20260620220415

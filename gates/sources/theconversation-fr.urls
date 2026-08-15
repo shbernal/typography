@@ -10,46 +10,50 @@
 # French by counting function words in the extracted text, not by trusting the
 # feed, and seven English articles were dropped.
 # Frozen 2026-08-10. format: html
-https://theconversation.com/ce-que-les-sciences-sociales-doivent-a-edgar-morin-289070
-https://theconversation.com/latelier-nawak-ou-les-ressorts-des-lieux-mythiques-de-la-creation-286909
-https://theconversation.com/le-maroc-futur-leader-continental-africain-des-data-centers-et-de-lia-288658
-https://theconversation.com/equilibrer-son-alimentation-malgre-la-precarite-enquete-sur-les-strategies-des-classes-populaires-287821
-https://theconversation.com/heritons-nous-des-traumatismes-de-nos-parents-pas-exactement-289107
-https://theconversation.com/des-millions-de-cliches-condamnes-a-disparaitre-lheritage-photographique-oublie-de-la-physique-des-particules-283940
-https://theconversation.com/sous-le-soleil-noir-les-plus-grandes-eclipses-de-lhistoire-du-cinema-288216
-https://theconversation.com/comment-les-eclipses-ont-ouvert-la-cour-imperiale-chinoise-aux-sciences-europeennes-289241
-https://theconversation.com/comment-leclipse-permettra-dobserver-le-soleil-devier-la-lumiere-des-etoiles-288985
-https://theconversation.com/eclipse-solaire-tout-ce-quil-faut-faire-et-eviter-pour-observer-le-soleil-sans-risque-288984
-https://theconversation.com/dou-viennent-ces-mysterieux-signaux-venus-de-lespace-nous-avons-trouve-leur-pierre-de-rosette-287213
-https://theconversation.com/les-gobelets-de-cafe-jetables-liberent-des-microplastiques-surtout-lorsquils-sont-tres-chauds-287210
-https://theconversation.com/le-royaume-uni-le-japon-et-litalie-peuvent-ils-reussir-leur-avion-de-combat-de-sixieme-generation-la-ou-la-france-et-ses-partenaires-ont-echoue-289056
-https://theconversation.com/faire-roter-sa-maison-cette-habitude-allemande-est-elle-bonne-pour-la-sante-287212
-https://theconversation.com/a-quoi-doit-on-faire-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209
-https://theconversation.com/dans-les-forets-des-landes-le-stockage-de-co-atteint-ses-limites-et-ce-nest-pas-seulement-du-aux-incendies-289163
-https://theconversation.com/pourquoi-les-boutons-sont-ils-a-droite-sur-les-vetements-dhomme-et-a-gauche-sur-ceux-des-femmes-287207
-https://theconversation.com/pourquoi-certains-chocolats-ne-fondent-ils-pas-malgre-la-chaleur-288295
-https://theconversation.com/pourquoi-le-vote-des-personnes-detenues-doit-etre-preserve-283455
-https://theconversation.com/la-guerre-contre-les-houthistes-du-yemen-peut-elle-detourner-riyad-du-soudan-288862
-https://theconversation.com/quand-la-paix-devient-suspecte-pourquoi-peter-thiel-voit-le-pape-comme-lantechrist-288158
-https://theconversation.com/les-entreprises-qui-passent-a-la-semaine-de-quatre-jours-sont-elles-plus-productives-une-etude-menee-sur-15-entreprises-apporte-des-reponses-288018
-https://theconversation.com/fusion-froide-quand-la-competition-et-la-pression-mediatique-virent-a-la-bavure-scientifique-286459
-https://theconversation.com/decharges-sauvages-decharges-anciennes-comment-surmonter-la-tentation-de-loubli-287891
-https://theconversation.com/les-robots-agricoles-annoncent-ils-vraiment-une-nouvelle-revolution-286606
-https://theconversation.com/renseignement-comment-les-services-secrets-sont-devenus-un-pilier-de-letat-285503
-https://theconversation.com/incendies-le-retour-a-la-maison-angle-mort-de-la-gestion-de-crise-288860
-https://theconversation.com/donald-trump-ou-la-contagion-du-mal-ordinaire-288861
-https://theconversation.com/il-ny-a-pas-si-longtemps-les-grillons-chantaient-dans-le-metro-parisien-288142
-https://theconversation.com/de-1940-a-1944-quel-vehicule-roulait-en-labsence-de-petrole-283801
-https://theconversation.com/dans-lantiquite-les-grecs-netaient-pas-tous-bodybuildes-285079
-https://theconversation.com/leclipse-solaire-un-spectacle-impressionnant-source-de-mythes-et-de-decouvertes-scientifiques-283920
-https://theconversation.com/quelles-sont-les-limites-de-la-clim-288010
-https://theconversation.com/canicules-le-role-de-lisolation-et-de-linertie-thermique-des-batiments-pour-se-proteger-contre-la-chaleur-287925
-https://theconversation.com/pourquoi-a-t-on-envie-de-manger-du-sale-au-bord-de-la-mer-288957
-https://theconversation.com/ce-que-lacces-aux-toilettes-publiques-revele-des-inegalites-de-genre-dans-les-villes-288744
-https://theconversation.com/ladministration-trump-veut-priver-les-citoyens-dun-puissant-levier-pour-proteger-lenvironnement-289055
-https://theconversation.com/la-defaite-de-la-selecao-peut-elle-couter-une-election-presidentielle-au-bresil-288655
-https://theconversation.com/le-pouvoir-politique-face-aux-incendies-depuis-la-rome-de-neron-un-exercice-de-mise-en-scene-288896
-https://theconversation.com/en-gironde-les-vulnerabilites-des-forets-ne-disparaitront-pas-avec-la-fumee-des-incendies-288956
-https://theconversation.com/plateformes-de-svod-quand-le-consommateur-est-pret-a-payer-moins-cher-son-abonnement-en-echange-du-visionnage-de-publicites-286198
-https://theconversation.com/la-souverainete-energetique-passe-t-elle-forcement-par-lelectrification-lexemple-du-solaire-thermique-mieux-developpe-dans-dautres-pays-pas-forcement-plus-ensoleilles-286900
-https://theconversation.com/redessiner-le-monde-pour-mieux-le-comprendre-le-pouvoir-politique-des-contre-cartes-284467
+#
+# A second column is an Internet Archive capture: fixed bytes, so a rebuild
+# reproduces instead of resampling. A URL without one is fetched live, and
+# `--live` ignores the column entirely. gates/README.md has the coverage.
+https://theconversation.com/ce-que-les-sciences-sociales-doivent-a-edgar-morin-289070 20260810031034
+https://theconversation.com/latelier-nawak-ou-les-ressorts-des-lieux-mythiques-de-la-creation-286909 20260810064406
+https://theconversation.com/le-maroc-futur-leader-continental-africain-des-data-centers-et-de-lia-288658 20260810055500
+https://theconversation.com/equilibrer-son-alimentation-malgre-la-precarite-enquete-sur-les-strategies-des-classes-populaires-287821 20260810073300
+https://theconversation.com/heritons-nous-des-traumatismes-de-nos-parents-pas-exactement-289107 20260810082121
+https://theconversation.com/des-millions-de-cliches-condamnes-a-disparaitre-lheritage-photographique-oublie-de-la-physique-des-particules-283940 20260809154552
+https://theconversation.com/sous-le-soleil-noir-les-plus-grandes-eclipses-de-lhistoire-du-cinema-288216 20260809091152
+https://theconversation.com/comment-les-eclipses-ont-ouvert-la-cour-imperiale-chinoise-aux-sciences-europeennes-289241 20260809065105
+https://theconversation.com/comment-leclipse-permettra-dobserver-le-soleil-devier-la-lumiere-des-etoiles-288985 20260809071117
+https://theconversation.com/eclipse-solaire-tout-ce-quil-faut-faire-et-eviter-pour-observer-le-soleil-sans-risque-288984 20260809083448
+https://theconversation.com/dou-viennent-ces-mysterieux-signaux-venus-de-lespace-nous-avons-trouve-leur-pierre-de-rosette-287213 20260809030049
+https://theconversation.com/les-gobelets-de-cafe-jetables-liberent-des-microplastiques-surtout-lorsquils-sont-tres-chauds-287210 20260809024352
+https://theconversation.com/le-royaume-uni-le-japon-et-litalie-peuvent-ils-reussir-leur-avion-de-combat-de-sixieme-generation-la-ou-la-france-et-ses-partenaires-ont-echoue-289056 20260809005201
+https://theconversation.com/faire-roter-sa-maison-cette-habitude-allemande-est-elle-bonne-pour-la-sante-287212 20260808031956
+https://theconversation.com/a-quoi-doit-on-faire-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209 20260808135100
+https://theconversation.com/dans-les-forets-des-landes-le-stockage-de-co-atteint-ses-limites-et-ce-nest-pas-seulement-du-aux-incendies-289163 20260809005201
+https://theconversation.com/pourquoi-les-boutons-sont-ils-a-droite-sur-les-vetements-dhomme-et-a-gauche-sur-ceux-des-femmes-287207 20260809005201
+https://theconversation.com/pourquoi-certains-chocolats-ne-fondent-ils-pas-malgre-la-chaleur-288295 20260809005201
+https://theconversation.com/pourquoi-le-vote-des-personnes-detenues-doit-etre-preserve-283455 20260809005201
+https://theconversation.com/la-guerre-contre-les-houthistes-du-yemen-peut-elle-detourner-riyad-du-soudan-288862 20260809005201
+https://theconversation.com/quand-la-paix-devient-suspecte-pourquoi-peter-thiel-voit-le-pape-comme-lantechrist-288158 20260809005201
+https://theconversation.com/les-entreprises-qui-passent-a-la-semaine-de-quatre-jours-sont-elles-plus-productives-une-etude-menee-sur-15-entreprises-apporte-des-reponses-288018 20260809005201
+https://theconversation.com/fusion-froide-quand-la-competition-et-la-pression-mediatique-virent-a-la-bavure-scientifique-286459 20260808164203
+https://theconversation.com/decharges-sauvages-decharges-anciennes-comment-surmonter-la-tentation-de-loubli-287891 20260809005201
+https://theconversation.com/les-robots-agricoles-annoncent-ils-vraiment-une-nouvelle-revolution-286606 20260809005201
+https://theconversation.com/renseignement-comment-les-services-secrets-sont-devenus-un-pilier-de-letat-285503 20260809005201
+https://theconversation.com/incendies-le-retour-a-la-maison-angle-mort-de-la-gestion-de-crise-288860 20260809005201
+https://theconversation.com/donald-trump-ou-la-contagion-du-mal-ordinaire-288861 20260809005201
+https://theconversation.com/il-ny-a-pas-si-longtemps-les-grillons-chantaient-dans-le-metro-parisien-288142 20260809005201
+https://theconversation.com/de-1940-a-1944-quel-vehicule-roulait-en-labsence-de-petrole-283801 20260809005201
+https://theconversation.com/dans-lantiquite-les-grecs-netaient-pas-tous-bodybuildes-285079 20260809005201
+https://theconversation.com/leclipse-solaire-un-spectacle-impressionnant-source-de-mythes-et-de-decouvertes-scientifiques-283920 20260809005201
+https://theconversation.com/quelles-sont-les-limites-de-la-clim-288010 20260811015726
+https://theconversation.com/canicules-le-role-de-lisolation-et-de-linertie-thermique-des-batiments-pour-se-proteger-contre-la-chaleur-287925 20260809005201
+https://theconversation.com/pourquoi-a-t-on-envie-de-manger-du-sale-au-bord-de-la-mer-288957 20260809005201
+https://theconversation.com/ce-que-lacces-aux-toilettes-publiques-revele-des-inegalites-de-genre-dans-les-villes-288744 20260809005201
+https://theconversation.com/ladministration-trump-veut-priver-les-citoyens-dun-puissant-levier-pour-proteger-lenvironnement-289055 20260809005201
+https://theconversation.com/la-defaite-de-la-selecao-peut-elle-couter-une-election-presidentielle-au-bresil-288655 20260809005201
+https://theconversation.com/le-pouvoir-politique-face-aux-incendies-depuis-la-rome-de-neron-un-exercice-de-mise-en-scene-288896 20260809005201
+https://theconversation.com/en-gironde-les-vulnerabilites-des-forets-ne-disparaitront-pas-avec-la-fumee-des-incendies-288956 20260809064853
+https://theconversation.com/plateformes-de-svod-quand-le-consommateur-est-pret-a-payer-moins-cher-son-abonnement-en-echange-du-visionnage-de-publicites-286198 20260809005201
+https://theconversation.com/la-souverainete-energetique-passe-t-elle-forcement-par-lelectrification-lexemple-du-solaire-thermique-mieux-developpe-dans-dautres-pays-pas-forcement-plus-ensoleilles-286900 20260809005201
+https://theconversation.com/redessiner-le-monde-pour-mieux-le-comprendre-le-pouvoir-politique-des-contre-cartes-284467 20260809005201

@@ -43,7 +43,9 @@ could not. The reproduction gate cannot run in CI at all, for the reason below.
 ## Every corpus is rebuildable
 
 A gate you cannot re-run is worth less than one you can, so all eight corpora are
-rebuilt from frozen URL lists by `node scripts/fetch-corpus.ts`.
+rebuilt from frozen URL lists by `node scripts/fetch-corpus.ts`. 141 of the 240
+URLs are read from an archived capture rather than from the live page; see "Where
+the bytes come from" for which, and for what a frozen URL does not freeze.
 
 | Corpus | Language | Source |
 |---|---|---|
@@ -241,13 +243,62 @@ much. 37 documents carrying the entire `de-CH` guillemet evidence base means one
 withdrawal moved that exposure by 5%, and no amount of pinning fixes that; see
 the note on `de-CH` exposure under "Gaps the corpora found".
 
+## Where the bytes come from: captures where there are any
+
+Every story above is one shape: a frozen URL freezes an address, and an address
+is not a document. So a line in `gates/sources/*.urls` may carry a second column,
+the timestamp of an Internet Archive capture, and that capture is what a rebuild
+reads. `--live` asks the publisher instead, which is the only way to find out
+whether these addresses still resolve and is what the monthly workflow runs.
+
+The mechanic is Wayback's `id_` modifier, which returns a capture as it was
+received rather than rewritten for a reader, so the `region` and `drop` selectors
+match exactly what they match live. `scripts/fetch-corpus.ts` says the rest,
+including the one edge that costs an afternoon.
+
+**Coverage, measured over all 240 URLs and not assumed:**
+
+| Corpus | Archived | Why the rest are not |
+|---|---|---|
+| `theconversation-fr` | 43 of 43 | |
+| `boe-lopdgdd-2018-es` | 1 of 1 | |
+| `fedlex-bv-2024-de-ch` | 1 of 1 | |
+| `aepd-faq-es` | 80 of 116 | 30 captures predate the pins, some by two years, and there is no newer one |
+| `openedition-journals-fr` | 13 of 39 | 22 never captured; 4 captured an anti-bot challenge page, served at 200 |
+| `admin-ch-medien-de-ch` | 3 of 36 | 32 captures replay as `403`: the archive holds admin.ch's refusal, not the press release |
+| `bsi-kompendium-2023-de` | 0 of 1 | never captured |
+| `fundeu-rae-es` | 0 of 3 | never captured, which is a crawler not following a `wp-json` query |
+
+**Every timestamp committed here is one whose bytes reproduced the committed pin
+on this machine.** That is the only test that means anything, and it is why the
+table is 141 of 240 rather than the 207 the archive claims to hold: a capture
+that exists and a capture that is the document are different things, and the
+difference showed up as a 403, an interstitial and thirty stale revisions. A
+capture that could not be verified was not written down, so a mixed corpus is
+mixed in a way that is recorded rather than hoped for, and `pnpm gates:status`
+prints the split per corpus in its `source` column.
+
+**The trade, stated plainly.** This swaps a dependency on eight publishers for a
+dependency on one archive, and an archive is a single point of failure in a way
+eight independent publishers are not. It is still the better trade, because not
+changing its bytes is the archive's entire job and serving the current version is
+every publisher's. It is also not a trap: `--live` reproduces the original claim
+exactly, that anyone with a checkout and a network can rebuild these corpora, and
+the three corpora with no useful coverage never stopped depending on it.
+
+What this buys is narrower than "the corpora cannot drift" and worth having: the
+corpus that actually drifted twice is now the one that is fully archived, and the
+four-character disagreement above was solved by fetching the awkward variant on
+demand instead of waiting for CI to serve it.
+
 ## What is committed, and what is not
 
 The corpora are third-party published works and are not this repo's to
 redistribute, so `gates/corpora/` is ignored. What is committed is:
 
 - **`gates/sources/*.urls`**, a frozen list of document URLs, for each corpus
-  that has one.
+  that has one, each line optionally carrying the archive capture a rebuild
+  reads instead of the live page.
 - **`scripts/fetch-corpus.ts`**, which turns a list into text.
 - **`gates/findings-*.json`**, the per-rule counts, exposure counts, samples and
   a corpus fingerprint, for every corpus.

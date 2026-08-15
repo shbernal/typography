@@ -16,5 +16,9 @@
 # would be inventing the evidence this gate is supposed to weigh.
 #
 # Frozen 2026-08-10. format: xml
+#
+# No second column anywhere below: the archive holds no capture of this URL,
+# so this corpus is always fetched live. The `v=4` above is what makes that
+# safe, and it is a stronger pin than a capture would be.
 
 https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Grundschutz/IT-GS-Kompendium/XML_Kompendium_2023.xml?__blob=publicationFile&v=4

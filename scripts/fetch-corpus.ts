@@ -19,9 +19,17 @@
 // disagrees fails naming the file. Writing those records is the separate,
 // deliberate act of `--rebaseline`, never a side effect of fetching.
 //
+// Where the bytes come from is the other half of the same problem. A frozen URL
+// addresses a document on a live web, which is a moving target even while the
+// address never changes, so each line of a list may also carry the timestamp of
+// an Internet Archive capture and that capture is what a default build reads.
+// `--live` asks the publisher instead. That is the only path that can answer
+// "does this URL still resolve", and the only one that should run on a schedule.
+//
 //   node scripts/fetch-corpus.ts                 # every corpus that has a list
 //   node scripts/fetch-corpus.ts --only aepd-faq-es
 //   node scripts/fetch-corpus.ts --refresh       # re-fetch what is already there
+//   node scripts/fetch-corpus.ts --live          # from the publishers, not the archive
 //   node scripts/fetch-corpus.ts --rebaseline    # accept the delta, rewrite the pins
 //
 // Exit codes: 1 the build came back short, 3 a document no longer matches its
@@ -231,11 +239,58 @@ async function get(url: string): Promise<string> {
   }
 }
 
-function readUrls(file: string): string[] {
+/** One line of a URL list: where the document lives, and optionally when the
+ * Internet Archive captured it.
+ *
+ * A second column rather than a parallel file, so that a URL and its snapshot
+ * cannot drift apart. There is one line to edit, and no way to delete a URL while
+ * leaving a snapshot of it behind or to reorder a list into a set of documents
+ * pinned to the wrong captures. The publisher's own URL stays first and stays the
+ * documented source: it is what a reader opens to check that this corpus is what
+ * it says it is, and an archive timestamp is not a citation. */
+interface Source {
+  readonly url: string;
+  readonly snapshot?: string | undefined;
+}
+
+function readSources(file: string): Source[] {
   return readFileSync(file, 'utf8')
     .split('\n')
     .map((line) => line.trim())
-    .filter((line) => line.length > 0 && !line.startsWith('#'));
+    .filter((line) => line.length > 0 && !line.startsWith('#'))
+    .map((line) => {
+      const [url, snapshot] = line.split(/\s+/);
+      // Checked rather than trusted, because the failure is otherwise invisible:
+      // a malformed timestamp still forms a URL, and the archive answers it by
+      // redirecting to whichever capture it thinks was meant. The build would
+      // then succeed, from bytes nothing in this repository names.
+      if (snapshot !== undefined && !/^\d{14}$/.test(snapshot))
+        throw new Error(`${file}: ${snapshot} is not a 14-digit archive timestamp`);
+      return { url: url ?? '', snapshot };
+    });
+}
+
+/** Where to actually ask for a document.
+ *
+ * The `id_` is what makes archived bytes usable here at all. A plain
+ * `web.archive.org/web/<timestamp>/` URL returns the page rewritten - links
+ * repointed at the archive, a toolbar injected into the markup - and every
+ * `region` selector in `gates/corpora.json` is written against the publisher's
+ * own markup. `id_` asks for the capture as it was received, and the selectors
+ * then match what they match live. Measured rather than assumed: the documents
+ * first recovered this way hashed to the pins the manifests already held, on the
+ * first timestamp tried.
+ *
+ * That fidelity has one edge worth writing down. `id_` replays the original
+ * response headers, `Content-Encoding` among them, so a client that does not
+ * inflate gzip is handed compressed bytes, and every selector then matches
+ * nothing at all - which reads exactly like a selector that has rotted. `fetch`
+ * inflates by itself. `curl` without `--compressed` does not, and that is an
+ * afternoon rather than a bug. */
+function sourceUrl(source: Source, live: boolean): string {
+  return !live && source.snapshot
+    ? `https://web.archive.org/web/${source.snapshot}id_/${source.url}`
+    : source.url;
 }
 
 /** The readable part of a document's name: the last two path segments of its
@@ -450,13 +505,24 @@ async function fetchCorpus(spec: CorpusSpec, options: Options): Promise<Outcome>
     // `gates/corpora/`.
     return reconcile(spec.id, describe(dir), new Set(), true, options.rebaseline);
   }
+  // Everything that can be wrong about the corpus definition is read before the
+  // corpus is deleted. All three of these throw on malformed input, and doing it
+  // the other way round means a typo in a list or a pattern takes the documents
+  // with it: the run fails, which is correct, and leaves an empty directory
+  // behind, which turns a one-character fix into a re-fetch of the whole corpus
+  // from somebody else's servers.
+  const region = spec.fetch.region ? new RegExp(spec.fetch.region, 'g') : undefined;
+  const drop = spec.fetch.drop ? new RegExp(spec.fetch.drop, 'g') : undefined;
+  const sources = readSources(join(REPO, spec.fetch.urls));
+
   rmSync(dir, { recursive: true, force: true });
   mkdirSync(dir, { recursive: true });
 
-  const region = spec.fetch.region ? new RegExp(spec.fetch.region, 'g') : undefined;
-  const drop = spec.fetch.drop ? new RegExp(spec.fetch.drop, 'g') : undefined;
-  const urls = readUrls(join(REPO, spec.fetch.urls));
-  const names = namesFor(urls);
+  // From the publisher's URL, never from the archive's. A document is the same
+  // document whichever of the two it arrived through, and naming it after the
+  // thing that was fetched would rename every document in the repository on the
+  // day a snapshot column was added, re-cutting eight manifests to say nothing.
+  const names = namesFor(sources.map((source) => source.url));
   const claimed = new Set<string>();
   // The names of documents this build already knows it does not have, so that
   // `verify` does not report them a second time as having vanished from the
@@ -469,11 +535,23 @@ async function fetchCorpus(spec: CorpusSpec, options: Options): Promise<Outcome>
   let empty = 0;
   let failed = 0;
 
-  for (const [at, url] of urls.entries()) {
-    const named = spec.fetch.format === 'wp-json' ? undefined : (names[at] ?? tailOf(url));
+  // Said out loud, every time, because a corpus assembled half from captures and
+  // half from a live web is a different kind of evidence from either and the
+  // difference is otherwise invisible in the output. `gates:status` reports the
+  // same coverage without a network, from the lists alone.
+  const archived = sources.filter((source) => source.snapshot).length;
+  console.log(
+    options.live
+      ? `${spec.id}: ${sources.length} URL(s), all live`
+      : `${spec.id}: ${sources.length} URL(s), ${archived} archived` +
+          (archived < sources.length ? `, ${sources.length - archived} live` : ''),
+  );
+
+  for (const [at, source] of sources.entries()) {
+    const named = spec.fetch.format === 'wp-json' ? undefined : (names[at] ?? tailOf(source.url));
     let body: string;
     try {
-      body = await get(url);
+      body = await get(sourceUrl(source, options.live));
     } catch (error) {
       // Counted, not just logged. A document that does not arrive makes the
       // corpus smaller than the list it was built from, and a rebuild that
@@ -498,7 +576,7 @@ async function fetchCorpus(spec: CorpusSpec, options: Options): Promise<Outcome>
       for (const post of posts)
         documents.push({ name: `${String(post.id)}.txt`, markup: post.content.rendered });
     } else {
-      documents.push({ name: named ?? tailOf(url), markup: body });
+      documents.push({ name: named ?? tailOf(source.url), markup: body });
     }
 
     for (const document of documents) {
@@ -506,6 +584,13 @@ async function fetchCorpus(spec: CorpusSpec, options: Options): Promise<Outcome>
       // An empty extraction means the region selector missed, and a corpus
       // quietly short of the documents it claims is the failure this counts.
       if (text.trim().length === 0) {
+        // Named, not just counted. This is the one failure that says nothing
+        // about itself otherwise: a document that did not arrive is reported
+        // with the URL that refused it, and a document that changed is reported
+        // by `verify` against its record, but an empty extraction is suppressed
+        // from both - by `absent` - and would leave a corpus short by a number
+        // with no file attached to it.
+        console.error(`  ${spec.id}: ${document.name} extracted to nothing`);
         absent.add(document.name);
         empty++;
         continue;
@@ -537,7 +622,7 @@ async function fetchCorpus(spec: CorpusSpec, options: Options): Promise<Outcome>
 
   if (empty || failed)
     console.error(
-      `  ${spec.id} is short ${empty + failed} of the ${urls.length} documents its list names. ` +
+      `  ${spec.id} is short ${empty + failed} of the ${sources.length} documents its list names. ` +
         'Do not re-baseline the gate from this build.',
     );
 
@@ -547,6 +632,7 @@ async function fetchCorpus(spec: CorpusSpec, options: Options): Promise<Outcome>
 interface Options {
   readonly refresh: boolean;
   readonly rebaseline: boolean;
+  readonly live: boolean;
   readonly only?: string | undefined;
 }
 
@@ -556,6 +642,7 @@ async function main(): Promise<void> {
   const options: Options = {
     refresh: args.includes('--refresh'),
     rebaseline: args.includes('--rebaseline'),
+    live: args.includes('--live'),
     only: args.includes('--only') ? onlyArg : undefined,
   };
 

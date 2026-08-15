@@ -11,4 +11,8 @@
 # fingerprint is what notices.
 #
 # format: xml   region: <texto>
-https://www.boe.es/diario_boe/xml.php?id=BOE-A-2018-16673
+#
+# A second column is an Internet Archive capture: fixed bytes, so a rebuild
+# reproduces instead of resampling. A URL without one is fetched live, and
+# `--live` ignores the column entirely. gates/README.md has the coverage.
+https://www.boe.es/diario_boe/xml.php?id=BOE-A-2018-16673 20260112084931
