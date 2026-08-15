@@ -332,7 +332,13 @@ redistribute, so `gates/corpora/` is ignored. What is committed is:
   reads instead of the live page.
 - **`scripts/fetch-corpus.ts`**, which turns a list into text.
 - **`gates/findings-*.json`**, the per-rule counts, exposure counts, samples and
-  a corpus fingerprint, for every corpus.
+  a corpus fingerprint, for every corpus, plus a copy of that corpus's `note`
+  from `gates/corpora.json` so the counts and the reason the corpus exists are
+  one artefact. The note is the only field in there that is not a measurement,
+  and `--verify` treats it that way: a difference confined to it is reported and
+  does not fail, because a release gate that goes red for a typo fix is one
+  people learn to re-run with `--rebaseline`. The file is still stale and still
+  has to be regenerated; a note that changed alongside a count still fails.
 - **`gates/documents-*.json`**, a character count and a hash for each document in
   each corpus. Metadata about somebody else's text rather than the text, so it is
   this repo's to commit. It does two jobs. It makes a disagreement legible - the

@@ -262,12 +262,43 @@ function main(): void {
     }
 
     if (verify) {
-      if (!existsSync(out) || readFileSync(out, 'utf8') !== serialized) {
-        console.error(`\n--verify: ${spec.id} has moved from the committed baseline (${out}).`);
-        process.exitCode = 1;
+      const committed = existsSync(out) ? readFileSync(out, 'utf8') : undefined;
+      if (committed === serialized) {
+        console.log('  unchanged from the committed baseline.');
         continue;
       }
-      console.log('  unchanged from the committed baseline.');
+
+      // The comparison is byte for byte over the whole file, deliberately: it
+      // catches a key that moved and a number that was hand-edited as well as a
+      // count that changed, and anything narrower is a list of the fields
+      // somebody thought of.
+      //
+      // `note` is the one field in it that is not a measurement. It is copied
+      // here from `gates/corpora.json` so that the counts and the reason this
+      // corpus exists sit in one artefact, and the cost of that was a release
+      // gate going red for a typo fix: editing the prose in the manifest fails
+      // `--verify` on a corpus whose text and numbers have not moved. A gate that
+      // goes red for proofreading is a gate people learn to re-run with
+      // `--rebaseline`, which is the habit every other line of this file is
+      // written to prevent.
+      //
+      // So a difference confined to the note is reported and does not fail. The
+      // committed file is still stale and still has to be regenerated; what it is
+      // not is a reason to stop a release. Everything else, including a note
+      // changing *alongside* a count, fails as before.
+      if (committed !== undefined) {
+        const prose = (JSON.parse(committed) as { note?: string }).note;
+        if (`${JSON.stringify({ ...report, note: prose }, null, 2)}\n` === committed) {
+          console.log(
+            '  measurements unchanged; the note in gates/corpora.json has been edited since\n' +
+              `  ${out} was written. Re-run \`pnpm gates\` to copy the prose across.`,
+          );
+          continue;
+        }
+      }
+
+      console.error(`\n--verify: ${spec.id} has moved from the committed baseline (${out}).`);
+      process.exitCode = 1;
       continue;
     }
 
