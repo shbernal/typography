@@ -51,7 +51,7 @@ interface CorpusSpec {
  * contained anything the rule could match. The first is the result the gate
  * exists to produce and the second is a vacuous run reported as a pass. The
  * counts make the difference readable, and `exposes` makes it enforceable. */
-const EXPOSURE: readonly (readonly [string, string])[] = [
+export const EXPOSURE: readonly (readonly [string, string])[] = [
   ['U+00AB «', '«'],
   ['U+00BB »', '»'],
   ['U+201E „', '„'],
@@ -70,7 +70,7 @@ const EXPOSURE: readonly (readonly [string, string])[] = [
   ['U+202F NNBSP', ' '],
 ];
 
-function countOccurrences(value: string, mark: string): number {
+export function countOccurrences(value: string, mark: string): number {
   let total = 0;
   let at = value.indexOf(mark);
   while (at !== -1) {
@@ -81,12 +81,12 @@ function countOccurrences(value: string, mark: string): number {
 }
 
 /** One value of running text, with enough identity to find it again. */
-interface Unit {
+export interface Unit {
   readonly where: string;
   readonly text: string;
 }
 
-function fromText(dir: string): Unit[] {
+export function fromText(dir: string): Unit[] {
   const units: Unit[] = [];
   const walk = (at: string): void => {
     // Sorted, for the reason `fetch-corpus.ts` states about its own reader:
@@ -305,4 +305,14 @@ function main(): void {
   }
 }
 
-main();
+// Only when this file is the thing that was run, for the reason
+// `scripts/fetch-corpus.ts` states at greater length: `EXPOSURE`, `fromText` and
+// `countOccurrences` are what "how many of these characters are in this corpus"
+// means in this repository, and `gates-status.ts --fragility` asks the same
+// question per document. Importing them must not run the gate, and a second copy
+// of the character table would be a second answer to the same question.
+//
+// `import.meta.main` would say this in one word and is not available on the Node
+// 22 this package declares support for, where it reads `undefined` and the script
+// would do nothing at all when run.
+if (resolve(process.argv[1] ?? '') === fileURLToPath(import.meta.url)) main();

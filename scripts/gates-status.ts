@@ -13,12 +13,22 @@
 // `pnpm check` and it does not fail on what it flags.
 //
 //   node scripts/gates-status.ts
+//   node scripts/gates-status.ts --fragility
+//
+// `--fragility` is the one thing here that does need the corpora, and it needs
+// them for a reason worth stating rather than working around: how much of a
+// corpus's exposure sits in a single document is a fact about the text, and the
+// committed files describe the text per document only by length and hash. It is
+// a separate mode rather than a separate script because it answers the same
+// question as the table above it - what are these corpora, really - one level
+// further down.
 
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { packFor } from '../src/check.ts';
+import { countOccurrences, EXPOSURE, fromText } from './gate-findings.ts';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const MANIFEST = join(REPO, 'gates', 'corpora.json');
@@ -108,6 +118,74 @@ function origin(row: Row): string {
   if (!row.urls) return '-';
   if (!row.archived) return 'live';
   return row.archived === row.urls ? 'archived' : `${row.archived}/${row.urls}`;
+}
+
+/** How much of a corpus's declared exposure dies with one document.
+ *
+ * `exposes` says a corpus is here to put the rules in front of a character, and
+ * the findings report says how many of that character it contains. Neither says
+ * how that total is distributed, and the distribution is what decides whether the
+ * number is evidence or an accident. `admin-ch-medien-de-ch` is the case that
+ * asked for this: one press release withdrawn by its publisher took two of 38
+ * Swiss guillemet pairs with it, 5% of the entire `de-CH` quotation evidence
+ * base, and nothing in the repository would have said in advance that a single
+ * document mattered that much.
+ *
+ * A share is printed per character rather than per corpus because they come
+ * apart: a corpus can be broad in one mark and hang off one document in another.
+ *
+ * A one-document corpus is trivially 100% and is not a finding. A constitution
+ * does not lose a paragraph, and the pins would catch it if it did; the number to
+ * read here is the one from a corpus that could have spread its exposure and did
+ * not. */
+function fragility(rows: readonly Row[]): void {
+  console.log('\nhow much of the declared exposure a single document holds:');
+
+  for (const row of rows) {
+    const declared = row.spec.exposes ?? [];
+    if (!row.present) {
+      console.log(`\n  ${row.spec.id}: not on this machine, so its documents cannot be read`);
+      continue;
+    }
+    if (!declared.length) {
+      console.log(`\n  ${row.spec.id}: declares nothing`);
+      continue;
+    }
+
+    const units = fromText(join(REPO, 'gates', 'corpora', row.spec.id));
+    console.log(
+      `\n  ${row.spec.id}  (${grouped(units.length)} document${units.length === 1 ? '' : 's'})`,
+    );
+
+    for (const mark of declared) {
+      // By label rather than by the bare character, for the reason
+      // `gate-findings.ts` gives where it checks the same field: half of them are
+      // invisible, and a JSON file is exactly where a no-break space is silently
+      // retyped as a space.
+      const entry = EXPOSURE.find(([name, character]) => name === mark || character === mark);
+      if (!entry) throw new Error(`${row.spec.id}: exposes ${mark}, which is not a counted mark`);
+
+      const counts = units.map((unit) => ({
+        where: unit.where,
+        count: countOccurrences(unit.text, entry[1]),
+      }));
+      const total = counts.reduce((sum, one) => sum + one.count, 0);
+      if (total === 0) {
+        // The findings gate fails on this rather than reporting it, so reaching
+        // here means the corpora on disk are not the ones the gate last passed.
+        console.log(`    ${entry[0].padEnd(13)} none, which the findings gate fails on`);
+        continue;
+      }
+
+      const holding = counts.filter((one) => one.count > 0).length;
+      const largest = counts.reduce((most, one) => (one.count > most.count ? one : most));
+      const share = Math.round((largest.count * 100) / total);
+      console.log(
+        `    ${entry[0].padEnd(13)} ${String(grouped(total)).padStart(6)} in ${String(holding).padStart(4)} of ${String(units.length).padStart(4)} documents` +
+          `    largest ${String(grouped(largest.count)).padStart(5)}  ${String(share).padStart(3)}%  ${largest.where}`,
+      );
+    }
+  }
 }
 
 function main(): void {
@@ -217,6 +295,8 @@ function main(): void {
       `\n${absent.length} of ${rows.length} corpora are not on this machine. ` +
         'They are ignored rather than missing; `pnpm corpus` builds them from the committed URL lists.',
     );
+
+  if (process.argv.includes('--fragility')) fragility(rows);
 }
 
 main();
