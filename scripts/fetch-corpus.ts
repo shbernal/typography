@@ -228,18 +228,54 @@ function readUrls(file: string): string[] {
     .filter((line) => line.length > 0 && !line.startsWith('#'));
 }
 
-/** A stable, readable file name for a document, derived from its URL. */
-function nameFor(url: string, index: number): string {
-  const tail = url
-    .replace(/^https?:\/\//, '')
-    .replace(/[?#].*$/, '')
-    .split('/')
-    .filter(Boolean)
-    .slice(-2)
-    .join('-')
-    .replace(/[^A-Za-z0-9._-]/g, '-')
-    .slice(-60);
-  return `${String(index).padStart(4, '0')}-${tail || 'document'}.txt`;
+/** The readable part of a document's name: the last two path segments of its
+ * URL, flattened to characters a filesystem will not argue about. */
+function tailOf(url: string): string {
+  return (
+    url
+      .replace(/^https?:\/\//, '')
+      .replace(/[?#].*$/, '')
+      .split('/')
+      .filter(Boolean)
+      .slice(-2)
+      .join('-')
+      .replace(/[^A-Za-z0-9._-]/g, '-')
+      .slice(-60) || 'document'
+  );
+}
+
+/** A stable file name for every document in a list, derived from its URL and
+ * from nothing else.
+ *
+ * These used to carry the document's zero-padded index in the URL list, which
+ * made a name a statement about where the URL sat rather than about which
+ * document it was. Removing one URL therefore renumbered every document after
+ * it, so deleting a page a publisher had withdrawn - one line in one list -
+ * arrived as a rewrite of most of a manifest, and the real change was somewhere
+ * inside it. The publisher's own stable id is usually already in the tail
+ * (`newnsb-m5dXtFD2sVP_nBvBol-Tm`), and the `wp-json` branch below has never
+ * used a prefix at all, naming by post id.
+ *
+ * What the index also did, by accident, was separate two URLs whose last two
+ * segments coincide. That is done here explicitly instead, and every colliding
+ * URL takes the suffix rather than the second and subsequent ones: a name then
+ * depends on the *set* of URLs and not on the order they appear in, which is the
+ * property the index prefix did not have and the reason it had to go. None of
+ * the seven lists this applies to collides today; the check is here so that the
+ * day one does, it is a rename of two documents rather than two documents
+ * quietly becoming one. */
+function namesFor(urls: readonly string[]): string[] {
+  const tails = urls.map(tailOf);
+  const claims = new Map<string, number>();
+  for (const tail of tails) claims.set(tail, (claims.get(tail) ?? 0) + 1);
+  return tails.map((tail, at) =>
+    (claims.get(tail) ?? 0) > 1
+      ? `${tail}-${createHash('sha256')
+          .update(urls[at] ?? '')
+          .digest('hex')
+          .slice(0, 8)}.txt`
+      : `${tail}.txt`,
+  );
 }
 
 // --- what a build actually produced ---------------------------------------
@@ -352,6 +388,8 @@ async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
   const region = spec.fetch.region ? new RegExp(spec.fetch.region, 'g') : undefined;
   const drop = spec.fetch.drop ? new RegExp(spec.fetch.drop, 'g') : undefined;
   const urls = readUrls(join(REPO, spec.fetch.urls));
+  const names = namesFor(urls);
+  const claimed = new Set<string>();
   let written = 0;
   let characters = 0;
   let empty = 0;
@@ -384,7 +422,7 @@ async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
       for (const post of posts)
         documents.push({ name: `${String(post.id)}.txt`, markup: post.content.rendered });
     } else {
-      documents.push({ name: nameFor(url, at), markup: body });
+      documents.push({ name: names[at] ?? tailOf(url), markup: body });
     }
 
     for (const document of documents) {
@@ -395,6 +433,18 @@ async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
         empty++;
         continue;
       }
+      // `namesFor` has already made the URL-derived names unique, but the
+      // `wp-json` branch names by post id and a paginated API can serve the same
+      // post twice. Either way the symptom would be a corpus one document short
+      // with nothing saying so, since the second write silently replaces the
+      // first and the count of what was asked for is not the count of what is on
+      // disk.
+      if (claimed.has(document.name))
+        throw new Error(
+          `${spec.id}: two documents both named ${document.name}. ` +
+            'The second would overwrite the first and the corpus would come back short.',
+        );
+      claimed.add(document.name);
       writeFileSync(join(dir, document.name), text, 'utf8');
       written++;
       characters += text.length;

@@ -47,14 +47,14 @@
       "findings": 128,
       "units": 1,
       "samples": [
-        "0000-IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"y: Der Baustein wurde in \\\"Active Directory Domain S\"",
-        "0000-IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"Directory Domain Services\\\" umbenannt.\\nAPP.2.3 OpenL\"",
-        "0000-IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"0: Der Baustein wurde in \\\"Clients unter Windows\\\" um\"",
-        "0000-IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"in \\\"Clients unter Windows\\\" umbenannt und behandelt \"",
-        "0000-IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"röffentlicht. Die Anlage \\\"Kreuzreferenztabelle zu e\"",
-        "0000-IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \" elementaren Gefährdungen\\\" wurde in den einzelnen B\"",
-        "0000-IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"bäudes stehen. Aber auch \\\"normaler\\\" Brandrauch kann\"",
-        "0000-IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"ehen. Aber auch \\\"normaler\\\" Brandrauch kann auf dies\""
+        "IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"y: Der Baustein wurde in \\\"Active Directory Domain S\"",
+        "IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"Directory Domain Services\\\" umbenannt.\\nAPP.2.3 OpenL\"",
+        "IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"0: Der Baustein wurde in \\\"Clients unter Windows\\\" um\"",
+        "IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"in \\\"Clients unter Windows\\\" umbenannt und behandelt \"",
+        "IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"röffentlicht. Die Anlage \\\"Kreuzreferenztabelle zu e\"",
+        "IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \" elementaren Gefährdungen\\\" wurde in den einzelnen B\"",
+        "IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"bäudes stehen. Aber auch \\\"normaler\\\" Brandrauch kann\"",
+        "IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"ehen. Aber auch \\\"normaler\\\" Brandrauch kann auf dies\""
       ]
     },
     "de-DE.low-quote-space": {

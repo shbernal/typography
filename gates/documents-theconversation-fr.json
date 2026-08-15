@@ -2,219 +2,219 @@
   "corpus": "theconversation-fr",
   "documents": [
     {
-      "name": "0000-om-ce-que-les-sciences-sociales-doivent-a-edgar-morin-289070.txt",
-      "characters": 9186,
-      "sha": "b98950f7e6ddf80c"
-    },
-    {
-      "name": "0001-ak-ou-les-ressorts-des-lieux-mythiques-de-la-creation-286909.txt",
-      "characters": 10332,
-      "sha": "853d602d3fbddb2f"
-    },
-    {
-      "name": "0002-eader-continental-africain-des-data-centers-et-de-lia-288658.txt",
-      "characters": 6328,
-      "sha": "7425b740b7c69710"
-    },
-    {
-      "name": "0003-ite-enquete-sur-les-strategies-des-classes-populaires-287821.txt",
-      "characters": 7566,
-      "sha": "a453b698620fd933"
-    },
-    {
-      "name": "0004-s-nous-des-traumatismes-de-nos-parents-pas-exactement-289107.txt",
-      "characters": 7314,
-      "sha": "7fabafb9dfcaaf7a"
-    },
-    {
-      "name": "0005-e-photographique-oublie-de-la-physique-des-particules-283940.txt",
-      "characters": 16000,
-      "sha": "d852097c82f7f3c9"
-    },
-    {
-      "name": "0006-noir-les-plus-grandes-eclipses-de-lhistoire-du-cinema-288216.txt",
-      "characters": 8035,
-      "sha": "d2764f3b7f2f31c7"
-    },
-    {
-      "name": "0007-t-la-cour-imperiale-chinoise-aux-sciences-europeennes-289241.txt",
-      "characters": 12661,
-      "sha": "68346a09ff029ca8"
-    },
-    {
-      "name": "0008-tra-dobserver-le-soleil-devier-la-lumiere-des-etoiles-288985.txt",
-      "characters": 6802,
-      "sha": "2ba4810a07626361"
-    },
-    {
-      "name": "0009-t-faire-et-eviter-pour-observer-le-soleil-sans-risque-288984.txt",
-      "characters": 10412,
-      "sha": "8fe79f5ef87e786c"
-    },
-    {
-      "name": "0010-s-de-lespace-nous-avons-trouve-leur-pierre-de-rosette-287213.txt",
-      "characters": 8090,
-      "sha": "beff57c83b3f0e70"
-    },
-    {
-      "name": "0011-es-microplastiques-surtout-lorsquils-sont-tres-chauds-287210.txt",
-      "characters": 6836,
-      "sha": "f87e9ee6748044a5"
-    },
-    {
-      "name": "0012-eration-la-ou-la-france-et-ses-partenaires-ont-echoue-289056.txt",
-      "characters": 8731,
-      "sha": "c6009a7abacdb4b9"
-    },
-    {
-      "name": "0013-cette-habitude-allemande-est-elle-bonne-pour-la-sante-287212.txt",
-      "characters": 7883,
-      "sha": "5ed842acc8e373cd"
-    },
-    {
-      "name": "0014-attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt",
-      "characters": 7930,
-      "sha": "367c3054470bf138"
-    },
-    {
-      "name": "0015-ses-limites-et-ce-nest-pas-seulement-du-aux-incendies-289163.txt",
-      "characters": 17396,
-      "sha": "2a7dab6b39764e58"
-    },
-    {
-      "name": "0016--les-vetements-dhomme-et-a-gauche-sur-ceux-des-femmes-287207.txt",
-      "characters": 5227,
-      "sha": "99f3e41afc70fb00"
-    },
-    {
-      "name": "0017-rtains-chocolats-ne-fondent-ils-pas-malgre-la-chaleur-288295.txt",
-      "characters": 8928,
-      "sha": "df59e16599022fe0"
-    },
-    {
-      "name": "0018-uoi-le-vote-des-personnes-detenues-doit-etre-preserve-283455.txt",
-      "characters": 8300,
-      "sha": "7d261e8b785d629e"
-    },
-    {
-      "name": "0019-uthistes-du-yemen-peut-elle-detourner-riyad-du-soudan-288862.txt",
-      "characters": 11325,
-      "sha": "08c1284b4bb187d6"
-    },
-    {
-      "name": "0020-e-pourquoi-peter-thiel-voit-le-pape-comme-lantechrist-288158.txt",
-      "characters": 11386,
-      "sha": "b7e0c57fc32fd0ba"
-    },
-    {
-      "name": "0021-e-etude-menee-sur-15-entreprises-apporte-des-reponses-288018.txt",
-      "characters": 6936,
-      "sha": "ec7e59c7067d3acd"
-    },
-    {
-      "name": "0022-a-pression-mediatique-virent-a-la-bavure-scientifique-286459.txt",
-      "characters": 8555,
-      "sha": "73696b14f5e41851"
-    },
-    {
-      "name": "0023-es-anciennes-comment-surmonter-la-tentation-de-loubli-287891.txt",
-      "characters": 12939,
-      "sha": "3c466c7aa605def9"
-    },
-    {
-      "name": "0024-icoles-annoncent-ils-vraiment-une-nouvelle-revolution-286606.txt",
-      "characters": 11036,
-      "sha": "3ae86a462a2abbab"
-    },
-    {
-      "name": "0025--les-services-secrets-sont-devenus-un-pilier-de-letat-285503.txt",
-      "characters": 9859,
-      "sha": "1987ed7cac1fdfdb"
-    },
-    {
-      "name": "0026--retour-a-la-maison-angle-mort-de-la-gestion-de-crise-288860.txt",
-      "characters": 10363,
-      "sha": "31276b147429f787"
-    },
-    {
-      "name": "0027-ion.com-donald-trump-ou-la-contagion-du-mal-ordinaire-288861.txt",
-      "characters": 8623,
-      "sha": "ac0cb3ff0cdac498"
-    },
-    {
-      "name": "0028-gtemps-les-grillons-chantaient-dans-le-metro-parisien-288142.txt",
-      "characters": 6761,
-      "sha": "1b2c717ff2acbad0"
-    },
-    {
-      "name": "0029-0-a-1944-quel-vehicule-roulait-en-labsence-de-petrole-283801.txt",
-      "characters": 9520,
-      "sha": "3d1f4cb2ed337ddb"
-    },
-    {
-      "name": "0030-ns-lantiquite-les-grecs-netaient-pas-tous-bodybuildes-285079.txt",
-      "characters": 9225,
-      "sha": "5e5bfdf789c982d3"
-    },
-    {
-      "name": "0031-nant-source-de-mythes-et-de-decouvertes-scientifiques-283920.txt",
-      "characters": 9221,
-      "sha": "45b2194687720190"
-    },
-    {
-      "name": "0032-econversation.com-quelles-sont-les-limites-de-la-clim-288010.txt",
-      "characters": 10280,
-      "sha": "0abb7728448150aa"
-    },
-    {
-      "name": "0033-ique-des-batiments-pour-se-proteger-contre-la-chaleur-287925.txt",
-      "characters": 9150,
-      "sha": "ce7e8cbc4ba9fadb"
-    },
-    {
-      "name": "0034-quoi-a-t-on-envie-de-manger-du-sale-au-bord-de-la-mer-288957.txt",
-      "characters": 7089,
-      "sha": "a91ac903eb955a0f"
-    },
-    {
-      "name": "0035-liques-revele-des-inegalites-de-genre-dans-les-villes-288744.txt",
-      "characters": 7277,
-      "sha": "3d0e3a9fcc34edb0"
-    },
-    {
-      "name": "0036-yens-dun-puissant-levier-pour-proteger-lenvironnement-289055.txt",
-      "characters": 9984,
-      "sha": "0777b38900a1cc03"
-    },
-    {
-      "name": "0037-eut-elle-couter-une-election-presidentielle-au-bresil-288655.txt",
-      "characters": 10793,
-      "sha": "eeb399ad13a0e27d"
-    },
-    {
-      "name": "0038--depuis-la-rome-de-neron-un-exercice-de-mise-en-scene-288896.txt",
+      "name": "-depuis-la-rome-de-neron-un-exercice-de-mise-en-scene-288896.txt",
       "characters": 9019,
       "sha": "b7de6ddc3109183d"
     },
     {
-      "name": "0039-rets-ne-disparaitront-pas-avec-la-fumee-des-incendies-288956.txt",
-      "characters": 11867,
-      "sha": "826812897bd3c1bd"
+      "name": "-le-comprendre-le-pouvoir-politique-des-contre-cartes-284467.txt",
+      "characters": 10215,
+      "sha": "12b6151d763f7668"
     },
     {
-      "name": "0040-son-abonnement-en-echange-du-visionnage-de-publicites-286198.txt",
-      "characters": 7053,
-      "sha": "97a619a66be2ae31"
+      "name": "-les-services-secrets-sont-devenus-un-pilier-de-letat-285503.txt",
+      "characters": 9859,
+      "sha": "1987ed7cac1fdfdb"
     },
     {
-      "name": "0041-oppe-dans-dautres-pays-pas-forcement-plus-ensoleilles-286900.txt",
+      "name": "-les-vetements-dhomme-et-a-gauche-sur-ceux-des-femmes-287207.txt",
+      "characters": 5227,
+      "sha": "99f3e41afc70fb00"
+    },
+    {
+      "name": "-retour-a-la-maison-angle-mort-de-la-gestion-de-crise-288860.txt",
+      "characters": 10363,
+      "sha": "31276b147429f787"
+    },
+    {
+      "name": "0-a-1944-quel-vehicule-roulait-en-labsence-de-petrole-283801.txt",
+      "characters": 9520,
+      "sha": "3d1f4cb2ed337ddb"
+    },
+    {
+      "name": "a-pression-mediatique-virent-a-la-bavure-scientifique-286459.txt",
+      "characters": 8555,
+      "sha": "73696b14f5e41851"
+    },
+    {
+      "name": "ak-ou-les-ressorts-des-lieux-mythiques-de-la-creation-286909.txt",
+      "characters": 10332,
+      "sha": "853d602d3fbddb2f"
+    },
+    {
+      "name": "attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt",
+      "characters": 7930,
+      "sha": "367c3054470bf138"
+    },
+    {
+      "name": "cette-habitude-allemande-est-elle-bonne-pour-la-sante-287212.txt",
+      "characters": 7883,
+      "sha": "5ed842acc8e373cd"
+    },
+    {
+      "name": "e-etude-menee-sur-15-entreprises-apporte-des-reponses-288018.txt",
+      "characters": 6936,
+      "sha": "ec7e59c7067d3acd"
+    },
+    {
+      "name": "e-photographique-oublie-de-la-physique-des-particules-283940.txt",
+      "characters": 16000,
+      "sha": "d852097c82f7f3c9"
+    },
+    {
+      "name": "e-pourquoi-peter-thiel-voit-le-pape-comme-lantechrist-288158.txt",
+      "characters": 11386,
+      "sha": "b7e0c57fc32fd0ba"
+    },
+    {
+      "name": "eader-continental-africain-des-data-centers-et-de-lia-288658.txt",
+      "characters": 6328,
+      "sha": "7425b740b7c69710"
+    },
+    {
+      "name": "econversation.com-quelles-sont-les-limites-de-la-clim-288010.txt",
+      "characters": 10280,
+      "sha": "0abb7728448150aa"
+    },
+    {
+      "name": "eration-la-ou-la-france-et-ses-partenaires-ont-echoue-289056.txt",
+      "characters": 8731,
+      "sha": "c6009a7abacdb4b9"
+    },
+    {
+      "name": "es-anciennes-comment-surmonter-la-tentation-de-loubli-287891.txt",
+      "characters": 12939,
+      "sha": "3c466c7aa605def9"
+    },
+    {
+      "name": "es-microplastiques-surtout-lorsquils-sont-tres-chauds-287210.txt",
+      "characters": 6836,
+      "sha": "f87e9ee6748044a5"
+    },
+    {
+      "name": "eut-elle-couter-une-election-presidentielle-au-bresil-288655.txt",
+      "characters": 10793,
+      "sha": "eeb399ad13a0e27d"
+    },
+    {
+      "name": "gtemps-les-grillons-chantaient-dans-le-metro-parisien-288142.txt",
+      "characters": 6761,
+      "sha": "1b2c717ff2acbad0"
+    },
+    {
+      "name": "icoles-annoncent-ils-vraiment-une-nouvelle-revolution-286606.txt",
+      "characters": 11036,
+      "sha": "3ae86a462a2abbab"
+    },
+    {
+      "name": "ion.com-donald-trump-ou-la-contagion-du-mal-ordinaire-288861.txt",
+      "characters": 8623,
+      "sha": "ac0cb3ff0cdac498"
+    },
+    {
+      "name": "ique-des-batiments-pour-se-proteger-contre-la-chaleur-287925.txt",
+      "characters": 9150,
+      "sha": "ce7e8cbc4ba9fadb"
+    },
+    {
+      "name": "ite-enquete-sur-les-strategies-des-classes-populaires-287821.txt",
+      "characters": 7566,
+      "sha": "a453b698620fd933"
+    },
+    {
+      "name": "liques-revele-des-inegalites-de-genre-dans-les-villes-288744.txt",
+      "characters": 7277,
+      "sha": "3d0e3a9fcc34edb0"
+    },
+    {
+      "name": "nant-source-de-mythes-et-de-decouvertes-scientifiques-283920.txt",
+      "characters": 9221,
+      "sha": "45b2194687720190"
+    },
+    {
+      "name": "noir-les-plus-grandes-eclipses-de-lhistoire-du-cinema-288216.txt",
+      "characters": 8035,
+      "sha": "d2764f3b7f2f31c7"
+    },
+    {
+      "name": "ns-lantiquite-les-grecs-netaient-pas-tous-bodybuildes-285079.txt",
+      "characters": 9225,
+      "sha": "5e5bfdf789c982d3"
+    },
+    {
+      "name": "om-ce-que-les-sciences-sociales-doivent-a-edgar-morin-289070.txt",
+      "characters": 9186,
+      "sha": "b98950f7e6ddf80c"
+    },
+    {
+      "name": "oppe-dans-dautres-pays-pas-forcement-plus-ensoleilles-286900.txt",
       "characters": 9812,
       "sha": "ad8302e58997cfeb"
     },
     {
-      "name": "0042--le-comprendre-le-pouvoir-politique-des-contre-cartes-284467.txt",
-      "characters": 10215,
-      "sha": "12b6151d763f7668"
+      "name": "quoi-a-t-on-envie-de-manger-du-sale-au-bord-de-la-mer-288957.txt",
+      "characters": 7089,
+      "sha": "a91ac903eb955a0f"
+    },
+    {
+      "name": "rets-ne-disparaitront-pas-avec-la-fumee-des-incendies-288956.txt",
+      "characters": 11867,
+      "sha": "826812897bd3c1bd"
+    },
+    {
+      "name": "rtains-chocolats-ne-fondent-ils-pas-malgre-la-chaleur-288295.txt",
+      "characters": 8928,
+      "sha": "df59e16599022fe0"
+    },
+    {
+      "name": "s-de-lespace-nous-avons-trouve-leur-pierre-de-rosette-287213.txt",
+      "characters": 8090,
+      "sha": "beff57c83b3f0e70"
+    },
+    {
+      "name": "s-nous-des-traumatismes-de-nos-parents-pas-exactement-289107.txt",
+      "characters": 7314,
+      "sha": "7fabafb9dfcaaf7a"
+    },
+    {
+      "name": "ses-limites-et-ce-nest-pas-seulement-du-aux-incendies-289163.txt",
+      "characters": 17396,
+      "sha": "2a7dab6b39764e58"
+    },
+    {
+      "name": "son-abonnement-en-echange-du-visionnage-de-publicites-286198.txt",
+      "characters": 7053,
+      "sha": "97a619a66be2ae31"
+    },
+    {
+      "name": "t-faire-et-eviter-pour-observer-le-soleil-sans-risque-288984.txt",
+      "characters": 10412,
+      "sha": "8fe79f5ef87e786c"
+    },
+    {
+      "name": "t-la-cour-imperiale-chinoise-aux-sciences-europeennes-289241.txt",
+      "characters": 12661,
+      "sha": "68346a09ff029ca8"
+    },
+    {
+      "name": "tra-dobserver-le-soleil-devier-la-lumiere-des-etoiles-288985.txt",
+      "characters": 6802,
+      "sha": "2ba4810a07626361"
+    },
+    {
+      "name": "uoi-le-vote-des-personnes-detenues-doit-etre-preserve-283455.txt",
+      "characters": 8300,
+      "sha": "7d261e8b785d629e"
+    },
+    {
+      "name": "uthistes-du-yemen-peut-elle-detourner-riyad-du-soudan-288862.txt",
+      "characters": 11325,
+      "sha": "08c1284b4bb187d6"
+    },
+    {
+      "name": "yens-dun-puissant-levier-pour-proteger-lenvironnement-289055.txt",
+      "characters": 9984,
+      "sha": "0777b38900a1cc03"
     }
   ]
 }

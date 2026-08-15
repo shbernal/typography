@@ -75,14 +75,14 @@
       "findings": 162,
       "units": 21,
       "samples": [
-        "0010-preguntas-frecuentes-10-menores-y-educacion.txt  \"ponible en la página web \\\"tudecideseninternet.es\\\"\\nD\"",
-        "0010-preguntas-frecuentes-10-menores-y-educacion.txt  \"b \\\"tudecideseninternet.es\\\"\\nDicha página contiene ta\"",
-        "0016-ner-mas-informacion-sobre-el-tratamiento-de-datos-de-menores.txt  \"ponible en la página web \\\"tudecideseninternet.es\\\"\\nD\"",
-        "0016-ner-mas-informacion-sobre-el-tratamiento-de-datos-de-menores.txt  \"b \\\"tudecideseninternet.es\\\"\\nDicha página contiene ta\"",
-        "0028-preguntas-frecuentes-12-sede-electronica.txt  \"vegador?\\nPulse el enlace \\\"Certificado AC RAIZ FNMT-\"",
-        "0028-preguntas-frecuentes-12-sede-electronica.txt  \"tificado AC RAIZ FNMT-RCM\\\" que encontrará en https:\"",
-        "0028-preguntas-frecuentes-12-sede-electronica.txt  \"u equipo, pulse el botón \\\"Abrir\\\".\\nA...\\nLeer más sob\"",
-        "0028-preguntas-frecuentes-12-sede-electronica.txt  \"po, pulse el botón \\\"Abrir\\\".\\nA...\\nLeer más sobre '¿C\""
+        "-fisica-en-un-tratamiento-de-solvencia-patrimonial-y-credito.txt  \"a patrimonial y crédito (\\\"fichero de morosos\\\")?\\nPar\"",
+        "-fisica-en-un-tratamiento-de-solvencia-patrimonial-y-credito.txt  \"dito (\\\"fichero de morosos\\\")?\\nPara incluir a una per\"",
+        "-formaciones-politicas-me-envien-propaganda-electoral-postal.txt  \"paganda electoral postal?\\\"\\nDe acuerdo con lo previs\"",
+        "Q-1208-como-configurar-los-certificados-raiz-en-el-navegador.txt  \"vegador?\\nPulse el enlace \\\"Certificado AC RAIZ FNMT-\"",
+        "Q-1208-como-configurar-los-certificados-raiz-en-el-navegador.txt  \"tificado AC RAIZ FNMT-RCM\\\" que encontrará en https:\"",
+        "Q-1208-como-configurar-los-certificados-raiz-en-el-navegador.txt  \"u equipo, pulse el botón \\\"Abrir\\\".\\nA continuación se\"",
+        "Q-1208-como-configurar-los-certificados-raiz-en-el-navegador.txt  \"po, pulse el botón \\\"Abrir\\\".\\nA continuación se mostr\"",
+        "Q-1208-como-configurar-los-certificados-raiz-en-el-navegador.txt  \"o, seleccione la pestaña \\\"General\\\" y pulse el botón\""
       ]
     }
   }

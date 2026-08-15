@@ -2,584 +2,584 @@
   "corpus": "aepd-faq-es",
   "documents": [
     {
-      "name": "0000-preguntas-frecuentes-0-conceptos-basicos.txt",
-      "characters": 4720,
-      "sha": "5b754d2bf64bfcf9"
-    },
-    {
-      "name": "0001-0-conceptos-basicos-FAQ-0001-que-es-un-dato-personal.txt",
-      "characters": 721,
-      "sha": "acc69d169b6ed4d3"
-    },
-    {
-      "name": "0002-0-conceptos-basicos-FAQ-0002-sobre-la-matricula-de-un-coche.txt",
-      "characters": 938,
-      "sha": "c3d80dec3b2a4718"
-    },
-    {
-      "name": "0003-eptos-basicos-FAQ-0003-sobre-direccion-de-correo-electronico.txt",
-      "characters": 1370,
-      "sha": "9e45625ad295a684"
-    },
-    {
-      "name": "0004-0-conceptos-basicos-FAQ-0004-que-son-los-datos-sensibles.txt",
-      "characters": 797,
-      "sha": "8a817d3e90c98850"
-    },
-    {
-      "name": "0005-0-conceptos-basicos-FAQ-0005-sobre-los-datos-anonimizados.txt",
-      "characters": 999,
-      "sha": "57b1bf5246dfca24"
-    },
-    {
-      "name": "0006-0-conceptos-basicos-FAQ-0006-sobre-los-datos-seudonimizados.txt",
-      "characters": 593,
-      "sha": "5fb1ea6dd60ab3e3"
-    },
-    {
-      "name": "0007-s-basicos-FAQ-0007-que-es-un-tratamiento-de-datos-personales.txt",
-      "characters": 682,
-      "sha": "e1176727244296ee"
-    },
-    {
-      "name": "0008-eptos-basicos-FAQ-0008-que-es-un-responsable-del-tratamiento.txt",
-      "characters": 478,
-      "sha": "9559a35f1295eb45"
-    },
-    {
-      "name": "0009-preguntas-frecuentes-1-tus-derechos.txt",
-      "characters": 1025,
-      "sha": "e3ba044fbf57cab5"
-    },
-    {
-      "name": "0010-preguntas-frecuentes-10-menores-y-educacion.txt",
-      "characters": 6022,
-      "sha": "e4ad68468285215d"
-    },
-    {
-      "name": "0011-edan-prestar-consentimiento-para-tratar-sus-datos-personales.txt",
-      "characters": 1141,
-      "sha": "9b10e45a0e8d4669"
-    },
-    {
-      "name": "0012-Q-1002-se-puede-recabar-y-tratar-datos-personales-de-menores.txt",
-      "characters": 1489,
-      "sha": "a4d50899d46a058d"
-    },
-    {
-      "name": "0013-n-menor-de-14-ejercitar-los-derechos-contemplados-en-el-rgpd.txt",
-      "characters": 1087,
-      "sha": "18781921550cbe04"
-    },
-    {
-      "name": "0014-e-pueden-tomar-imagenes-o-grabar-videos-en-eventos-escolares.txt",
-      "characters": 2311,
-      "sha": "07acd4fcd3df9d8d"
-    },
-    {
-      "name": "0015-enitores-a-las-historias-clinicas-de-sus-hijos-mayores-de-14.txt",
-      "characters": 1316,
-      "sha": "3fc1a17fafada2cc"
-    },
-    {
-      "name": "0016-ner-mas-informacion-sobre-el-tratamiento-de-datos-de-menores.txt",
-      "characters": 739,
-      "sha": "b9f180d711c4a100"
-    },
-    {
-      "name": "0017--1007-estan-obligados-los-centros-docentes-a-designar-un-dpd.txt",
+      "name": "-1007-estan-obligados-los-centros-docentes-a-designar-un-dpd.txt",
       "characters": 1717,
       "sha": "6afad7337ce5ea97"
     },
     {
-      "name": "0018-es-obtener-un-certificado-de-empadronamiento-de-los-pequenos.txt",
-      "characters": 1183,
-      "sha": "e5db888b55060a5d"
-    },
-    {
-      "name": "0019-preguntas-frecuentes-11-transparencia-y-pd.txt",
-      "characters": 6322,
-      "sha": "7cc207e4bb1de8b2"
-    },
-    {
-      "name": "0020-AQ-1101-que-es-el-derecho-de-acceso-a-la-informacion-publica.txt",
-      "characters": 1019,
-      "sha": "dd7bec7a6f56bfda"
-    },
-    {
-      "name": "0021-rsonal-prevalece-el-derecho-o-debe-entregarse-la-informacion.txt",
-      "characters": 2651,
-      "sha": "4f89f0345144f6fe"
-    },
-    {
-      "name": "0022--retribuciones-y-productividad-del-personal-de-un-ministerio.txt",
-      "characters": 2287,
-      "sha": "94220dd49618dd9d"
-    },
-    {
-      "name": "0023-persona-que-desempena-un-determinado-puesto-en-un-ministerio.txt",
-      "characters": 1137,
-      "sha": "97f6d3f1f6772365"
-    },
-    {
-      "name": "0024-las-retribuciones-y-rpts-con-identificacion-de-sus-titulares.txt",
-      "characters": 1817,
-      "sha": "eec7ec21df19f09d"
-    },
-    {
-      "name": "0025-cumentacion-del-resto-de-candidatos-de-un-concurso-oposicion.txt",
-      "characters": 2030,
-      "sha": "de1003615ac748e4"
-    },
-    {
-      "name": "0026-11-transparencia-y-pd-FAQ-1107-que-es-la-publicidad-activa.txt",
-      "characters": 965,
-      "sha": "5c77aaf4adc48d05"
-    },
-    {
-      "name": "0027-drian-publicarse-con-las-firmas-manuscritas-de-los-firmantes.txt",
-      "characters": 1134,
-      "sha": "a5b287719b8a95b5"
-    },
-    {
-      "name": "0028-preguntas-frecuentes-12-sede-electronica.txt",
-      "characters": 5408,
-      "sha": "f86534f86603ff30"
-    },
-    {
-      "name": "0029-12-sede-electronica-FAQ-1201-que-es-la-sede-electronica.txt",
-      "characters": 2715,
-      "sha": "8dfebd9c53ae4770"
-    },
-    {
-      "name": "0030--sede-electronica-FAQ-1202-tramites-ante-la-sede-electronica.txt",
-      "characters": 1658,
-      "sha": "bcce8b5ba881a873"
-    },
-    {
-      "name": "0031-e-obligacion-de-identificarse-siempre-para-acceder-a-la-sede.txt",
-      "characters": 809,
-      "sha": "31740e19574ecbfd"
-    },
-    {
-      "name": "0032-ica-FAQ-1204-como-se-accede-a-la-sede-electronica-de-la-aepd.txt",
-      "characters": 773,
-      "sha": "2fea35369b84d017"
-    },
-    {
-      "name": "0033--sede-electronica-FAQ-1205-que-es-un-certificado-electronico.txt",
-      "characters": 1813,
-      "sha": "682af2b0ff29d559"
-    },
-    {
-      "name": "0034-ro-utilizar-los-servicios-disponibles-en-la-sede-electronica.txt",
-      "characters": 687,
-      "sha": "f93925c1b3d0201e"
-    },
-    {
-      "name": "0035-rar-el-acrobat-reader-para-que-confie-en-el-certificado-raiz.txt",
-      "characters": 2203,
-      "sha": "62cf6053b965e224"
-    },
-    {
-      "name": "0036-Q-1208-como-configurar-los-certificados-raiz-en-el-navegador.txt",
-      "characters": 1312,
-      "sha": "aac0e050fa446ae6"
-    },
-    {
-      "name": "0037-preguntas-frecuentes-13-reclamaciones.txt",
-      "characters": 5228,
-      "sha": "3ea77650fec3989f"
-    },
-    {
-      "name": "0038--reclamacion-si-han-vulnerado-mis-datos-de-caracter-personal.txt",
-      "characters": 1957,
-      "sha": "906303d18365b15d"
-    },
-    {
-      "name": "0039-able-es-sancionado-puedo-obtener-una-indemnizacion-economica.txt",
-      "characters": 861,
-      "sha": "926cfb365e3d1956"
-    },
-    {
-      "name": "0040-respecto-al-ejercicio-de-los-derechos-de-proteccion-de-datos.txt",
-      "characters": 1490,
-      "sha": "5c66ab3428166ae1"
-    },
-    {
-      "name": "0041-304-ante-quien-debo-reclamar-sobre-mis-facturas-de-telefonia.txt",
-      "characters": 588,
-      "sha": "04910268b41a91ec"
-    },
-    {
-      "name": "0042-competencias-de-la-autoridad-catalana-de-proteccion-de-datos.txt",
-      "characters": 2249,
-      "sha": "6e7291eb0475ab7b"
-    },
-    {
-      "name": "0043-as-competencias-de-la-autoridad-vasca-de-proteccion-de-datos.txt",
-      "characters": 3086,
-      "sha": "0e3cf03f15c560a9"
-    },
-    {
-      "name": "0044-reclamaciones-FAQ-1308-plazos-para-contestar-una-reclamacion.txt",
-      "characters": 1368,
-      "sha": "99fcd5b49eeffc53"
-    },
-    {
-      "name": "0045-309-posibilidad-de-reclamar-directamente-ante-incumplimiento.txt",
-      "characters": 1684,
-      "sha": "23ec17939123efac"
-    },
-    {
-      "name": "0046-preguntas-frecuentes-14-procesos-electorales.txt",
-      "characters": 2962,
-      "sha": "8d1665a768199455"
-    },
-    {
-      "name": "0047--formaciones-politicas-me-envien-propaganda-electoral-postal.txt",
-      "characters": 801,
-      "sha": "e8b0a80c5a10fe90"
-    },
-    {
-      "name": "0048-ral-postar-pese-a-haber-solicitado-la-exclusion-de-mis-datos.txt",
-      "characters": 1912,
-      "sha": "0f64b1f980668729"
-    },
-    {
-      "name": "0049-nerme-a-que-los-partidos-politicos-usen-mis-datos-personales.txt",
-      "characters": 1222,
-      "sha": "ac7a2774eedaa5fb"
-    },
-    {
-      "name": "0050-edo-hacer-si-he-recibido-correos-electronicos-o-mensajes-sms.txt",
-      "characters": 874,
-      "sha": "a5dca6e078264039"
-    },
-    {
-      "name": "0051-s-15-canal-prioritario-para-contenidos-sensibles-en-internet.txt",
-      "characters": 3994,
-      "sha": "5eefd9006f51140e"
-    },
-    {
-      "name": "0052-al-prioritario-de-difusion-ilegitima-de-contenidos-sensibles.txt",
-      "characters": 1697,
-      "sha": "dd47843bfde6a8e9"
-    },
-    {
-      "name": "0053--en-internet-FAQ-1502-en-que-casos-puedo-acudir-a-este-canal.txt",
-      "characters": 1317,
-      "sha": "f5b8c3db516ac406"
-    },
-    {
-      "name": "0054--internet-FAQ-1503-en-que-casos-no-puedo-acudir-a-este-canal.txt",
-      "characters": 3703,
-      "sha": "d3d9f31d745d82f2"
-    },
-    {
-      "name": "0055-ion-necesito-aportar-a-la-aepd-cuando-haga-uso-de-este-canal.txt",
-      "characters": 1787,
-      "sha": "92e5fca5888fc2a8"
-    },
-    {
-      "name": "0056-nsibles-en-internet-FAQ-1505-como-puedo-acceder-a-este-canal.txt",
-      "characters": 1284,
-      "sha": "cfc25ac44709a77b"
-    },
-    {
-      "name": "0057-6-que-sucedera-despues-de-solicitar-la-retirada-ante-la-aepd.txt",
-      "characters": 752,
-      "sha": "fa90ac5ef880774f"
-    },
-    {
-      "name": "0058-uien-difunda-ilegitimamente-contenidos-sensibles-de-terceros.txt",
-      "characters": 2894,
-      "sha": "9d6bc34b4a2a28ba"
-    },
-    {
-      "name": "0059-preguntas-frecuentes-16-salud.txt",
-      "characters": 864,
-      "sha": "34694883019dcb77"
-    },
-    {
-      "name": "0060-preguntas-frecuentes-17-internet-y-redes-sociales.txt",
-      "characters": 4742,
-      "sha": "54c23b59fd015a72"
-    },
-    {
-      "name": "0061-iales-FAQ-1701-como-puedo-proteger-mi-privacidad-en-internet.txt",
-      "characters": 1046,
-      "sha": "6958c9de2eedae96"
-    },
-    {
-      "name": "0062-AQ-1702-ante-la-suplantacion-de-mi-identidad-que-puedo-hacer.txt",
-      "characters": 968,
-      "sha": "bcaaababeed0fac4"
-    },
-    {
-      "name": "0063-dirigir-para-poder-ejercer-un-derecho-en-proteccion-de-datos.txt",
-      "characters": 794,
-      "sha": "40062c39d36929f2"
-    },
-    {
-      "name": "0064-Q-1704-que-hacer-si-se-difunden-imagenes-en-las-que-aparezco.txt",
-      "characters": 1270,
-      "sha": "7b0e626112fba138"
-    },
-    {
-      "name": "0065-Q-1705-difusion-de-datos-a-traves-de-servicios-de-mensajeria.txt",
-      "characters": 1042,
-      "sha": "595890e2dcd3fe1d"
-    },
-    {
-      "name": "0066-et-y-redes-sociales-FAQ-1706-ejercicio-del-derecho-al-olvido.txt",
-      "characters": 1255,
-      "sha": "d698ea9a524bed78"
-    },
-    {
-      "name": "0067-AQ-1707-importancia-de-las-cookies-en-la-proteccion-de-datos.txt",
-      "characters": 985,
-      "sha": "b2a58f9a6750cd81"
-    },
-    {
-      "name": "0068-l-libre-consentimiento-al-uso-de-cookies-por-gran-red-social.txt",
-      "characters": 1288,
-      "sha": "d9780ee12fe0c2bc"
-    },
-    {
-      "name": "0069-ecuentes-2-tus-obligaciones-como-responsable-del-tratamiento.txt",
-      "characters": 1490,
-      "sha": "27e423a27d197638"
-    },
-    {
-      "name": "0070-guntas-frecuentes-3-proteccion-de-datos-en-el-ambito-laboral.txt",
-      "characters": 5992,
-      "sha": "bcde855d0a7cf765"
-    },
-    {
-      "name": "0071-ontener-datos-de-salud-los-justificantes-de-ausencia-laboral.txt",
-      "characters": 2289,
-      "sha": "fed9d99100d6cc7e"
-    },
-    {
-      "name": "0072-istado-de-los-trabajadores-beneficiarios-de-la-accion-social.txt",
-      "characters": 2185,
-      "sha": "0472bf866c3598ec"
-    },
-    {
-      "name": "0073-icativas-de-los-trabajadores-pueden-incluir-nombre-apellidos.txt",
-      "characters": 1027,
-      "sha": "cf3a1a9f692fe361"
-    },
-    {
-      "name": "0074--de-salarios-y-rnt-de-una-subcontrata-a-la-empresa-principal.txt",
-      "characters": 1781,
-      "sha": "8da080459024f6b7"
-    },
-    {
-      "name": "0075-ps-en-los-coches-de-la-empresa-que-utilizan-los-trabajadores.txt",
-      "characters": 1575,
-      "sha": "3dc0b04c9278c566"
-    },
-    {
-      "name": "0076-solicitar-los-antecedentes-penales-para-un-puesto-de-trabajo.txt",
-      "characters": 1931,
-      "sha": "b43a4fe64ae3862c"
-    },
-    {
-      "name": "0077--y-direccion-de-correo-electronico-particular-del-trabajador.txt",
-      "characters": 1691,
-      "sha": "f0638c9d871d4aaf"
-    },
-    {
-      "name": "0078-s-medicos-al-empresario-comite-de-empresa-y-seccion-sindical.txt",
-      "characters": 2633,
-      "sha": "4fc6a0642d129d23"
-    },
-    {
-      "name": "0079-preguntas-frecuentes-4-dpd.txt",
-      "characters": 1083,
-      "sha": "0574116bf0661460"
-    },
-    {
-      "name": "0080-preguntas-frecuentes-5-publicidad-no-deseada.txt",
-      "characters": 4333,
-      "sha": "791dc47df89919eb"
-    },
-    {
-      "name": "0081--automatizadas-sin-intervencion-humana-con-fines-comerciales.txt",
+      "name": "-automatizadas-sin-intervencion-humana-con-fines-comerciales.txt",
       "characters": 768,
       "sha": "f70afc97a8b2917b"
     },
     {
-      "name": "0082-no-solicitadas-con-fines-comerciales-con-intervencion-humana.txt",
-      "characters": 1628,
-      "sha": "52973d38399dde7e"
+      "name": "-de-salarios-y-rnt-de-una-subcontrata-a-la-empresa-principal.txt",
+      "characters": 1781,
+      "sha": "8da080459024f6b7"
     },
     {
-      "name": "0083--fines-comerciales-si-mis-datos-figuran-en-guias-de-abonados.txt",
+      "name": "-en-internet-FAQ-1502-en-que-casos-puedo-acudir-a-este-canal.txt",
+      "characters": 1317,
+      "sha": "f5b8c3db516ac406"
+    },
+    {
+      "name": "-fines-comerciales-si-mis-datos-figuran-en-guias-de-abonados.txt",
       "characters": 644,
       "sha": "8f9f7702867e4b75"
     },
     {
-      "name": "0084-sistema-de-exclusion-publicitaria-y-sigo-recibiendo-llamadas.txt",
-      "characters": 919,
-      "sha": "4ea118d8c9efa46c"
-    },
-    {
-      "name": "0085-ias-si-soy-un-empresario-individual-o-un-profesional-liberal.txt",
-      "characters": 1162,
-      "sha": "340282a1d1316855"
-    },
-    {
-      "name": "0086-is-derechos-de-proteccion-de-datos-cuando-recibo-una-llamada.txt",
-      "characters": 1223,
-      "sha": "683539bcd36a7cc3"
-    },
-    {
-      "name": "0087-n-que-la-AEPD-puede-actuar-frente-a-las-llamadas-comerciales.txt",
-      "characters": 2273,
-      "sha": "1f21664624c3268d"
-    },
-    {
-      "name": "0088-tes-6-transferencias-internacionales-bcr-codigos-de-conducta.txt",
-      "characters": 960,
-      "sha": "cd254386812e41bf"
-    },
-    {
-      "name": "0089-preguntas-frecuentes-7-solvencia-patrimonial.txt",
-      "characters": 6746,
-      "sha": "56d1af7bd30399ee"
-    },
-    {
-      "name": "0090--fisica-en-un-tratamiento-de-solvencia-patrimonial-y-credito.txt",
+      "name": "-fisica-en-un-tratamiento-de-solvencia-patrimonial-y-credito.txt",
       "characters": 1691,
       "sha": "1394f2dd709d814a"
     },
     {
-      "name": "0091-ento-de-solvencia-patrimonial-y-credito-pero-desconozco-cual.txt",
-      "characters": 1410,
-      "sha": "ba2003d3d435b339"
+      "name": "-formaciones-politicas-me-envien-propaganda-electoral-postal.txt",
+      "characters": 801,
+      "sha": "e8b0a80c5a10fe90"
     },
     {
-      "name": "0092-ncluido-en-un-tratamiendo-de-solvencia-patrimonial-y-credito.txt",
-      "characters": 2228,
-      "sha": "56ec36f0544d74ec"
+      "name": "-internet-FAQ-1503-en-que-casos-no-puedo-acudir-a-este-canal.txt",
+      "characters": 3703,
+      "sha": "d3d9f31d745d82f2"
     },
     {
-      "name": "0093-al-FAQ-0705-es-legal-la-actuacion-de-una-empresa-de-recobros.txt",
-      "characters": 1910,
-      "sha": "5473e819c7ebbc5f"
-    },
-    {
-      "name": "0094-ncluido-en-un-tratamiento-de-solvencia-patrimonial-y-credito.txt",
-      "characters": 933,
-      "sha": "f0b8b8678ed49d33"
-    },
-    {
-      "name": "0095-707-me-reclaman-una-deuda-llamando-a-mis-familiares-y-amigos.txt",
-      "characters": 1353,
-      "sha": "7f7d2a120b30dbb3"
-    },
-    {
-      "name": "0096-presa-de-recobros-me-esta-reclamando-una-deuda-que-no-es-mia.txt",
-      "characters": 3069,
-      "sha": "e8974fab01c6dcb9"
-    },
-    {
-      "name": "0097-to-de-solvencia-patrimonial-y-credito-y-no-me-han-contestado.txt",
-      "characters": 1188,
-      "sha": "9d23c14ea9c6ce1e"
-    },
-    {
-      "name": "0098-preguntas-frecuentes-8-videovigilancia.txt",
-      "characters": 5619,
-      "sha": "acf3ecfd0ae257b0"
-    },
-    {
-      "name": "0099-ocamaras-supone-un-tratamiento-de-datos-de-caracter-personal.txt",
-      "characters": 867,
-      "sha": "fb20973c3b82921f"
-    },
-    {
-      "name": "0100-aciones-se-deben-cumplir-para-la-instalacion-de-videocamaras.txt",
-      "characters": 3014,
-      "sha": "cd04d9a1f34d30a3"
-    },
-    {
-      "name": "0101-a-en-una-moto-para-grabar-mis-viajes-es-legal-esta-captacion.txt",
-      "characters": 945,
-      "sha": "5e4334b4a3251da3"
-    },
-    {
-      "name": "0102-Q-0804-se-puede-grabar-la-via-publica-con-fines-de-seguridad.txt",
-      "characters": 815,
-      "sha": "db6aa27ba6ea4c51"
-    },
-    {
-      "name": "0103-ede-instalar-camaras-con-la-finalidad-de-control-empresarial.txt",
-      "characters": 1200,
-      "sha": "3923cbf4694b48e6"
-    },
-    {
-      "name": "0104-ben-estar-colocadas-las-camaras-y-los-monitores-de-grabacion.txt",
-      "characters": 1153,
-      "sha": "c89bdc4e357aecd8"
-    },
-    {
-      "name": "0105-ia-FAQ-0807-se-pueden-grabar-los-plenos-de-los-ayuntamientos.txt",
-      "characters": 1121,
-      "sha": "42e2af01b2fa5429"
-    },
-    {
-      "name": "0106-seguridad-que-no-graba-solo-permite-visionado-en-tiempo-real.txt",
-      "characters": 959,
-      "sha": "f5af34c1396a1ae7"
-    },
-    {
-      "name": "0107-preguntas-frecuentes-9-comunidades-de-propietarios.txt",
-      "characters": 5644,
-      "sha": "6bcd52b32f6fbb78"
-    },
-    {
-      "name": "0108-iva-de-proteccion-de-datos-a-las-comunidades-de-propietarios.txt",
-      "characters": 1569,
-      "sha": "4b2632401eefa185"
-    },
-    {
-      "name": "0109-ropietarios-FAQ-0902-cuales-son-las-principales-obligaciones.txt",
-      "characters": 1684,
-      "sha": "be6972e5592773d5"
-    },
-    {
-      "name": "0110-rio-la-inscripcion-de-ficheros-de-la-comunidad-en-la-agencia.txt",
-      "characters": 1539,
-      "sha": "6e48fb2e89874a99"
-    },
-    {
-      "name": "0111-e-riesgos-a-los-tratamientos-de-la-comunidad-de-propietarios.txt",
-      "characters": 1202,
-      "sha": "7adc3b739ec99491"
-    },
-    {
-      "name": "0112-ropietarios-deben-nombrar-un-delegado-de-proteccion-de-datos.txt",
-      "characters": 1211,
-      "sha": "2228e1c05aec6a25"
-    },
-    {
-      "name": "0113-ede-tener-acceso-un-propietario-a-los-gastos-de-su-comunidad.txt",
-      "characters": 6532,
-      "sha": "788f561640a0269b"
-    },
-    {
-      "name": "0114--puede-conocer-un-propietario-los-empleados-de-una-comunidad.txt",
+      "name": "-puede-conocer-un-propietario-los-empleados-de-una-comunidad.txt",
       "characters": 1768,
       "sha": "1b8b76ffda3088b8"
     },
     {
-      "name": "0115-e-un-vecino-el-nombre-del-resto-de-propietarios-del-inmueble.txt",
+      "name": "-reclamacion-si-han-vulnerado-mis-datos-de-caracter-personal.txt",
+      "characters": 1957,
+      "sha": "906303d18365b15d"
+    },
+    {
+      "name": "-retribuciones-y-productividad-del-personal-de-un-ministerio.txt",
+      "characters": 2287,
+      "sha": "94220dd49618dd9d"
+    },
+    {
+      "name": "-sede-electronica-FAQ-1202-tramites-ante-la-sede-electronica.txt",
+      "characters": 1658,
+      "sha": "bcce8b5ba881a873"
+    },
+    {
+      "name": "-sede-electronica-FAQ-1205-que-es-un-certificado-electronico.txt",
+      "characters": 1813,
+      "sha": "682af2b0ff29d559"
+    },
+    {
+      "name": "-y-direccion-de-correo-electronico-particular-del-trabajador.txt",
+      "characters": 1691,
+      "sha": "f0638c9d871d4aaf"
+    },
+    {
+      "name": "0-conceptos-basicos-FAQ-0001-que-es-un-dato-personal.txt",
+      "characters": 721,
+      "sha": "acc69d169b6ed4d3"
+    },
+    {
+      "name": "0-conceptos-basicos-FAQ-0002-sobre-la-matricula-de-un-coche.txt",
+      "characters": 938,
+      "sha": "c3d80dec3b2a4718"
+    },
+    {
+      "name": "0-conceptos-basicos-FAQ-0004-que-son-los-datos-sensibles.txt",
+      "characters": 797,
+      "sha": "8a817d3e90c98850"
+    },
+    {
+      "name": "0-conceptos-basicos-FAQ-0005-sobre-los-datos-anonimizados.txt",
+      "characters": 999,
+      "sha": "57b1bf5246dfca24"
+    },
+    {
+      "name": "0-conceptos-basicos-FAQ-0006-sobre-los-datos-seudonimizados.txt",
+      "characters": 593,
+      "sha": "5fb1ea6dd60ab3e3"
+    },
+    {
+      "name": "11-transparencia-y-pd-FAQ-1107-que-es-la-publicidad-activa.txt",
+      "characters": 965,
+      "sha": "5c77aaf4adc48d05"
+    },
+    {
+      "name": "12-sede-electronica-FAQ-1201-que-es-la-sede-electronica.txt",
+      "characters": 2715,
+      "sha": "8dfebd9c53ae4770"
+    },
+    {
+      "name": "304-ante-quien-debo-reclamar-sobre-mis-facturas-de-telefonia.txt",
+      "characters": 588,
+      "sha": "04910268b41a91ec"
+    },
+    {
+      "name": "309-posibilidad-de-reclamar-directamente-ante-incumplimiento.txt",
+      "characters": 1684,
+      "sha": "23ec17939123efac"
+    },
+    {
+      "name": "6-que-sucedera-despues-de-solicitar-la-retirada-ante-la-aepd.txt",
+      "characters": 752,
+      "sha": "fa90ac5ef880774f"
+    },
+    {
+      "name": "707-me-reclaman-una-deuda-llamando-a-mis-familiares-y-amigos.txt",
+      "characters": 1353,
+      "sha": "7f7d2a120b30dbb3"
+    },
+    {
+      "name": "AQ-1101-que-es-el-derecho-de-acceso-a-la-informacion-publica.txt",
+      "characters": 1019,
+      "sha": "dd7bec7a6f56bfda"
+    },
+    {
+      "name": "AQ-1702-ante-la-suplantacion-de-mi-identidad-que-puedo-hacer.txt",
+      "characters": 968,
+      "sha": "bcaaababeed0fac4"
+    },
+    {
+      "name": "AQ-1707-importancia-de-las-cookies-en-la-proteccion-de-datos.txt",
+      "characters": 985,
+      "sha": "b2a58f9a6750cd81"
+    },
+    {
+      "name": "Q-0804-se-puede-grabar-la-via-publica-con-fines-de-seguridad.txt",
+      "characters": 815,
+      "sha": "db6aa27ba6ea4c51"
+    },
+    {
+      "name": "Q-1002-se-puede-recabar-y-tratar-datos-personales-de-menores.txt",
+      "characters": 1489,
+      "sha": "a4d50899d46a058d"
+    },
+    {
+      "name": "Q-1208-como-configurar-los-certificados-raiz-en-el-navegador.txt",
+      "characters": 1312,
+      "sha": "aac0e050fa446ae6"
+    },
+    {
+      "name": "Q-1704-que-hacer-si-se-difunden-imagenes-en-las-que-aparezco.txt",
+      "characters": 1270,
+      "sha": "7b0e626112fba138"
+    },
+    {
+      "name": "Q-1705-difusion-de-datos-a-traves-de-servicios-de-mensajeria.txt",
+      "characters": 1042,
+      "sha": "595890e2dcd3fe1d"
+    },
+    {
+      "name": "a-en-una-moto-para-grabar-mis-viajes-es-legal-esta-captacion.txt",
+      "characters": 945,
+      "sha": "5e4334b4a3251da3"
+    },
+    {
+      "name": "able-es-sancionado-puedo-obtener-una-indemnizacion-economica.txt",
+      "characters": 861,
+      "sha": "926cfb365e3d1956"
+    },
+    {
+      "name": "aciones-se-deben-cumplir-para-la-instalacion-de-videocamaras.txt",
+      "characters": 3014,
+      "sha": "cd04d9a1f34d30a3"
+    },
+    {
+      "name": "al-FAQ-0705-es-legal-la-actuacion-de-una-empresa-de-recobros.txt",
+      "characters": 1910,
+      "sha": "5473e819c7ebbc5f"
+    },
+    {
+      "name": "al-prioritario-de-difusion-ilegitima-de-contenidos-sensibles.txt",
+      "characters": 1697,
+      "sha": "dd47843bfde6a8e9"
+    },
+    {
+      "name": "as-competencias-de-la-autoridad-vasca-de-proteccion-de-datos.txt",
+      "characters": 3086,
+      "sha": "0e3cf03f15c560a9"
+    },
+    {
+      "name": "ben-estar-colocadas-las-camaras-y-los-monitores-de-grabacion.txt",
+      "characters": 1153,
+      "sha": "c89bdc4e357aecd8"
+    },
+    {
+      "name": "competencias-de-la-autoridad-catalana-de-proteccion-de-datos.txt",
+      "characters": 2249,
+      "sha": "6e7291eb0475ab7b"
+    },
+    {
+      "name": "cumentacion-del-resto-de-candidatos-de-un-concurso-oposicion.txt",
+      "characters": 2030,
+      "sha": "de1003615ac748e4"
+    },
+    {
+      "name": "dirigir-para-poder-ejercer-un-derecho-en-proteccion-de-datos.txt",
+      "characters": 794,
+      "sha": "40062c39d36929f2"
+    },
+    {
+      "name": "drian-publicarse-con-las-firmas-manuscritas-de-los-firmantes.txt",
+      "characters": 1134,
+      "sha": "a5b287719b8a95b5"
+    },
+    {
+      "name": "e-obligacion-de-identificarse-siempre-para-acceder-a-la-sede.txt",
+      "characters": 809,
+      "sha": "31740e19574ecbfd"
+    },
+    {
+      "name": "e-pueden-tomar-imagenes-o-grabar-videos-en-eventos-escolares.txt",
+      "characters": 2311,
+      "sha": "07acd4fcd3df9d8d"
+    },
+    {
+      "name": "e-riesgos-a-los-tratamientos-de-la-comunidad-de-propietarios.txt",
+      "characters": 1202,
+      "sha": "7adc3b739ec99491"
+    },
+    {
+      "name": "e-un-vecino-el-nombre-del-resto-de-propietarios-del-inmueble.txt",
       "characters": 1280,
       "sha": "18dedd57bfd18663"
+    },
+    {
+      "name": "ecuentes-2-tus-obligaciones-como-responsable-del-tratamiento.txt",
+      "characters": 1490,
+      "sha": "27e423a27d197638"
+    },
+    {
+      "name": "edan-prestar-consentimiento-para-tratar-sus-datos-personales.txt",
+      "characters": 1141,
+      "sha": "9b10e45a0e8d4669"
+    },
+    {
+      "name": "ede-instalar-camaras-con-la-finalidad-de-control-empresarial.txt",
+      "characters": 1200,
+      "sha": "3923cbf4694b48e6"
+    },
+    {
+      "name": "ede-tener-acceso-un-propietario-a-los-gastos-de-su-comunidad.txt",
+      "characters": 6532,
+      "sha": "788f561640a0269b"
+    },
+    {
+      "name": "edo-hacer-si-he-recibido-correos-electronicos-o-mensajes-sms.txt",
+      "characters": 874,
+      "sha": "a5dca6e078264039"
+    },
+    {
+      "name": "enitores-a-las-historias-clinicas-de-sus-hijos-mayores-de-14.txt",
+      "characters": 1316,
+      "sha": "3fc1a17fafada2cc"
+    },
+    {
+      "name": "ento-de-solvencia-patrimonial-y-credito-pero-desconozco-cual.txt",
+      "characters": 1410,
+      "sha": "ba2003d3d435b339"
+    },
+    {
+      "name": "eptos-basicos-FAQ-0003-sobre-direccion-de-correo-electronico.txt",
+      "characters": 1370,
+      "sha": "9e45625ad295a684"
+    },
+    {
+      "name": "eptos-basicos-FAQ-0008-que-es-un-responsable-del-tratamiento.txt",
+      "characters": 478,
+      "sha": "9559a35f1295eb45"
+    },
+    {
+      "name": "es-obtener-un-certificado-de-empadronamiento-de-los-pequenos.txt",
+      "characters": 1183,
+      "sha": "e5db888b55060a5d"
+    },
+    {
+      "name": "et-y-redes-sociales-FAQ-1706-ejercicio-del-derecho-al-olvido.txt",
+      "characters": 1255,
+      "sha": "d698ea9a524bed78"
+    },
+    {
+      "name": "guntas-frecuentes-3-proteccion-de-datos-en-el-ambito-laboral.txt",
+      "characters": 5992,
+      "sha": "bcde855d0a7cf765"
+    },
+    {
+      "name": "ia-FAQ-0807-se-pueden-grabar-los-plenos-de-los-ayuntamientos.txt",
+      "characters": 1121,
+      "sha": "42e2af01b2fa5429"
+    },
+    {
+      "name": "iales-FAQ-1701-como-puedo-proteger-mi-privacidad-en-internet.txt",
+      "characters": 1046,
+      "sha": "6958c9de2eedae96"
+    },
+    {
+      "name": "ias-si-soy-un-empresario-individual-o-un-profesional-liberal.txt",
+      "characters": 1162,
+      "sha": "340282a1d1316855"
+    },
+    {
+      "name": "ica-FAQ-1204-como-se-accede-a-la-sede-electronica-de-la-aepd.txt",
+      "characters": 773,
+      "sha": "2fea35369b84d017"
+    },
+    {
+      "name": "icativas-de-los-trabajadores-pueden-incluir-nombre-apellidos.txt",
+      "characters": 1027,
+      "sha": "cf3a1a9f692fe361"
+    },
+    {
+      "name": "ion-necesito-aportar-a-la-aepd-cuando-haga-uso-de-este-canal.txt",
+      "characters": 1787,
+      "sha": "92e5fca5888fc2a8"
+    },
+    {
+      "name": "is-derechos-de-proteccion-de-datos-cuando-recibo-una-llamada.txt",
+      "characters": 1223,
+      "sha": "683539bcd36a7cc3"
+    },
+    {
+      "name": "istado-de-los-trabajadores-beneficiarios-de-la-accion-social.txt",
+      "characters": 2185,
+      "sha": "0472bf866c3598ec"
+    },
+    {
+      "name": "iva-de-proteccion-de-datos-a-las-comunidades-de-propietarios.txt",
+      "characters": 1569,
+      "sha": "4b2632401eefa185"
+    },
+    {
+      "name": "l-libre-consentimiento-al-uso-de-cookies-por-gran-red-social.txt",
+      "characters": 1288,
+      "sha": "d9780ee12fe0c2bc"
+    },
+    {
+      "name": "las-retribuciones-y-rpts-con-identificacion-de-sus-titulares.txt",
+      "characters": 1817,
+      "sha": "eec7ec21df19f09d"
+    },
+    {
+      "name": "n-menor-de-14-ejercitar-los-derechos-contemplados-en-el-rgpd.txt",
+      "characters": 1087,
+      "sha": "18781921550cbe04"
+    },
+    {
+      "name": "n-que-la-AEPD-puede-actuar-frente-a-las-llamadas-comerciales.txt",
+      "characters": 2273,
+      "sha": "1f21664624c3268d"
+    },
+    {
+      "name": "ncluido-en-un-tratamiendo-de-solvencia-patrimonial-y-credito.txt",
+      "characters": 2228,
+      "sha": "56ec36f0544d74ec"
+    },
+    {
+      "name": "ncluido-en-un-tratamiento-de-solvencia-patrimonial-y-credito.txt",
+      "characters": 933,
+      "sha": "f0b8b8678ed49d33"
+    },
+    {
+      "name": "ner-mas-informacion-sobre-el-tratamiento-de-datos-de-menores.txt",
+      "characters": 739,
+      "sha": "b9f180d711c4a100"
+    },
+    {
+      "name": "nerme-a-que-los-partidos-politicos-usen-mis-datos-personales.txt",
+      "characters": 1222,
+      "sha": "ac7a2774eedaa5fb"
+    },
+    {
+      "name": "no-solicitadas-con-fines-comerciales-con-intervencion-humana.txt",
+      "characters": 1628,
+      "sha": "52973d38399dde7e"
+    },
+    {
+      "name": "nsibles-en-internet-FAQ-1505-como-puedo-acceder-a-este-canal.txt",
+      "characters": 1284,
+      "sha": "cfc25ac44709a77b"
+    },
+    {
+      "name": "ocamaras-supone-un-tratamiento-de-datos-de-caracter-personal.txt",
+      "characters": 867,
+      "sha": "fb20973c3b82921f"
+    },
+    {
+      "name": "ontener-datos-de-salud-los-justificantes-de-ausencia-laboral.txt",
+      "characters": 2289,
+      "sha": "fed9d99100d6cc7e"
+    },
+    {
+      "name": "persona-que-desempena-un-determinado-puesto-en-un-ministerio.txt",
+      "characters": 1137,
+      "sha": "97f6d3f1f6772365"
+    },
+    {
+      "name": "preguntas-frecuentes-0-conceptos-basicos.txt",
+      "characters": 4720,
+      "sha": "5b754d2bf64bfcf9"
+    },
+    {
+      "name": "preguntas-frecuentes-1-tus-derechos.txt",
+      "characters": 1025,
+      "sha": "e3ba044fbf57cab5"
+    },
+    {
+      "name": "preguntas-frecuentes-10-menores-y-educacion.txt",
+      "characters": 6022,
+      "sha": "e4ad68468285215d"
+    },
+    {
+      "name": "preguntas-frecuentes-11-transparencia-y-pd.txt",
+      "characters": 6322,
+      "sha": "7cc207e4bb1de8b2"
+    },
+    {
+      "name": "preguntas-frecuentes-12-sede-electronica.txt",
+      "characters": 5408,
+      "sha": "f86534f86603ff30"
+    },
+    {
+      "name": "preguntas-frecuentes-13-reclamaciones.txt",
+      "characters": 5228,
+      "sha": "3ea77650fec3989f"
+    },
+    {
+      "name": "preguntas-frecuentes-14-procesos-electorales.txt",
+      "characters": 2962,
+      "sha": "8d1665a768199455"
+    },
+    {
+      "name": "preguntas-frecuentes-16-salud.txt",
+      "characters": 864,
+      "sha": "34694883019dcb77"
+    },
+    {
+      "name": "preguntas-frecuentes-17-internet-y-redes-sociales.txt",
+      "characters": 4742,
+      "sha": "54c23b59fd015a72"
+    },
+    {
+      "name": "preguntas-frecuentes-4-dpd.txt",
+      "characters": 1083,
+      "sha": "0574116bf0661460"
+    },
+    {
+      "name": "preguntas-frecuentes-5-publicidad-no-deseada.txt",
+      "characters": 4333,
+      "sha": "791dc47df89919eb"
+    },
+    {
+      "name": "preguntas-frecuentes-7-solvencia-patrimonial.txt",
+      "characters": 6746,
+      "sha": "56d1af7bd30399ee"
+    },
+    {
+      "name": "preguntas-frecuentes-8-videovigilancia.txt",
+      "characters": 5619,
+      "sha": "acf3ecfd0ae257b0"
+    },
+    {
+      "name": "preguntas-frecuentes-9-comunidades-de-propietarios.txt",
+      "characters": 5644,
+      "sha": "6bcd52b32f6fbb78"
+    },
+    {
+      "name": "presa-de-recobros-me-esta-reclamando-una-deuda-que-no-es-mia.txt",
+      "characters": 3069,
+      "sha": "e8974fab01c6dcb9"
+    },
+    {
+      "name": "ps-en-los-coches-de-la-empresa-que-utilizan-los-trabajadores.txt",
+      "characters": 1575,
+      "sha": "3dc0b04c9278c566"
+    },
+    {
+      "name": "ral-postar-pese-a-haber-solicitado-la-exclusion-de-mis-datos.txt",
+      "characters": 1912,
+      "sha": "0f64b1f980668729"
+    },
+    {
+      "name": "rar-el-acrobat-reader-para-que-confie-en-el-certificado-raiz.txt",
+      "characters": 2203,
+      "sha": "62cf6053b965e224"
+    },
+    {
+      "name": "reclamaciones-FAQ-1308-plazos-para-contestar-una-reclamacion.txt",
+      "characters": 1368,
+      "sha": "99fcd5b49eeffc53"
+    },
+    {
+      "name": "respecto-al-ejercicio-de-los-derechos-de-proteccion-de-datos.txt",
+      "characters": 1490,
+      "sha": "5c66ab3428166ae1"
+    },
+    {
+      "name": "rio-la-inscripcion-de-ficheros-de-la-comunidad-en-la-agencia.txt",
+      "characters": 1539,
+      "sha": "6e48fb2e89874a99"
+    },
+    {
+      "name": "ro-utilizar-los-servicios-disponibles-en-la-sede-electronica.txt",
+      "characters": 687,
+      "sha": "f93925c1b3d0201e"
+    },
+    {
+      "name": "ropietarios-FAQ-0902-cuales-son-las-principales-obligaciones.txt",
+      "characters": 1684,
+      "sha": "be6972e5592773d5"
+    },
+    {
+      "name": "ropietarios-deben-nombrar-un-delegado-de-proteccion-de-datos.txt",
+      "characters": 1211,
+      "sha": "2228e1c05aec6a25"
+    },
+    {
+      "name": "rsonal-prevalece-el-derecho-o-debe-entregarse-la-informacion.txt",
+      "characters": 2651,
+      "sha": "4f89f0345144f6fe"
+    },
+    {
+      "name": "s-15-canal-prioritario-para-contenidos-sensibles-en-internet.txt",
+      "characters": 3994,
+      "sha": "5eefd9006f51140e"
+    },
+    {
+      "name": "s-basicos-FAQ-0007-que-es-un-tratamiento-de-datos-personales.txt",
+      "characters": 682,
+      "sha": "e1176727244296ee"
+    },
+    {
+      "name": "s-medicos-al-empresario-comite-de-empresa-y-seccion-sindical.txt",
+      "characters": 2633,
+      "sha": "4fc6a0642d129d23"
+    },
+    {
+      "name": "seguridad-que-no-graba-solo-permite-visionado-en-tiempo-real.txt",
+      "characters": 959,
+      "sha": "f5af34c1396a1ae7"
+    },
+    {
+      "name": "sistema-de-exclusion-publicitaria-y-sigo-recibiendo-llamadas.txt",
+      "characters": 919,
+      "sha": "4ea118d8c9efa46c"
+    },
+    {
+      "name": "solicitar-los-antecedentes-penales-para-un-puesto-de-trabajo.txt",
+      "characters": 1931,
+      "sha": "b43a4fe64ae3862c"
+    },
+    {
+      "name": "tes-6-transferencias-internacionales-bcr-codigos-de-conducta.txt",
+      "characters": 960,
+      "sha": "cd254386812e41bf"
+    },
+    {
+      "name": "to-de-solvencia-patrimonial-y-credito-y-no-me-han-contestado.txt",
+      "characters": 1188,
+      "sha": "9d23c14ea9c6ce1e"
+    },
+    {
+      "name": "uien-difunda-ilegitimamente-contenidos-sensibles-de-terceros.txt",
+      "characters": 2894,
+      "sha": "9d6bc34b4a2a28ba"
     }
   ]
 }

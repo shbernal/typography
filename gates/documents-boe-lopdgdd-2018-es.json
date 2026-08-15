@@ -2,7 +2,7 @@
   "corpus": "boe-lopdgdd-2018-es",
   "documents": [
     {
-      "name": "0000-diario_boe-xml.php.txt",
+      "name": "diario_boe-xml.php.txt",
       "characters": 245269,
       "sha": "feb8c5e8d1b6b47f"
     }
