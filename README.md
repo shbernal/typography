@@ -1,7 +1,8 @@
 # @shbernal/typography
 
 [![CI](https://github.com/shbernal/typography/actions/workflows/ci.yml/badge.svg)](https://github.com/shbernal/typography/actions/workflows/ci.yml)
-[![Corpus](https://github.com/shbernal/typography/actions/workflows/corpus.yml/badge.svg)](https://github.com/shbernal/typography/actions/workflows/corpus.yml)
+[![Corpus links](https://github.com/shbernal/typography/actions/workflows/corpus-links.yml/badge.svg)](https://github.com/shbernal/typography/actions/workflows/corpus-links.yml)
+[![Corpus pins](https://github.com/shbernal/typography/actions/workflows/corpus-pins.yml/badge.svg)](https://github.com/shbernal/typography/actions/workflows/corpus-pins.yml)
 [![npm](https://img.shields.io/npm/v/@shbernal/typography)](https://www.npmjs.com/package/@shbernal/typography)
 [![No dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
 

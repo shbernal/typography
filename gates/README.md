@@ -102,7 +102,7 @@ checkout. An unrun gate said plainly is fine.
 
 ## Two ways a rebuild disagrees with the baseline, neither of which is drift
 
-The monthly `Corpus` workflow rebuilds all eight and verifies them. Its first two
+CI rebuilds all eight and verifies them. Its first two
 runs turned up both of the ways that can fail without anything having changed,
 and both are recorded here because the obvious response to either - re-baseline
 and move on - would quietly rewrite what the numbers in this file describe.
@@ -249,7 +249,7 @@ Every story above is one shape: a frozen URL freezes an address, and an address
 is not a document. So a line in `gates/sources/*.urls` may carry a second column,
 the timestamp of an Internet Archive capture, and that capture is what a rebuild
 reads. `--live` asks the publisher instead, which is the only way to find out
-whether these addresses still resolve and is what the monthly workflow runs.
+whether these addresses still resolve and is what `Corpus links` runs.
 
 The mechanic is Wayback's `id_` modifier, which returns a capture as it was
 received rather than rewritten for a reader, so the `region` and `drop` selectors
@@ -290,6 +290,37 @@ What this buys is narrower than "the corpora cannot drift" and worth having: the
 corpus that actually drifted twice is now the one that is fully archived, and the
 four-character disagreement above was solved by fetching the awkward variant on
 demand instead of waiting for CI to serve it.
+
+## Two workflows, because there were always two questions
+
+There was one `Corpus` workflow, monthly, and it asked both of these at once and
+reported one answer:
+
+| Workflow | Question | When | Reads |
+|---|---|---|---|
+| `Corpus links` | Do these URLs still resolve, and still extract? | monthly, and on demand | the publishers, `--live` |
+| `Corpus pins` | Do the rules still measure what this repo records? | on a push touching a pack, a corpus definition, a URL list or a committed manifest | the captures |
+
+The mismatch was in the *when*, and every false alarm the old workflow produced
+came out of it. Reproducibility is a property of a commit: the counts in this
+file can only stop describing the corpus if somebody changes a rule, so checking
+them monthly asks a question whose answer nobody has touched. Link rot is the
+opposite, a property of somebody else's month. Asking the second question on the
+first question's schedule, against live text, means every sub-editor in eight
+newsrooms can turn a release gate red on the first of the month.
+
+So a pin mismatch is **information** in `Corpus links` and a **failure** in
+`Corpus pins`, and that is the same fact reported twice rather than an
+inconsistency. Live text differing from a pin is what a live web does, and the
+per-document deltas are the useful part; captured bytes differing from a pin
+cannot be a publisher, so it is this repository's doing. A build that comes back
+short is red in both, because neither question can be answered from a corpus that
+is missing documents.
+
+Nothing is rebaselined in either. `--rebaseline` stays a person reading a delta
+and committing it, for the reason the withdrawal section gives: the run that
+discovers a change must not be the run that destroys the record of what it used
+to be.
 
 ## What is committed, and what is not
 

@@ -95,7 +95,11 @@ turns them into text, so every number above is one somebody else can check rathe
 than one they have to believe. The text itself stays out of the repo: it is
 third-party published work and this repository does not redistribute it.
 
-A scheduled workflow rebuilds all eight corpora monthly, so the claim in the
-previous paragraph fails loudly when a publisher moves a document rather than
-quietly when a contributor tries. The French reproduction baseline is the one
-exception, and `gates/README.md` names it rather than averaging it away.
+Two workflows keep that honest, and they ask different questions. `Corpus links`
+runs monthly against the publishers, so the claim in the previous paragraph fails
+loudly when a document moves rather than quietly when a contributor tries.
+`Corpus pins` runs when a rule or a corpus definition changes, rebuilds from the
+archived captures the URL lists name, and re-measures: red there means the
+numbers above no longer describe the text they were cut from. The French
+reproduction baseline is the one exception to any of this, and `gates/README.md`
+names it rather than averaging it away.

@@ -1,0 +1,132 @@
+name: Corpus links
+
+# Half of what used to be one `Corpus` workflow. That one asked two questions on
+# one schedule and reported one answer, and the answers have different meanings,
+# different audiences and different right frequencies:
+#
+#   this file        do these URLs still resolve, and still extract?
+#   corpus-pins.yml  do the rules still measure what this repo records?
+#
+# Red here means the frozen list has rotted: a journal reorganised its
+# permalinks, a federal site moved a PDF, a page started serving an interstitial.
+# Nothing in the repository changed, the tests are green, and the first person to
+# find out would otherwise be a contributor whose `pnpm corpus` half-fails on
+# their first afternoon. "Every corpus is rebuildable" is asserted in the README,
+# in CHANGELOG.md, in CONTRIBUTING.md and in gates/README.md, and this is the
+# only thing standing behind it.
+#
+# So this is the `--live` job, and it is the only CI here that may talk to a
+# publisher. Asking the Internet Archive every month whether admin.ch has
+# reorganised its permalinks would return a confident and permanent no.
+#
+# What it deliberately does not do is fail on text having changed. A live web
+# serving revised text under a frozen URL is not a fault, it is the property that
+# made `gates/documents-*.json` necessary in the first place; the run that has to
+# go red for it is the one that claims reproducibility, and that is the other
+# file. Conflating the two is what made the old workflow noisy: every sub-editor
+# in eight publishers' newsrooms could turn the first of the month red for a
+# release gate nobody was touching.
+#
+# It does not run the reproduction gate, which cannot run anywhere but the
+# maintainer's machine. gates/README.md says why, and that is a different kind of
+# unrunnable from this one.
+
+on:
+  schedule:
+    # Monthly. The documents are official publications and standards-body text,
+    # which move on the order of years; anything more frequent is load on
+    # somebody else's servers in exchange for nothing.
+    #
+    # GitHub disables a schedule after 60 days without a commit to the default
+    # branch, so on a quiet repository this stops on its own and stops silently.
+    # `workflow_dispatch` is here so a maintainer can re-run it by hand, which is
+    # also what re-enables the schedule.
+    - cron: '0 4 1 * *'
+  workflow_dispatch:
+    # A scheduled run rebuilds everything, because it is asking whether anything
+    # moved. A dispatched one is usually asking about something that already did,
+    # and that question is about one corpus: `theconversation-fr` disagreed on 76
+    # characters, and answering it by re-asking eight publishers for all 240
+    # documents spends the politeness this workflow is otherwise careful with -
+    # for seven corpora nobody is currently asking about.
+    inputs:
+      corpus:
+        description: One corpus id, e.g. theconversation-fr. Blank checks all eight.
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+
+    # A normal run is about ten minutes: 240 documents at the 1.5 s request rate
+    # is six minutes of deliberate waiting, plus the fetching itself. The retry
+    # ladder is what makes the tail long rather than fat - five rungs running to
+    # 90 s, per document - so a publisher having a bad day can stretch this by
+    # hours while still eventually succeeding. GitHub's default would let it run
+    # for six of them before saying anything, and a job that hangs until the
+    # default kills it reports as the same red X as the rot this exists to catch.
+    # An hour is several times a healthy run and a fraction of that.
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out typography
+        uses: actions/checkout@v7
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: 11.21.0
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Exit 1 is the build coming back short, and it is the only thing this job
+      # is allowed to be red about: a document 404s, or moved, or now needs a
+      # session, or downloads and extracts to nothing, which is what an
+      # interstitial or a paywall looks like from here. All of them are ways a
+      # corpus quietly comes back smaller than the list it was built from.
+      #
+      # Exit 3 is every document arriving and one of them no longer matching
+      # `gates/documents-*.json`. Here that is information rather than a failure,
+      # and the per-document deltas the fetcher printed above are the whole
+      # value of it: they say which publisher edited what, before anyone has to
+      # decide whether the corpus should follow. Deciding is a person reading the
+      # delta and committing it, and nothing is rebaselined here in either case -
+      # the run that discovers a change must not be the run that destroys the
+      # record of what it used to be.
+      #
+      # Being throttled is not either of those and is not a failure. The first
+      # run of the old workflow drew 17 `503 Service Unavailable` responses out
+      # of 116 from one publisher for no reason except asking 116 times in a row
+      # from a data centre. Those are retried with growing backoff, which is why
+      # this step is slow. A run that is short after the retries is a real event.
+      #
+      # `corpus` arrives through the environment rather than being interpolated
+      # into the command, because `${{ }}` substitutes into the script *text* and
+      # a dispatch input is somebody's typing. `${ONLY:+...}` then expands to
+      # nothing at all when it is blank, which is what a scheduled run sees, so
+      # the default path is the full check with no argument. An id that matches
+      # no corpus exits 2, which is a typo and stays red.
+      - name: Ask every publisher for every document
+        env:
+          ONLY: ${{ inputs.corpus }}
+        run: |
+          node scripts/fetch-corpus.ts --refresh --live ${ONLY:+--only "$ONLY"} && exit 0
+          status=$?
+          if [ "$status" -eq 3 ]; then
+            echo "::warning::Documents differ from gates/documents-*.json. Every URL still" \
+              "resolves, so this job is green; the text under one of them has changed." \
+              "Read the per-document deltas above and decide whether to rebaseline."
+            exit 0
+          fi
+          exit "$status"
