@@ -88,6 +88,17 @@ than asking.
 have printed with it, so the dry run and the real run compute the same thing and
 cannot disagree.
 
+`fix --write -` is a filter: the repaired text is the whole of stdout, byte for
+byte and whether or not anything moved, and the report goes to stderr. Both
+halves of that matter to a redirect. A filter that emitted nothing for text it
+had nothing to say about would not pass it through, it would delete it; and a
+report sharing stdout with the document would be appended to the document, which
+under `--json` also means the JSON does not parse.
+
+```bash
+typocheck fix --lang fr --write - < draft.md > fixed.md
+```
+
 Exit codes: `0` clean, `1` findings (`--strict` counts warnings too), `2` misuse.
 An argument starting with a dash that is not a flag it knows is a misuse, so a
 mistyped `--write` fails rather than falling through to the file list.

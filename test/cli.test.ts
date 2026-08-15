@@ -10,6 +10,8 @@ import { join, resolve } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+import { NO_BREAK } from '../src/pack.ts';
+
 const CLI = resolve(fileURLToPath(import.meta.url), '..', '..', 'src', 'cli.ts');
 
 function run(args: readonly string[], input?: string) {
@@ -87,6 +89,31 @@ test('fix leaves the unfixable findings alone and says so', () => {
 test('stdin is a first-class input', () => {
   const r = run(['check', '--lang', 'fr', '-'], 'Bonjour!');
   assert.match(r.stdout, /<stdin>:1:8/);
+});
+
+// `fix --write -` is the one mode where stdout carries somebody's document
+// rather than this tool's opinion of it. All three of these shipped broken and
+// none of them was executed anywhere: the filter dropped clean input entirely,
+// and both report formats were appended to the text they had just written.
+test('fix --write - passes clean text through rather than swallowing it', () => {
+  const clean = 'Rien a signaler ici.';
+  const r = run(['fix', '--lang', 'fr', '--write', '-'], clean);
+  assert.equal(r.stdout, clean);
+});
+
+test('fix --write - puts the repaired text on stdout and the report on stderr', () => {
+  const r = run(['fix', '--lang', 'fr', '--write', '-'], 'Il a dit : oui');
+  // The whole of stdout is the document, byte for byte, with nothing appended.
+  assert.equal(r.stdout, `Il a dit${NO_BREAK}: oui`);
+  assert.match(r.stderr, /fr\.space-before-colon/);
+  assert.match(r.stderr, /^fix: rewrote <stdin>/m);
+});
+
+test('fix --write - --json emits JSON a caller can parse', () => {
+  const r = run(['fix', '--lang', 'fr', '--write', '--json', '-'], 'Il a dit : oui');
+  assert.equal(r.stdout, `Il a dit${NO_BREAK}: oui`);
+  const parsed = JSON.parse(r.stderr) as { files: { changed: boolean }[] };
+  assert.equal(parsed.files[0]!.changed, true);
 });
 
 test('--json carries the stamp and the findings', () => {

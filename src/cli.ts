@@ -36,7 +36,9 @@ Arguments
 
 Options
   --lang <tag>         required. One of: ${packs.map((p) => p.lang).join(', ')}
-  --write              fix only. Rewrite the files in place.
+  --write              fix only. Rewrite the files in place. With -, the
+                       repaired text goes to stdout and the report to stderr,
+                       so the command is a filter you can redirect.
   --json               machine-readable findings on stdout
   --strict             exit non-zero on warnings as well as errors
   -h, --help
@@ -189,12 +191,18 @@ function main(argv: readonly string[]): number {
     if (verb === 'fix') {
       const fixed = fix(pack, text);
       changed = fixed !== text;
-      if (changed && opts.write) {
+      if (opts.write) {
+        // stdin's destination is stdout, and it is written whether or not
+        // anything moved. `typocheck fix --lang fr --write - < in > out` is a
+        // filter, and a filter that emits nothing for the text it had nothing to
+        // say about does not pass it through, it deletes it. A file is written
+        // only when it changed, because there the unchanged case already has a
+        // correct copy on disk and rewriting it moves an mtime for nothing.
         if (path === '-') process.stdout.write(fixed);
-        else writeFileSync(path, fixed);
-      } else if (!opts.write && path === '-') {
-        // Nothing is written and nothing is echoed: a dry run reports.
+        else if (changed) writeFileSync(path, fixed);
       }
+      // Without `--write` nothing is written and nothing is echoed, including
+      // for stdin: a dry run reports.
     }
 
     all.push({ path, findings, changed });
@@ -202,8 +210,17 @@ function main(argv: readonly string[]): number {
 
   const findings = all.flatMap((f) => f.findings);
 
+  // When `--write` is given a `-`, stdout is carrying somebody's document, so
+  // nothing about the document may go there as well. Both halves of that were
+  // broken: the human report was appended to the text, so `fix --write - > out`
+  // wrote the repaired text with the report glued to the end of it, and `--json`
+  // emitted the text immediately followed by the object, which does not parse.
+  // The report is still produced in full; it moves to stderr, where a redirect
+  // separates it from the thing being redirected.
+  const say = opts.write && opts.paths.includes('-') ? console.error : console.log;
+
   if (opts.json) {
-    console.log(
+    say(
       JSON.stringify(
         {
           tool: `typocheck ${version}`,
@@ -220,25 +237,25 @@ function main(argv: readonly string[]): number {
       ),
     );
   } else {
-    for (const file of all) for (const line of report(file.path, file.findings)) console.log(line);
+    for (const file of all) for (const line of report(file.path, file.findings)) say(line);
 
     const errors = findings.filter((f) => f.severity === 'error').length;
     const warnings = findings.length - errors;
     const notFixable = findings.filter((f) => !f.fixable).length;
 
-    console.log(
+    say(
       `\n${stamp(pack)}: ${findings.length} findings in ${all.length} file(s) ` +
         `(${errors} error, ${warnings} warning, ${notFixable} needing a decision)`,
     );
 
     if (verb === 'fix') {
       const moved = all.filter((f) => f.changed).map((f) => label(f.path));
-      if (!moved.length) console.log('fix: nothing to rewrite.');
-      else if (opts.write) console.log(`fix: rewrote ${moved.join(', ')}`);
-      else console.log(`fix: would rewrite ${moved.join(', ')}. Pass --write to do it.`);
+      if (!moved.length) say('fix: nothing to rewrite.');
+      else if (opts.write) say(`fix: rewrote ${moved.join(', ')}`);
+      else say(`fix: would rewrite ${moved.join(', ')}. Pass --write to do it.`);
     }
     if (notFixable && verb === 'fix')
-      console.log(
+      say(
         `${notFixable} finding(s) are not fixable by substitution and are untouched. ` +
           'They need a reader, not a flag.',
       );
