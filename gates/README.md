@@ -133,21 +133,33 @@ two genuine findings, both in a headline a callout reproduces. Which four
 characters differ is still unknown, which is why the whole block goes rather than
 the phrase alone.
 
-That is also where this stops being closed. The pattern is anchored to the
-callout's structure and its phrase together, and from a GitHub runner it matches
-nothing at all: the rebuild that used to come back 76 characters short now comes
-back 1,706 characters long, which is 19 callouts still being there, each of them
-4 characters shorter than the ones this pattern was written against. So the four
-characters are inside the callout markup rather than somewhere near it, and the
-block served to a data centre is not the block served here. What it is instead is
-not known. Guessing costs a rebuild per guess, so the next step is to measure it
-rather than to widen the pattern until something matches.
+**The four characters are the callout's own label, and it is localised.** The
+pattern was anchored to the callout's structure and its French phrase together,
+so from a GitHub runner it matched nothing at all and the rebuild that used to
+come back 76 characters short came back 1,706 characters long instead: 19
+callouts still there, each 4 characters from the length this pattern was written
+against. Fetching the same 43 URLs from the Internet Archive reproduces that
+number exactly, which is what finally made it a thing anyone could look at
+rather than a thing that needed a rebuild per guess. The markup either side is
+identical to the tag:
 
-The consequence for anyone rebuilding: `theconversation-fr` reproduces from a
-connection that is served the callouts this repository was built against and does
-not from one that is not. Matching seven of eight fingerprints from a data centre
-is the expected result and is not evidence that anything upstream has changed. The
-other seven match from everywhere.
+    <hr><p><em><strong> À lire aussi : <a href=...>headline</a> </strong></em></p><hr>
+    <hr><p><em><strong> Read more:      <a href=...>headline</a> </strong></em></p><hr>
+
+`À lire aussi :` is 14 characters and `Read more:` is 10. The Conversation
+serves the label by where the request comes from and not by which edition is
+being read, so a French article carries an English label to a data centre, and
+the count of callouts in a document times four was its delta all along.
+
+The `drop` now matches either label. That is why it is written as one
+alternation inside the same structural anchor rather than as a looser pattern:
+the two labels are a fact about this publisher's CMS, and anything wide enough
+to catch a third without being told about it would also be wide enough to catch
+prose. Widening it moved no committed number - the French label still matches
+what it always matched - and it closed the gap it was written to close, from
+everywhere. `theconversation-fr` now rebuilds to 402,245 characters and to its
+committed pins from a residential connection, from a data centre and from the
+archive.
 
 Both of those were diagnosed at the granularity of a whole corpus, because a whole
 corpus was all the committed evidence could describe. `gates/documents-*.json`
