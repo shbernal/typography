@@ -23,8 +23,13 @@ package targets Node 22.
 pnpm check          # typecheck + lint + test. The done gate
 pnpm build
 pnpm corpus         # rebuild the gate corpora from gates/sources/*.urls
+pnpm gates:status   # what the corpora are, from committed files, no network
 pnpm gates:verify   # the release gates
 ```
+
+`gates:status --fragility` is the same report one level down and is the one thing
+here that needs the corpora on disk: how much of each corpus's declared exposure
+sits in a single document. Read it before concluding that a count is evidence.
 
 All eight corpora are gitignored and rebuildable from committed URL lists. The
 French *reproduction* gate is the exception: it reads a private tree at

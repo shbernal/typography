@@ -56,9 +56,16 @@ const USER_AGENT =
  * publisher rather than by what the rest would put up with. 400 was too fast for
  * one of them: at that rate the AEPD refused 17 of 116 requests from a GitHub
  * runner, and with retries it still refused 7. A monthly job has no deadline, so
- * spending six minutes waiting across the 241 documents costs nothing, and asking
+ * spending nine minutes waiting across the 357 documents costs nothing, and asking
  * a data protection authority for 116 pages in 46 seconds costs goodwill this
- * repo is spending on somebody else's servers. */
+ * repo is spending on somebody else's servers.
+ *
+ * Lowering this has a failure mode worse than slowness. admin.ch answers a burst
+ * with `403`, not with `429` or a `503`, and a 403 is an answer rather than a
+ * refusal to answer, so `transient` below does not retry it and should not: at a
+ * faster rate that corpus comes back short rather than slow, from a publisher
+ * that has done nothing but rate-limit a crawler. Measured at roughly one request
+ * a second, which is faster than this and slower than it sounds. */
 const DELAY = 1_500;
 
 /** How many times to re-ask after a transient refusal, and how long to wait
@@ -102,6 +109,15 @@ interface CorpusSpec {
  * the BSI Kompendium is served from a version-pinned URL, so its inventory is
  * fixed and a longer list would be guesswork. `emphasis` and `link` are
  * deliberately absent, being inline.
+ *
+ * `sup` is absent for the same reason, and it has a consequence worth knowing
+ * before reading a finding as a defect: a superscript footnote marker flattens
+ * onto whatever preceded it, so `»<sup>1</sup>` reaches the rules as `»1` and
+ * `de-CH.inward-guillemets` reads a correctly closed Swiss quotation as a
+ * German-facing opening one. It happens once in that corpus. The alternative is
+ * worse - a newline inside every `H<sub>2</sub>O` - so the answer is not to add
+ * it here but to remember that an adjacency in the extracted text is not always
+ * one a reader of the page ever saw.
  *
  * Adding the DocBook names does not disturb the HTML corpora. Most are not HTML
  * elements at all; `title` only ever occurs inside `<head>`, which is stripped
