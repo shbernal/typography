@@ -163,8 +163,8 @@ Rebuilding `admin-ch-medien-de-ch` on 2026-08-15 returned 110,484 characters
 against a committed 111,812, and `gates/documents-*.json` named the two files
 immediately:
 
-    ~ newnsb-m5dXtFD2sVP_nBvBol-Tm.txt: 1400 -> 75 characters (-1325)
-    ~ newnsb-wcH3pK00kcgQRVfxKbItB.txt: 2154 -> 2151 characters (-3)
+    ~ newnsb-m5dXtFD2sVP_nBvBol-Tm.txt: sha mismatch, 1400 -> 75 characters
+    ~ newnsb-wcH3pK00kcgQRVfxKbItB.txt: sha mismatch, 2154 -> 2151 characters
 
 The 75 characters are `Diese Seite existiert nicht oder die Medienmitteilung
 wurde zurückgezogen.` The Swiss federal administration retracted that press
@@ -179,9 +179,19 @@ that would have caught this one without firing on real text. The general answer
 is neither a threshold nor a smarter emptiness test. It is that
 `gates/documents-*.json` already records what that document is supposed to
 contain, and comparing against it catches a withdrawal, a redirect, an
-interstitial and a sub-editor with one mechanism and no guessing. That is what
-the manifest is for now, and it is why this section is closed rather than
-mitigated.
+interstitial and a sub-editor with one mechanism and no guessing.
+
+`scripts/fetch-corpus.ts` now enforces those records rather than reporting them
+and rewriting them: a build in which any document fails its recorded length and
+hash exits 3, naming the file, and writing the records is the separate act of
+`--rebaseline`. That is what closes this section rather than mitigating it. The
+incident that made the enforcement non-negotiable was not this one but a quieter
+one two corpora over: a rebuild picked up three documents `theconversation-fr`
+had silently revised, overwrote the record of what they used to say, and exited
+0. The evidence that anything had moved was destroyed by the run that discovered
+it. All three were recovered from the Internet Archive and verified against the
+hashes the records still held: a record that is enforced is also a record that
+lets a document be put back.
 
 **The decision taken: the URL is dropped from the frozen list.** An error page in
 a corpus whose stated qualification is professionally typeset published text
@@ -231,12 +241,14 @@ redistribute, so `gates/corpora/` is ignored. What is committed is:
   a corpus fingerprint, for every corpus.
 - **`gates/documents-*.json`**, a character count and a hash for each document in
   each corpus. Metadata about somebody else's text rather than the text, so it is
-  this repo's to commit, and it is what makes a disagreement legible: the
-  fingerprint says a corpus moved, and this says which of its 300 documents did.
-  Written by `scripts/fetch-corpus.ts`, which prints the delta against it on
-  every rebuild and **declines to rewrite it from a build that came back short** -
-  regenerating it from an incomplete fetch would record the documents that failed
-  to arrive as the new truth, which is the same trap as re-baselining a gate.
+  this repo's to commit. It does two jobs. It makes a disagreement legible - the
+  fingerprint says a corpus moved, this says which of its 300 documents did - and
+  it is **the corpus contract**: the URL list freezes which documents a corpus
+  contains, and this freezes what they say. `scripts/fetch-corpus.ts` enforces it
+  on every build, exits 3 naming any document that fails, and writes it only under
+  `--rebaseline`, which it **refuses from a build that came back short** -
+  regenerating from an incomplete fetch would record the documents that failed to
+  arrive as the new truth, which is the same trap as re-baselining a gate.
 
 That combination is deliberate. A gate whose corpus cannot be rebuilt is a number
 nobody else can check, and a gate that ships the corpus is a redistribution

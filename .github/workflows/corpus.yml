@@ -76,12 +76,23 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      # Failing here means the URL lists have rotted: a document 404s, or moved,
-      # or now needs a session. `fetch-corpus.ts` also exits non-zero when a
-      # document downloads but extracts to nothing, which is what an interstitial
-      # or a paywall looks like from here, and when a document does not arrive at
-      # all - both being ways a corpus quietly comes back smaller than the list
-      # it was built from.
+      # This fails two ways, and the exit code says which.
+      #
+      # Exit 1 is the build coming back short: a document 404s, or moved, or now
+      # needs a session, or downloads and extracts to nothing, which is what an
+      # interstitial or a paywall looks like from here. All of them are ways a
+      # corpus quietly comes back smaller than the list it was built from.
+      #
+      # Exit 3 is every document arriving and one of them no longer matching
+      # `gates/documents-*.json`. The URL list froze which documents this corpus
+      # contains; those records freeze what they say, and a frozen URL serving
+      # revised text is invisible without them. A withdrawal notice served at 200
+      # in place of a press release is this, not exit 1.
+      #
+      # Neither is rebaselined here. Accepting a change to somebody else's
+      # published text is a person reading the delta and committing it, and the
+      # run that discovers a change must not be the run that destroys the record
+      # of what it used to be.
       #
       # Being throttled is not that, and is not a failure. The first run of this
       # workflow drew 17 `503 Service Unavailable` responses out of 116 from one

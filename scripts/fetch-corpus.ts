@@ -13,9 +13,19 @@
 // newlines, because stripping them silently would weld two words together and
 // manufacture a finding the publisher never wrote.
 //
+// A frozen URL list freezes which documents a corpus contains and says nothing
+// about what they say, so this also enforces `gates/documents-<id>.json`: every
+// document is checked against a committed length and hash, and a build that
+// disagrees fails naming the file. Writing those records is the separate,
+// deliberate act of `--rebaseline`, never a side effect of fetching.
+//
 //   node scripts/fetch-corpus.ts                 # every corpus that has a list
 //   node scripts/fetch-corpus.ts --only aepd-faq-es
 //   node scripts/fetch-corpus.ts --refresh       # re-fetch what is already there
+//   node scripts/fetch-corpus.ts --rebaseline    # accept the delta, rewrite the pins
+//
+// Exit codes: 1 the build came back short, 3 a document no longer matches its
+// pin, 2 the arguments named no corpus.
 
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -284,16 +294,21 @@ function namesFor(urls: readonly string[]): string[] {
  *
  * `gates/corpora/` is ignored because these are somebody else's published works,
  * so the only thing a rebuild on another machine can compare against is what
- * this repo commits *about* them. Until now that was one fingerprint per corpus,
- * which can say a corpus moved and cannot say which document moved. The first
- * real disagreement was exactly that shape: `theconversation-fr` rebuilds 76
+ * this repo commits *about* them. A character count and a hash per document are
+ * metadata rather than text, so they are this repo's to commit.
+ *
+ * These began as a way to *localise* a fingerprint delta. The first real
+ * disagreement was exactly that shape: `theconversation-fr` rebuilds 76
  * characters shorter from a data centre than from a residential connection, both
  * numbers stable, and nobody could localise it further than "somewhere in 43
- * documents".
+ * documents". A per-document record turns that into a line of output naming the
+ * file.
  *
- * A character count and a hash per document are metadata rather than text, so
- * they are this repo's to commit, and they turn that question into a line of
- * output naming the file. */
+ * They are now the corpus contract, which is a stronger claim and a different
+ * job. The URL list says which documents a corpus contains; this says what they
+ * say. Without it a rebuild is a fresh sample of a moving web that happens to be
+ * addressed by frozen URLs, and "the corpora are rebuildable" degrades to "the
+ * URLs still resolve". */
 interface DocumentRecord {
   readonly name: string;
   readonly characters: number;
@@ -321,66 +336,119 @@ function describe(dir: string): DocumentRecord[] {
     });
 }
 
-/** Says what moved since the committed manifest, and writes the new one.
- *
- * This reports and never fails. `gate-findings.ts --verify` is the gate and it
- * already fails when a corpus stops matching its baseline; what was missing was
- * anything to *read* once it did. A second gate over the same fact would only be
- * a second red step saying the same thing.
- *
- * `write` is false when the build came back short. Regenerating a manifest from
- * an incomplete fetch is the same trap as re-baselining a gate from one: it
- * records the documents that failed to arrive as the new truth, and it does it
- * without saying so. */
-function reconcile(id: string, records: DocumentRecord[], write: boolean): void {
-  const out = manifestFor(id);
-  const committed = existsSync(out)
-    ? (JSON.parse(readFileSync(out, 'utf8')) as { documents: DocumentRecord[] }).documents
-    : undefined;
-
-  if (committed) {
-    const before = new Map(committed.map((doc) => [doc.name, doc]));
-    const after = new Map(records.map((doc) => [doc.name, doc]));
-    const moved: string[] = [];
-
-    for (const [name, now] of after) {
-      const then = before.get(name);
-      if (!then) {
-        moved.push(`    + ${name}: ${now.characters} characters, not in the manifest`);
-        continue;
-      }
-      if (then.sha === now.sha) continue;
-      const delta = now.characters - then.characters;
-      moved.push(
-        `    ~ ${name}: ${then.characters} -> ${now.characters} characters` +
-          (delta === 0
-            ? ' (same length, different text)'
-            : ` (${delta > 0 ? '+' : ''}${String(delta)})`),
-      );
-    }
-    for (const name of before.keys())
-      if (!after.has(name)) moved.push(`    - ${name}: in the manifest, not in this build`);
-
-    if (moved.length) {
-      console.log(`  ${moved.length} document(s) differ from gates/documents-${id}.json:`);
-      for (const line of moved) console.log(line);
-    }
-  }
-
-  if (write) writeFileSync(out, `${JSON.stringify({ corpus: id, documents: records }, null, 2)}\n`);
+/** How a corpus came out. Two independent facts, because they are two different
+ * events with two different people to talk to: `short` means the network or the
+ * publisher did not hand over a document, `mismatch` means it handed over a
+ * different one than last time. */
+interface Outcome {
+  readonly short: boolean;
+  readonly mismatch: boolean;
 }
 
-async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
-  if (!spec.fetch) return;
+/** Checks a build against the committed records, and says what to go and read.
+ *
+ * This used to report and then write the new manifest anyway, on the argument
+ * that `gate-findings.ts --verify` was the real gate and this was only the thing
+ * to read once it went red. That was wrong, in a way that took a live incident to
+ * see: a rebuild picked up three documents a publisher had silently rewritten,
+ * overwrote the record of what they used to say, and exited 0. The evidence that
+ * anything had moved was destroyed by the run that discovered it, and what
+ * survived was a corpus that looked freshly verified. A pin that the thing
+ * producing the corpus is free to rewrite is not a pin.
+ *
+ * `absent` names the documents whose fetch already failed. Without it, every one
+ * of them is reported a second time as missing from the build, which is true and
+ * is the same event told twice - with the second telling being the more alarming
+ * one, since "the publisher deleted it" and "the request timed out" read very
+ * differently at the top of a CI log. */
+function verify(
+  id: string,
+  records: readonly DocumentRecord[],
+  absent: ReadonlySet<string>,
+): 'pinned' | 'unpinned' | 'mismatch' {
+  const out = manifestFor(id);
+  if (!existsSync(out)) {
+    // Not a failure, because a corpus being added has no records yet and there is
+    // no order in which it could: the first build is what there is to describe.
+    // Deleting the file for a corpus that has one is a visible act on a tracked
+    // file, and `pnpm gates:status` says so as well.
+    console.log(`  no records in gates/documents-${id}.json, --rebaseline to write them`);
+    return 'unpinned';
+  }
+  const committed = (JSON.parse(readFileSync(out, 'utf8')) as { documents: DocumentRecord[] })
+    .documents;
+  const before = new Map(committed.map((doc) => [doc.name, doc]));
+  const after = new Map(records.map((doc) => [doc.name, doc]));
+  const off: string[] = [];
+
+  for (const [name, now] of after) {
+    const then = before.get(name);
+    if (!then) {
+      off.push(`    + ${name}: not in the manifest, ${now.characters} characters`);
+      continue;
+    }
+    if (then.sha === now.sha) continue;
+    off.push(
+      `    ~ ${name}: sha mismatch, ${then.characters} -> ${now.characters} characters` +
+        (then.characters === now.characters ? ', same length and different text' : ''),
+    );
+  }
+  for (const name of before.keys())
+    if (!after.has(name) && !absent.has(name))
+      off.push(`    - ${name}: in the manifest, not in this build`);
+
+  if (!off.length) return 'pinned';
+  console.error(`  ${off.length} document(s) do not match gates/documents-${id}.json:`);
+  // Sorted, so the three kinds group: what appeared, what went, what changed.
+  for (const line of off.sort()) console.error(line);
+  return 'mismatch';
+}
+
+/** Verifies, and then writes the records only if asked and only if the build was
+ * whole.
+ *
+ * Rebaselining from an incomplete fetch is the trap this is shaped around: it
+ * records the documents that failed to arrive as having ceased to exist, and it
+ * does it without saying so, which is how a corpus loses 10% of itself and
+ * reports a clean run. */
+function reconcile(
+  id: string,
+  records: readonly DocumentRecord[],
+  absent: ReadonlySet<string>,
+  whole: boolean,
+  rebaseline: boolean,
+): Outcome {
+  const verdict = verify(id, records, absent);
+
+  if (rebaseline && !whole) {
+    console.error(`  refusing to rebaseline ${id} from a build that came back short.`);
+    return { short: true, mismatch: false };
+  }
+  if (rebaseline) {
+    writeFileSync(
+      manifestFor(id),
+      `${JSON.stringify({ corpus: id, documents: records }, null, 2)}\n`,
+    );
+    console.log(`  gates/documents-${id}.json written from this build`);
+    return { short: false, mismatch: false };
+  }
+  return { short: !whole, mismatch: verdict === 'mismatch' };
+}
+
+async function fetchCorpus(spec: CorpusSpec, options: Options): Promise<Outcome> {
+  if (!spec.fetch) return { short: false, mismatch: false };
   const dir = join(REPO, 'gates', 'corpora', spec.id);
-  if (existsSync(dir) && !refresh) {
+  if (existsSync(dir) && !options.refresh) {
     console.log(`${spec.id}: already present, skipping (--refresh to re-fetch)`);
-    // The manifest describes what is on disk, and what is on disk did not
-    // change by being skipped. Running this over an existing corpus is also how
-    // the manifests were first written, without re-asking eight publishers for
-    // documents already sitting in `gates/corpora/`.
-    reconcile(spec.id, describe(dir), true);
-    return;
+    // Checked, not skipped. What is on disk did not change by being skipped, but
+    // whether it matches the records is a question about the corpus rather than
+    // about this run, and it is the cheap one: no network, and it is what makes
+    // a local corpus that has been edited or truncated fail the moment anyone
+    // runs `pnpm corpus`. Running this over an existing corpus with
+    // `--rebaseline` is also how the records were first written, without
+    // re-asking eight publishers for documents already sitting in
+    // `gates/corpora/`.
+    return reconcile(spec.id, describe(dir), new Set(), true, options.rebaseline);
   }
   rmSync(dir, { recursive: true, force: true });
   mkdirSync(dir, { recursive: true });
@@ -390,12 +458,19 @@ async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
   const urls = readUrls(join(REPO, spec.fetch.urls));
   const names = namesFor(urls);
   const claimed = new Set<string>();
+  // The names of documents this build already knows it does not have, so that
+  // `verify` does not report them a second time as having vanished from the
+  // publisher. Only the one-URL-one-document formats can fill this in: a
+  // `wp-json` request that fails carries away the ids of every post it would
+  // have returned, and there is nothing to name.
+  const absent = new Set<string>();
   let written = 0;
   let characters = 0;
   let empty = 0;
   let failed = 0;
 
   for (const [at, url] of urls.entries()) {
+    const named = spec.fetch.format === 'wp-json' ? undefined : (names[at] ?? tailOf(url));
     let body: string;
     try {
       body = await get(url);
@@ -406,6 +481,7 @@ async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
       // corpus looks fine, the fingerprint moves, and the obvious next move is
       // to re-baseline the gate against text that was never missing.
       console.error(`  ${spec.id}: ${(error as Error).message}`);
+      if (named) absent.add(named);
       failed++;
       await sleep(DELAY);
       continue;
@@ -422,7 +498,7 @@ async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
       for (const post of posts)
         documents.push({ name: `${String(post.id)}.txt`, markup: post.content.rendered });
     } else {
-      documents.push({ name: names[at] ?? tailOf(url), markup: body });
+      documents.push({ name: named ?? tailOf(url), markup: body });
     }
 
     for (const document of documents) {
@@ -430,6 +506,7 @@ async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
       // An empty extraction means the region selector missed, and a corpus
       // quietly short of the documents it claims is the failure this counts.
       if (text.trim().length === 0) {
+        absent.add(document.name);
         empty++;
         continue;
       }
@@ -458,35 +535,71 @@ async function fetchCorpus(spec: CorpusSpec, refresh: boolean): Promise<void> {
       (failed ? `, ${failed} document(s) that did not arrive` : ''),
   );
 
-  reconcile(spec.id, describe(dir), !empty && !failed);
+  if (empty || failed)
+    console.error(
+      `  ${spec.id} is short ${empty + failed} of the ${urls.length} documents its list names. ` +
+        'Do not re-baseline the gate from this build.',
+    );
 
-  if (empty || failed) {
-    if (failed)
-      console.error(
-        `  ${spec.id} is short ${failed} of the ${urls.length} documents its list names. ` +
-          'Do not re-baseline the gate from this build.',
-      );
-    process.exitCode = 1;
-  }
+  return reconcile(spec.id, describe(dir), absent, !empty && !failed, options.rebaseline);
+}
+
+interface Options {
+  readonly refresh: boolean;
+  readonly rebaseline: boolean;
+  readonly only?: string | undefined;
 }
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
-  const refresh = args.includes('--refresh');
   const onlyArg = args[args.indexOf('--only') + 1];
-  const only = args.includes('--only') ? onlyArg : undefined;
+  const options: Options = {
+    refresh: args.includes('--refresh'),
+    rebaseline: args.includes('--rebaseline'),
+    only: args.includes('--only') ? onlyArg : undefined,
+  };
 
   const manifest = JSON.parse(readFileSync(MANIFEST, 'utf8')) as { corpora: CorpusSpec[] };
   const wanted = manifest.corpora.filter(
-    (spec) => spec.fetch !== undefined && (!only || spec.id === only),
+    (spec) => spec.fetch !== undefined && (!options.only || spec.id === options.only),
   );
   if (!wanted.length) {
-    console.error(only ? `no fetchable corpus named ${only}` : 'no fetchable corpora');
+    console.error(
+      options.only ? `no fetchable corpus named ${options.only}` : 'no fetchable corpora',
+    );
     process.exitCode = 2;
     return;
   }
 
-  for (const spec of wanted) await fetchCorpus(spec, refresh);
+  let short = false;
+  let mismatch = false;
+  for (const spec of wanted) {
+    const outcome = await fetchCorpus(spec, options);
+    short ||= outcome.short;
+    mismatch ||= outcome.mismatch;
+  }
+
+  // Two exit codes because they are two events, and the one thing a maintainer
+  // must not have to guess at 4am on the first of the month is which one
+  // happened. 1 is "we did not get the text": a 404, a timeout, a region
+  // selector that no longer matches, and the corpus on disk is incomplete. 3 is
+  // "we got different text": every document arrived and one of them is not what
+  // it was, which is a change somebody published and a person has to read.
+  //
+  // Short wins when both are true. An incomplete build cannot be trusted to be
+  // saying anything about the documents that did arrive either, and its
+  // mismatches are printed above regardless.
+  if (short) {
+    console.error('\nThe fetch did not complete. Nothing was rebaselined.');
+    process.exitCode = 1;
+  } else if (mismatch) {
+    console.error(
+      '\nSome documents no longer match gates/documents-*.json, and nothing failed\n' +
+        'to arrive: the text itself is not what this repo records. Read the delta\n' +
+        'above. Rerun with --rebaseline to accept it, which is a commit of its own.',
+    );
+    process.exitCode = 3;
+  }
 }
 
 // Only when this file is the thing that was run. `toText` is exported so it can
