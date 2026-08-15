@@ -44,13 +44,37 @@ test('frontmatter matches the skill format', () => {
   assert.ok(fm.description!.length <= 1024, `description is ${fm.description!.length} characters`);
 });
 
+/** The primary subtag, which is the grain the skill's prose and its reference
+ * files work at: `de-DE` and `de-CH` are two packs and one German. */
+function primary(lang: string): string {
+  return lang.split('-')[0]!;
+}
+
+/** The English name of a language, for matching against prose written in
+ * English. Derived rather than tabulated, so adding a pack cannot leave a stale
+ * entry behind: the failure this whole file exists to prevent. */
+const ENGLISH = new Intl.DisplayNames(['en'], { type: 'language' });
+
+/** Every language the registry ships, once each, as an English name. */
+const LANGUAGES = [...new Set(packs.map((p) => primary(p.lang)))].map((tag) => ({
+  tag,
+  name: ENGLISH.of(tag)!,
+}));
+
 test('the description names every language the tool actually ships', () => {
+  // This assertion used to carry `|| /french|spanish|german/i.test(...)`, which
+  // meant it passed for every pack as long as the description mentioned any one
+  // of those three. It therefore never checked coverage at all, and adding a
+  // fourth language is what showed it: `nl` shipped and the test stayed green.
+  //
+  // Nothing here is a literal any more. The language names come from the
+  // registry through `Intl`, so a fifth pack fails this the moment it is
+  // registered and before its skill copy is written.
   const fm = frontmatter();
-  for (const pack of packs)
+  for (const { tag, name } of LANGUAGES)
     assert.ok(
-      fm.description!.toLowerCase().includes(pack.standard.split(' ')[0]!.toLowerCase()) ||
-        /french|spanish|german/i.test(fm.description!),
-      `description does not reach ${pack.lang}`,
+      new RegExp(`\\b${name}\\b`, 'i').test(fm.description!),
+      `the skill description does not name ${name} (${tag}), which the tool ships`,
     );
 });
 
@@ -97,7 +121,11 @@ test('every pack id the skill quotes is the one that pack currently has', () => 
   // A pack version moves whenever a rule changes, which is exactly when nobody is
   // thinking about the skill, so this cannot be left to review.
   const current = new Set(packs.map((p) => p.id));
-  const quoted = [...SKILL.matchAll(/\b((?:fr|es|de-DE|de-CH)@\d+\.\d+\.\d+)\b/g)];
+  // Built from the registry rather than written out, for the reason above one
+  // level up: a hand-kept alternation of tags does not fail when a language is
+  // added, it just stops watching that language's stamps.
+  const tags = packs.map((p) => p.lang.replace('-', '\\-')).join('|');
+  const quoted = [...SKILL.matchAll(new RegExp(`\\b((?:${tags})@\\d+\\.\\d+\\.\\d+)\\b`, 'g'))];
 
   assert.ok(quoted.length > 0, 'the skill should show at least one stamp');
   for (const match of quoted) {
@@ -122,12 +150,14 @@ test('every pack id the skill quotes is the one that pack currently has', () => 
 });
 
 test('the references exist and one is read only once the language is known', () => {
-  for (const ref of ['fr', 'es', 'de']) {
-    const body = readFileSync(join(SKILL_DIR, 'references', `${ref}.md`), 'utf8');
-    assert.ok(body.length > 500, `references/${ref}.md is a stub`);
+  // One reference per language, not per pack: `de-DE` and `de-CH` share `de.md`
+  // because they share a standard and differ only in which guillemet opens.
+  for (const { tag } of LANGUAGES) {
+    const body = readFileSync(join(SKILL_DIR, 'references', `${tag}.md`), 'utf8');
+    assert.ok(body.length > 500, `references/${tag}.md is a stub`);
     assert.ok(
-      SKILL.includes(`references/${ref}.md`),
-      `SKILL.md does not point at references/${ref}.md`,
+      SKILL.includes(`references/${tag}.md`),
+      `SKILL.md does not point at references/${tag}.md`,
     );
   }
 });
@@ -137,10 +167,13 @@ test('every rule id the references name still exists', () => {
   // counts, so renaming one silently invalidates both. This is the check that
   // makes the rename visible.
   const known = new Set(packs.flatMap((p) => p.rules.map((r) => r.id)));
-  for (const ref of ['fr', 'es', 'de']) {
-    const body = readFileSync(join(SKILL_DIR, 'references', `${ref}.md`), 'utf8');
-    for (const m of body.matchAll(/`((?:fr|es|de|de-DE|de-CH)\.[a-z-]+)`/g))
-      assert.ok(known.has(m[1]!), `references/${ref}.md names ${m[1]}, which no pack defines`);
+  const prefixes = [...new Set(packs.flatMap((p) => [p.lang, primary(p.lang)]))]
+    .map((tag) => tag.replace('-', '\\-'))
+    .join('|');
+  for (const { tag } of LANGUAGES) {
+    const body = readFileSync(join(SKILL_DIR, 'references', `${tag}.md`), 'utf8');
+    for (const m of body.matchAll(new RegExp(`\`((?:${prefixes})\\.[a-z-]+)\``, 'g')))
+      assert.ok(known.has(m[1]!), `references/${tag}.md names ${m[1]}, which no pack defines`);
   }
 });
 
