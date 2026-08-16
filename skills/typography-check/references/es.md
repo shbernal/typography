@@ -65,8 +65,10 @@ Reported, never converted. The two ends are the same character.
 
 ## Note on evidence
 
-As of `0.1.0` the Spanish rules have **not** been run past a real published
-Spanish corpus - see `gates/README.md` in the package repo. The rules are cited
-and unit-tested, and their false-positive rate on professionally typeset Spanish
-is unmeasured. If a user reports a surprising Spanish finding, that is worth
-capturing rather than dismissing.
+The Spanish rules were measured against 1.1M characters of published Spanish
+(the Boletín Oficial del Estado, the AEPD and FundéuRAE) and produced one false
+positive: an English phrase quoted inside a Spanish sentence, where inserting the
+`¿` the rule wants would have been actively wrong. That is why the two
+unpaired-mark rules report and never repair. `docs/provenance.md` in the package
+repo has the rest, and a surprising Spanish finding is still worth capturing
+rather than dismissing.

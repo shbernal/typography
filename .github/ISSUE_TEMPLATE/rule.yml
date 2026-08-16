@@ -5,15 +5,22 @@ body:
   - type: markdown
     attributes:
       value: |
-        One thing decides whether a rule can ship: a citation. Every rule names
-        the section of the Imprimerie nationale, the RAE or the Duden that
-        decides it. That line is what keeps the packs from becoming a place where
-        preferences collect, and it is why there is no English pack.
+        Every rule carries a citation, which is what keeps a style from
+        becoming a place where preferences collect unattributed. A shipped
+        style's rules name the Imprimerie nationale, the RAE, the Duden or the
+        Taalunie; `en` has no such body behind it and cites two manuals, and
+        ships only what both of them say. Where the sources diverge, the rule
+        reports without repairing or does not exist: that is why the serial
+        comma is in no style here.
+
+        A rule that is your own house's preference does not need this issue.
+        Compose a style with the rule in it and cite the house style: that is
+        what `compose`, `derive` and `@shbernal/typography/rules` are for.
   - type: input
     id: lang
     attributes:
-      label: Language tag
-      placeholder: fr, es, de-DE, de-CH
+      label: Style
+      placeholder: en, fr, es, de-DE, de-CH, nl
     validations:
       required: true
   - type: textarea

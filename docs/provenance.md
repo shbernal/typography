@@ -75,11 +75,12 @@ into `“…”` retypes those 393. This is why the ballot generalizes and the
 imposer does not: `withWidth` can impose a space width because the repair is a
 substitution, and a `withStyle` imposing a quotation system cannot exist.
 
-## Why ten of the seventeen rule ids have no fix
+## Why eleven of the nineteen rule ids have no fix
 
-Ten of them ship without a `fix` in at least one style, because the repair needs information the pattern does not have, and in three
-languages independently the missing information was the same one: **the unit
-these rules run over is not reliably monolingual.**
+Eleven of them ship without a `fix` in at least one style, because the repair
+needs information the pattern does not have, and in three languages
+independently the missing information was the same one: **the unit these rules
+run over is not reliably monolingual.**
 
 - 355 `missing-punctuation-space` findings in a French bibliography, every one an
   English or Portuguese book title set correctly to its own language's rules.
@@ -100,6 +101,13 @@ prose, where the standard's marks are right, and quoted UI labels, menu paths,
 domain names and identifiers, where they are not. That split is between the
 domain and the language rather than between right and wrong, so the rule is a
 warning that reports and does not repair.
+
+`double-hyphen` is the third reason and the newest, and no corpus is behind it:
+the two English manuals disagree about what replaces `--`, Chicago closing an em
+dash up and Oxford setting a spaced en dash, so either repair retypes text that
+is correct under the other. It has the domain hazard as well, since `--` between
+two letters is a dash in prose and a modifier in a stylesheet, but the citation
+would have stopped the repair on its own.
 
 ## What the corpora were
 

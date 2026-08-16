@@ -13,7 +13,7 @@ de-DE   »Wort«     „Wort“      (guillemets inward, or the low-high pair)
 de-CH   «Wort»                 (guillemets outward, closed up)
 ```
 
-So the tool has two packs and refuses a bare `de`. A pack id gets stamped onto a
+So the tool has two styles and refuses a bare `de`. A style id gets stamped onto a
 corpus as the era it was set in, and a stamp that cannot tell a Swiss quotation
 from a German mistake is worse than no stamp at all.
 
@@ -25,7 +25,7 @@ This is also why the two regions below list the **same rule ids** under differen
 headings. A rule id names a position, not a character: `guillemet-open-space` is
 the space inside whichever mark opens a quotation, which is `»` in Germany and
 `«` in Switzerland. The id being equal is what makes the two reports comparable;
-the *pack* is what says which mark it means. Read the stamp in the report footer
+the *style* is what says which mark it means. Read the stamp in the report footer
 before reading a finding.
 
 ## Shared by both regions
@@ -69,14 +69,14 @@ language one. That mix is why it is a warning.
 
 - **`guillemet-direction`** (not fixable): `«Wort»` in a German document.
   The repair is mechanically obvious - swap both characters - and it is still not
-  safe, because the text may be right and the *pack* wrong. A Swiss quotation
+  safe, because the text may be right and the *style* wrong. A Swiss quotation
   inside a German document is a citation, not an error.
 
 ## `de-CH` only
 
 - **`guillemet-open-space`, `guillemet-close-space`** (fixable):
   `« Wort »` becomes `«Wort»`. Same characters as French, closed up rather than
-  spaced, which is the difference that makes running the wrong pack produce
+  spaced, which is the difference that makes running the wrong style produce
   confident nonsense.
 
 - **`guillemet-direction`** (not fixable): `»Wort«` in a Swiss document, the

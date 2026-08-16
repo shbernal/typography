@@ -1,5 +1,181 @@
 # Changelog
 
+## Unreleased
+
+**The packs become composable styles.** A rule is the primitive now and a style
+is a rule list with a name, built by `compose` out of the builders in
+`@shbernal/typography/rules`, which is exactly how the shipped ones are built. A
+user can compose one, name it, and it stamps and reports the way `fr` does.
+
+This breaks every consumer, and the release number is not decided yet: the
+heading says `Unreleased` on purpose, and `scripts/check-release-tag.mjs` refuses
+to publish while it does.
+
+**Why the project turned.** The input this package is for is a model's output.
+The question a corpus of professionally typeset text answers is "does this rule
+misfire on text somebody already set correctly", and the question that matters
+for generated text is "does the same content come back the same way twice". The
+first question was answered at high cost by nine corpora and is now recorded
+rather than re-asked; the second is answered by `audit`, offline, over text the
+caller supplies.
+
+**No shipped style's behaviour moved.** For every one of the 8,799 generated
+inputs in the battery and every written fixture, `normalize` returns the string
+it returned at `0.2.1` and every rule's `find` reports the same offsets. Text
+normalized under `0.2.1` does not need re-normalizing. What moved is the labels:
+the ids of the rules and the stamps of the styles. A summary is documentation and
+is not covered by that promise.
+
+### The breaking changes
+
+- **`TypographyPack` is `Style`**, `packs` is `styles`, `packFor` is `styleFor`.
+  A style need not be about a language, so `lang` is optional and the registry
+  lookup is still by tag.
+
+- **A style id is `<name>@<12 hex>` and the hex is derived**, hashed over each
+  rule's id, sentence, citation, severity, pattern and parameters. A hand-written
+  version could not survive composition: there is nobody to bump a constant in a
+  user's config, so a declared version would go quiet exactly where the text
+  stops being reproducible. The same derivation removed three couplings that used
+  to be maintained by hand, `de-DE` and `de-CH` most visibly, since they share a
+  rule list and now stamp together because the list moved.
+
+  These name the same rules as the versions they replace, and this table is the
+  only place that mapping exists:
+
+  | Was | Is |
+  |---|---|
+  | `fr@0.2.0` | `fr@a8ada4df7c7c` |
+  | `es@0.2.0` | `es@8a1408a1e177` |
+  | `de-DE@0.2.0` | `de-DE@69f15e8b27a9` |
+  | `de-CH@0.2.0` | `de-CH@f4928d1e43d1` |
+  | `nl@0.1.0` | `nl@54bd114c5488` |
+
+- **Rule ids are global**, so a finding no longer carries a language prefix, and
+  32 distinct ids became 19. A consumer filtering stored findings by id has to
+  remap them. A global id has to **name the position rather than the verdict**,
+  because French requires a space before `; ! ?` where the other five styles
+  forbid one, and that is one question about one position:
+
+  | Was | Is |
+  |---|---|
+  | `fr.` `de.` `nl.apostrophe` | `apostrophe` |
+  | `es.` `de.` `nl.space-before-punctuation`, `fr.space-before-high-punctuation` | `punctuation-spacing` |
+  | `fr.space-before-colon` | `colon-spacing` |
+  | `fr.missing-space-before-high-punctuation` | `missing-punctuation-space` |
+  | `fr.guillemet-open`, `es.` `de-DE.` `de-CH.guillemet-open-space` | `guillemet-open-space` |
+  | `fr.guillemet-close`, `es.` `de-DE.` `de-CH.guillemet-close-space` | `guillemet-close-space` |
+  | `de-DE.low-quote-space` | `low-quote-open-space` |
+  | `de-DE.outward-guillemets`, `de-CH.inward-guillemets` | `guillemet-direction` |
+  | everything else | the same id without its prefix |
+
+- **`typocheck --style <name>` replaces `--lang <tag>`**, and the `langs` verb is
+  `styles`. Both old spellings answer with the new one rather than falling in
+  with the typos, so a script that says `--lang fr` gets a sentence that is true.
+  Every shipped style is named for its tag, so `--style fr` is what `--lang fr`
+  was.
+
+- **`--json` renames one key and adds one.** `pack` is `style`, for the reason
+  every other rename here happened, and `config` is new: the path of the config
+  the style came from, and **null rather than absent** when none was loaded, so a
+  consumer can tell "this run used the shipped rules" from "this output came from
+  a tool that predates configs". A finding's own shape is untouched, and its
+  `rule` field carries a global id.
+
+`--strict`, the exit codes and `{ id, normalize }` are unchanged. A host that
+binds a style through `job.normalize` needs to do nothing but re-record the
+stamp.
+
+### What is new
+
+- **`compose`, `derive`, `stampOf` and `audit`** on the root export, and
+  **`@shbernal/typography/rules`**, the builders the shipped styles are made of.
+  `derive(base, { name?, drop?, replace?, add? })` is three verbs rather than one
+  merge, and each asserts something about the base: dropping an id the base does
+  not have throws, replacing one it does not have throws, adding one it already
+  has throws. A config outlives the package version it was written against, and
+  the failure it must not have is the quiet one.
+
+- **`audit(style, samples)`**, exported rather than kept in `test/`, because the
+  promise is about *composed* styles: a shipped style is held to these by this
+  repo's suite and a user's style is held to them by nobody. It returns
+  violations of three properties. **Idempotence**, `normalize` settles.
+  **Conformance**, `check` after `fix` reports nothing fixable, which is the
+  actual product promise and is the one no corpus was ever asked for.
+  **Non-interference**, no rule's fix reintroduces what an earlier rule removed,
+  which is the real hazard of a user-composed set.
+
+- **A sixth style, `en`**, subpath `@shbernal/typography/en`. Six rules, three of
+  them fixable, and it is the first style here with no standards body behind it:
+  it cites *The Chicago Manual of Style* and *New Hart's Rules* together and
+  asserts only what both of them say. Where they diverge the style reports
+  without repairing or has no rule, which is why the serial comma is not in it
+  and why the dash is named and not replaced. `en` had no corpus and will not get
+  one; `docs/provenance.md` says which of its rules that exposes.
+
+- **A config, for the CLI only.** `typography.config.mjs` (or `.js`, or `.ts` on
+  Node 22.18 and newer), in the working directory or an ancestor, default
+  exporting a style or an array of them. It is a module and not JSON because a
+  schema able to say what `src/rules/` says is a second copy of the builder API
+  that has to agree with it, which is the defect this repo keeps catching. A
+  config style may take a shipped style's name and stand in for it: a house
+  French is still French and every script already says `fr`. What keeps that
+  visible rather than quiet is the derived stamp, which cannot agree with the
+  shipped one, plus the config's path in the report footer and in `--json`.
+
+  The library gets no config concept at all. `check` takes a `Style`, and
+  `test/config.test.ts` walks every module in `src/` to hold that, because the
+  way it breaks is somebody importing `findConfig` into a rule module.
+
+### What left
+
+- **The nine corpora, both corpus workflows, all four gate scripts and `gates/`
+  itself**, 9.4M of fetched text off the disk. `pnpm check` is now the whole gate
+  and needs no network. What the corpora established is distilled into
+  **`docs/provenance.md`**: the sources each style's defaults come from, the five
+  measured narrowings that look like needless complication in the code, why
+  eleven of the nineteen rule ids have no `fix`, and what each corpus was.
+
+- **The French reproduction gate**, which pinned `fr.normalize` byte for byte
+  against the private implementation `fr` was extracted from. It could never run
+  outside the maintainer's machine, and conformance is what replaces it.
+
+- `docs/evidence.md` and `docs/corpus-consistency.md`. The evidence went into
+  `provenance.md`; the second was not a corpus document at all but the
+  `surveyWidth` / `withWidth` how-to, and it went into `docs/api.md`.
+
+### What holds it now
+
+- **`test/fixtures.ts`**, 52 written samples, weighted at **machine text** rather
+  than prose, because a fenced block, a JSON payload and a Windows path arrive in
+  the same value as the sentence. It replaced two overlapping hostile lists that
+  were themselves the two-copies defect, sitting in the files whose job is to
+  catch it.
+
+- **`test/hazards.test.ts`**, which asserts that every rule in every style fires
+  on at least one fixture, because a property over samples that reach nothing
+  passes for any set of rules. It also holds the rules that rewrite machine text
+  to a written-down list. That is a ratchet rather than an approval: every row is
+  a defect with an entry beside it, the exposure cannot grow quietly while the
+  decision waits, and the row disappears the day somebody fixes it.
+
+- **`pnpm battery` and a digest per style in `test/battery.test.ts`**, over 8,799
+  generated inputs. This is the one real gap a derived stamp leaves: the stamp
+  hashes what a rule *declares*, so an edit to `src/prose.ts` or to a helper
+  every builder calls changes what every style does to text and moves no stamp at
+  all. The digest covers the generated inputs only, deliberately, so that adding
+  a fixture never re-cuts a baseline and nobody learns to re-cut one without
+  looking.
+
+### The skill
+
+`skills/typography-check/` gains `references/en.md`, and its frontmatter names
+English and Chicago. Two sentences that named pack versions in prose now name the
+change instead, which is better documentation anyway: a reader holding a stamped
+report could never have compared a hex to a semver without a table. The test that
+checks every stamp the skill quotes is one a style currently carries fires more
+often now, not less.
+
 ## 0.2.1
 
 **`es.normalize` welded words together on a German quotation, and now does not.**

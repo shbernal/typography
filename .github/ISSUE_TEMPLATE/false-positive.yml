@@ -5,21 +5,21 @@ body:
   - type: markdown
     attributes:
       value: |
-        The most useful report this project can get. Unit tests measure whether a
-        rule fires on text written to make it fire; only real published prose
-        measures whether it fires on text that was already right.
+        The most useful report this project can get. Unit tests measure whether
+        a rule fires on text written to make it fire; only text somebody set
+        deliberately measures whether it fires on text that was already right.
   - type: input
     id: lang
     attributes:
-      label: Language tag
-      placeholder: fr, es, de-DE, de-CH
+      label: Style
+      placeholder: en, fr, es, de-DE, de-CH, nl
     validations:
       required: true
   - type: input
     id: rule
     attributes:
       label: Rule id
-      placeholder: es.unpaired-question
+      placeholder: unpaired-question
     validations:
       required: true
   - type: textarea
@@ -36,17 +36,20 @@ body:
   - type: input
     id: source
     attributes:
-      label: Where it was published
+      label: Where the text came from
       description: >
-        A URL or a citation. This decides how much the report weighs: text set by
-        somebody who sets type for a living is evidence, and may end up as a
-        fixture.
+        A URL, a citation, or how it was generated. This decides how much the
+        report weighs: text set by somebody who sets type for a living is
+        evidence, and may end up as a fixture.
     validations:
       required: true
   - type: input
     id: version
     attributes:
       label: Version
-      description: The line typocheck stamps on its report, e.g. `typocheck 0.1.0 (es@0.1.0)`
+      description: >
+        The line typocheck stamps on its report, e.g.
+        `typocheck 0.2.1 (es@8a1408a1e177)`. The part after the `@` is derived
+        from the rules, so it says which rules ran better than a version does.
     validations:
       required: true

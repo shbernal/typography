@@ -47,7 +47,7 @@ guillemets with the fine space U+202F while its p.149 table specifies `espace
 mots insécable`, which is U+00A0; the fine space is what Swiss practice
 prescribes. Over 2.4M characters of published French both publishers use U+00A0
 exclusively. A rule asserting either width would retype correctly set French, so
-this pack asserts consistency instead, which is what the citation supports.
+this style asserts consistency instead, which is what the citation supports.
 
 Inserting is licensed only because guillemets are unambiguous: there is no other
 construction to mistake them for, and a guillemet with no space inside it is

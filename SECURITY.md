@@ -28,7 +28,7 @@ Worth stating, because it is smaller than the word "linter" suggests:
   vulnerability in this package and worth reporting.
 
   `test/perf.test.ts` is what stands behind that paragraph rather than merely
-  next to it: every pack is held to linear time over long runs of each of the
+  next to it: every style is held to linear time over long runs of each of the
   four spaces this package knows about, unbroken tokens, and very long URLs.
   Three rules failed it when it was written. The French guillemet rules were an
   alternation over `ANY_SPACE*BREAKABLE ANY_SPACE*`, and because `BREAKABLE` is a

@@ -3,13 +3,13 @@
 Sources: `Technische Handleiding` (Nederlandse Taalunie, oktober 2016) for
 spelling, and Taaladvies.net for punctuation.
 
-Dutch is the pack whose shape differs most from the other three, and the
+Dutch is the style whose shape differs most from the other five, and the
 difference is the first thing to understand before answering a question about it.
 **It has no rule about which quotation marks Dutch uses**, because the Taalunie
 never made one. What it has instead is a rule about using more than one system in
 the same document.
 
-One pack, no regions. The Taalunie is a treaty body whose spelling binds the
+One style, no regions. The Taalunie is a treaty body whose spelling binds the
 Netherlands, Flanders and Suriname alike, so `nl` is bare in the way `fr` and `es`
 are and unlike `de`.
 
@@ -23,7 +23,7 @@ Taaladvies is explicit on both halves of this:
 > Er zijn geen vaste regels voor het gebruik van enkele of dubbele
 > aanhalingstekens. We raden aan om consequent voor één systeem te kiezen.
 
-So a pack that ruled on which system to use would be asserting what its citation
+So a style that ruled on which system to use would be asserting what its citation
 does not fix. Consistency is the whole of what can honestly be claimed, and it is
 claimed.
 
@@ -44,7 +44,7 @@ A straight quote **or a U+2018** between two letters becomes U+2019.
 Dutch reaches for the apostrophe far more than French or German, because the
 plural of a vowel-final noun takes one: `auto's`, `baby's`, `taxi's`.
 
-This is the only pack that converts U+2018. Between two letters it cannot be
+This is the only style that converts U+2018 between two letters. Between two letters it cannot be
 opening a quotation, so it can only be a smart-quote pass that turned the wrong
 way. The standard uses U+2018 to open a quotation 144 times and as an apostrophe
 never.
@@ -94,7 +94,7 @@ Dutch takes no space before `; : ! ?`.
 Worth watching in Dutch specifically. Dutch and French are in daily contact in
 Belgium, and French spacing carried into Dutch is a defect under the Belgian half
 of the Taalunie's own authority rather than a Belgian convention. That is why the
-pack is `nl` and not `nl-BE` plus `nl-NL`.
+style is `nl` and not `nl-BE` plus `nl-NL`.
 
 Check-only for the usual reason: `a ? b : c` is a ternary.
 
@@ -114,5 +114,6 @@ make one. If a user disputes one of those two findings on the grounds that it is
 advice rather than a standard, they are right about the status and the tool is
 still reporting what the advice says.
 
-See `gates/README.md` in the package repo for what the Dutch corpora do and do not
-exercise.
+`docs/provenance.md` in the package repo records what the one Dutch corpus did
+and did not exercise: two of these rules met nothing they could match in 880k
+characters, so their zeros say nothing about them.

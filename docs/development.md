@@ -57,7 +57,8 @@ reasoning behind the first four.
 - **`check` is a superset of `fix`, and `normalize` is the fix set.** A rule
   whose repair needs information the pattern does not have gets a `find` and no
   `fix`. Do not "complete" a `detectRule` by guessing a repair.
-- **A rule with no citation does not ship.**
+- **Every rule carries a citation**, as provenance rather than as permission, and
+  a style must not assert what its citation does not fix.
 - **Never write a rule twice.** `replaceRule` derives `find` and `fix` from one
   pattern. If you are writing a matcher and a rewriter separately, plus a test to
   keep them equal, the test is a symptom.
@@ -77,9 +78,13 @@ reasoning behind the first four.
   `npx @shbernal/typography` fetch one tarball rather than resolve a tree, which
   is what makes the public entry point tolerable and what the skill leans on.
   Dev dependencies are unconstrained.
-- **A pack must not import `translation-harness`,** and there is no registration
+- **A style must not import `translation-harness`,** and there is no registration
   call in either direction. `{ id, normalize }` is the whole contract, satisfied
   structurally.
+- **The library has no config concept.** `src/config.ts` is the CLI's and is
+  imported by `src/cli.ts` and nothing else; `test/config.test.ts` walks every
+  module in `src/` to hold that, because the way it breaks is somebody reaching
+  for `findConfig` from inside a rule module rather than through `index.ts`.
 
 ## Patterns must be linear, and this is the expensive one
 
@@ -97,43 +102,73 @@ hostile is required to produce one; an indented block or a wrapped table will do
 without a `(?<!ANY_SPACE)` in front of it every character of a run starts a fresh
 scan that consumes to the end of it.
 
-Rules in three of the four packs then shipping had one or the other, and the German and
-Spanish ones were found only after the French one had been fixed and written up
-as French-only. So: write the exception as a lookahead at the position where the
+Rules in three of the four rule sets then shipping had one or the other, and the
+German and Spanish ones were found only after the French one had been fixed and
+written up as French-only. So: write the exception as a lookahead at the position where the
 run starts, take the run once, and do not enumerate the defects as alternatives.
 `src/fr.ts` works through it at the constant `CORRECT_AFTER_OPEN`, and
-`test/perf.test.ts` holds every pack to linear time so a fourth instance fails
+`test/perf.test.ts` holds every style to linear time so a fourth instance fails
 rather than ships.
 
 `SECURITY.md` calls a pattern that behaves this way a vulnerability in this
 package, which makes `test/perf.test.ts` the assertion behind that claim rather
 than a benchmark.
 
-## Adding a language
+## Adding a rule
 
-1. `src/<tag>.ts`, one module, no shared engine. Read `src/fr.ts` first for the
-   comment density expected: every narrowing says what it is protecting.
-2. A tag is as specific as the convention requires, and no more.
+A rule lives in `src/rules/`, one module per family, each exporting a builder
+that a style calls with its own citation and character classes. Read `src/fr.ts`
+for the comment density expected: every narrowing says what it is protecting.
+
+1. Look for the family first. Six builders already cover most of the
+   declarations in the package, and the question a new rule asks is usually one
+   of theirs with a different answer. `punctuation-spacing` is the worked case:
+   French requires the space and five styles forbid it, and that is one builder
+   with a parameter rather than two rules.
+2. **A rule id names the position, not the verdict.** Ids are global, so
+   `guillemet-open-space` means "what belongs inside an opening guillemet" and
+   the answer differs per style. A builder owns its id rather than taking one,
+   which is what stops a style introducing a near-duplicate by spelling a name
+   slightly differently.
+3. Every parameter the rule's behaviour depends on has to reach the pattern or
+   the `params` the signature hashes. A parameter that reaches the text through a
+   closure is invisible to the stamp, and `conformRule` nearly shipped that way.
+4. The citation is the style's, never the builder's. Sharing a pattern across
+   languages is the point; sharing a citation would be a rule asserting an
+   authority that never spoke.
+
+## Adding a style
+
+1. `src/<name>.ts`, a `compose({ name, lang?, standard, rules })` call over
+   builders from `src/rules/`. There is no version constant to write: the stamp
+   is derived.
+2. Where the style is about a language, its tag is as specific as the convention
+   requires and no more. There is no bare `de`, and no fallback from a region to
+   a bare language.
 3. Register it in `src/check.ts`'s `styles` and add a subpath export in
    `package.json`. Re-export it from `src/index.ts` too.
 4. Fixtures in `test/fixtures.ts` that reach every one of its rules. This is not
    optional politeness: `test/hazards.test.ts` fails until they exist, because a
    rule no sample reaches is a rule every property in the suite is silent about.
    The three properties then run over them through `audit`.
-5. A `skills/typography-check/references/<primary-subtag>.md`, linked from
+5. A digest in `test/battery.test.ts`, cut from the tail of `pnpm battery`, and
+   the input count in that file's header if it moved.
+6. A `skills/typography-check/references/<primary-subtag>.md`, linked from
    `SKILL.md`, and the language named in the skill's frontmatter description.
    `test/skill.test.ts` derives all three from the registry and will fail until
-   they exist, which is the intended order: the pack first, then its documents.
+   they exist, which is the intended order: the style first, then its documents.
 
-**Check what the standard declines to say, not only what it says.** `nl` is the
-worked example. Dutch has no rule about which quotation marks to use, so the pack
-has none, and the citation that says there is no rule is the same one that
-licenses `mixed-quotation-marks`. A pack must not assert what its citation
-does not fix, and the absence of a rule is sometimes the most citable thing about
-a language.
+**Check what the source declines to say, not only what it says.** `nl` is the
+worked example. Dutch has no rule about which quotation marks to use, so the
+style has none, and the citation that says there is no rule is the same one that
+licenses `mixed-quotation-marks`. A style must not assert what its citation does
+not fix, and the absence of a rule is sometimes the most citable thing about a
+language. `en` is the same lesson from the other side: where the two authorities
+diverge, the style either reports without repairing or has no rule, which is why
+the serial comma is not in it.
 
 **Expect the new language to break a test that was never checking anything.**
-Adding `nl` exposed a skill test whose assertion passed for every pack as long as
+Adding `nl` exposed a skill test whose assertion passed for every style as long as
 the description mentioned any one of three hardcoded languages. Anything in the
 suite that names `fr`, `es`, `de-DE` and `de-CH` in a literal is a candidate: it
 does not fail when a language is added, it just stops covering it. Derive from
@@ -159,7 +194,7 @@ settled is the precedent to follow.
 
 A style's stamp moves by itself when a rule moves, so there is no version to
 bump; what a rule change still owes is a CHANGELOG entry, since the stamp is what
-a consumer's stored corpus carries. See the era stamp section of
+a consumer's stored text carries. See the derived-stamp section of
 [design.md](design.md).
 
 **A change that claims to change nothing has to be shown to.** The type checker
@@ -185,7 +220,8 @@ network.
 1. Update `CHANGELOG.md` with a `## <version>` heading. Not "Unreleased":
    `scripts/check-release-tag.mjs` refuses a release whose tag, `package.json`
    version and CHANGELOG heading do not all agree.
-2. Bump `version` in `package.json`. Pack versions are independent of it.
+2. Bump `version` in `package.json`. Style stamps are derived and independent of
+   it: nothing else has a number to move.
 3. `pnpm check`, then commit and tag `v<version>`.
 4. Push the tag, then **publish a GitHub Release** pointing at it. The Release is
    the trigger, not the tag, so pushing a tag is not on its own enough to

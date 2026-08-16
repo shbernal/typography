@@ -6,10 +6,19 @@ where to read before you touch a rule.
 
 ## What this project is
 
-Orthotypography rules for French, Spanish, German and Dutch, published as
-`@shbernal/typography`. A pack is a list of rules from a standards body; each
-rule cites its source. There is a library, a `typocheck` CLI, and a skill in
-`skills/` that ships from this same repo.
+Composable orthotypography rules, published as `@shbernal/typography`. **A rule
+is the primitive and a style is a rule list with a name**, built by `compose` out
+of the parameterized builders in `src/rules/`; each rule cites where it came
+from. Six styles ship, for English, French, Spanish, German and Dutch, and a user
+composes their own the same way, with `compose`, `derive` and the builders on
+`@shbernal/typography/rules`. There is a library, a `typocheck` CLI, and a skill
+in `skills/` that ships from this same repo.
+
+**The input is a model's output.** Generated or translated text, arriving set
+however the model happened to set it, which is why the goal is uniformity rather
+than conformance to a publisher's house rules: the question is whether the same
+content comes back the same way twice. That is what replaced the corpora, and it
+is why `audit` exists.
 
 **Pre-release, and single-maintainer.** No backwards-compatibility obligation
 and no deference to prior architecture unless the maintainer asks for it.
@@ -43,26 +52,36 @@ change to `src/prose.ts` or to a shared helper.
 - **`check` is a superset of `fix`, and `normalize` is the fix set.** A rule
   whose repair needs information the pattern does not have gets a `find` and no
   `fix`. Do not "complete" a `detectRule` by guessing a repair.
-- **A rule with no citation does not ship**, and **a pack must not assert what
-  its citation does not fix.** When a standard admits two spellings, rule on what
-  is wrong under both and preserve the rest.
-- **Never write a rule twice.** `replaceRule` derives `find` and `fix` from one
-  pattern. If you are writing a matcher and a rewriter separately plus a test to
-  keep them equal, the test is a symptom.
+- **Every rule carries a citation**, as provenance rather than as permission, and
+  **a style must not assert what its citation does not fix.** When a source
+  admits two spellings, rule on what is wrong under both and preserve the rest.
+  A divergence becomes a parameter with a default only where there is a *repair*
+  for it to reach; where it reaches a report and nothing else, it is not a
+  parameter, because a style that rewrites text identically must not carry a
+  second stamp.
+- **Never write a rule twice**, and more generally never write anything twice
+  that then has to agree with itself. `replaceRule` derives `find` and `fix` from
+  one pattern. If you are writing a matcher and a rewriter separately plus a test
+  to keep them equal, the test is a symptom. This defect has been caught five
+  times here; the config being a module and not JSON is the same argument.
+- **A builder that cannot sign a parameter must not accept it.** The stamp hashes
+  what a rule declares, so a parameter reaching the text through a closure is a
+  distinction the stamp cannot see. `rules/spelling.ts` is the shape: data that
+  carries its own behaviour, declared once.
 - **Every fix must be idempotent, and an inserting rule has to match its own
   output**, or a backfill never converges and each pass looks like progress.
 - **A pattern must have one way to match, and a pattern that starts with a space
   quantifier must be anchored to the start of the run.** This one has cost real
   time: an ambiguous French guillemet rule took 15 seconds on a padded
-  3,000-space line, and three of the four packs then shipping had a version of it.
-  `docs/development.md` works through it; `test/perf.test.ts` holds every pack
-  to linear time, including the two `withWidth` derives.
+  3,000-space line, and three of the four rule sets then shipping had a version
+  of it. `docs/development.md` works through it; `test/perf.test.ts` holds every
+  style to linear time, including the two `withWidth` derives.
 - **Never paste an invisible character into a test or a doc.** U+0020, U+00A0,
   U+202F and U+2009 are indistinguishable in a source file, and a test using them
   literally passes while asserting the wrong thing. Use `NO_BREAK` and friends.
 - **A report must never quote raw text.** Use `reveal` / `excerptAt`.
 - **No em dashes (U+2014).** Enforced in lint and again in the test suite.
-- **Zero runtime dependencies**, and **a pack must not import
+- **Zero runtime dependencies**, and **a style must not import
   `translation-harness`.** `{ id, normalize }` is the whole contract, satisfied
   structurally, with no registration call in either direction.
 - **The library has no config concept.** `src/config.ts` is imported by
@@ -73,23 +92,40 @@ change to `src/prose.ts` or to a shared helper.
   the builder API that has to agree with it. That is the same defect as a matcher
   and a rewriter written separately, and it has shown up three times here.
 
-## Pack ids are era stamps
+## Style ids are era stamps, and the stamp is derived
 
-`pack.id` is `<lang>@<version>` and the version lives in the pack module, not in
-`package.json`. **It moves when a rule changes and never for a README fix.** A
-corpus normalized under `fr@0.1.0` and one under `fr@0.2.0` are two typography
-eras; every row is individually correct and nothing compares two rows, which is
-how a corpus splits invisibly. Bumping a pack version is a CHANGELOG entry.
+`style.id` is `<name>@<12 hex>` and **nothing declares the hex**: `compose`
+hashes each rule's id, sentence, citation, severity, pattern and parameters, in
+order. It moves when a rule changes and never for a README fix, without anybody
+remembering. Two bodies of text normalized by different rule sets are two
+typography eras; every row in either is individually correct and nothing compares
+two rows, which is how a corpus splits invisibly. A rule change is still a
+CHANGELOG entry, because the stamp is what a consumer's stored text carries.
 
-`fr`'s `withWidth` returns a derived pack whose id carries the width it imposes
-(`fr@0.2.0+house-00A0`), for the same reason.
+Two things follow that will bite.
+
+- **A hand-written version could not have survived composition.** There is
+  nobody to bump a constant in a user's config, so a declared version would go
+  quiet exactly where the text stops being reproducible. The same derivation
+  removed three couplings that used to be maintained by hand: `de-DE` and `de-CH`
+  share a rule list, so their stamps move together because the list moved.
+- **The stamp cannot see anything a rule does not declare.** A change to
+  `src/prose.ts`, to a runner in `pack.ts` or to a shared helper moves behaviour
+  and moves no stamp. `test/battery.test.ts`'s digest table is the thing that
+  catches that, and `pnpm battery` on both trees is how you find out what moved.
+
+`fr`'s `withWidth` returns a derived style whose stamp differs from `fr`'s and
+between the two widths, for the same reason. It is two `derive` verbs now, and
+the width is in the pattern rather than in a closure so that the stamp can see
+it.
 
 ## Where to read before changing something
 
 | Doing | Read |
 |---|---|
 | Changing a rule | [`docs/provenance.md`](docs/provenance.md) |
-| Adding a language | [`docs/development.md`](docs/development.md) |
+| Adding a rule, or a style | [`docs/development.md`](docs/development.md) |
+| Composing or deriving a style | [`docs/api.md`](docs/api.md), then [`docs/design.md`](docs/design.md) |
 | Touching a pattern | [`docs/development.md`](docs/development.md), the linear-time section |
 | Changing the protocol | [`docs/design.md`](docs/design.md) |
 | Touching the CLI or the config | [`docs/api.md`](docs/api.md), the CLI and Config sections |
@@ -104,7 +140,7 @@ citation does not fix one, so the rules were narrowed to the spacing that is
 wrong under either reading. Two lessons that generalise, and neither is about
 French:
 
-- A pack must not assert what its citation does not fix.
+- A style must not assert what its citation does not fix.
 - **A gate constrains a rule only where its corpus exercises it.** Narrowing
   those rules looked blocked by the French reproduction gate, which pinned
   `normalize` byte for byte. It was not: that corpus contained no guillemet the
