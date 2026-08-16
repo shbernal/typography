@@ -1,5 +1,58 @@
 # Changelog
 
+## 0.2.1
+
+**`es.normalize` welded words together on a German quotation, and now does not.**
+`es@0.2.0`. One pack version moves and no finding count does.
+
+- **The defect.** `es.normalize('Er sagte »Wort« und ging.')` returned
+  `'Er sagte»Wort«und ging.'`. `«` opens a quotation in Spanish, in French and in
+  Switzerland, and closes one in Germany and Austria; `»` is the mirror. Both
+  Spanish guillemet rules read the German marks as Spanish ones and deleted the
+  spaces on the outside of the quotation, which are word boundaries.
+
+- **The repair is the guard both German packs have always had.**
+  `es.guillemet-open-space` now requires that the `«` it closes up is not
+  preceded by a letter or a digit, and `es.guillemet-close-space` that the `»` is
+  not followed by one. That is character for character `de-CH`'s pair, which is
+  the point below.
+
+- **`de-CH.ts` said this rule was "the same pattern and replacement as the
+  Spanish rule". It was not.** It was the Spanish rule plus the guard, and the
+  claim had been false for two pack versions. This is the second instance of one
+  shape in two releases: `0.2.0` fixed `de.space-before-punctuation`, which cited
+  `es.ts` for a `looksMachine` filter it did not have. **A comment asserting
+  parity with another pack is an assertion nothing tests**, and both times the
+  pack making the claim was the one in better shape, so the claim read as
+  reassurance while the other rule carried the defect. The comment now records
+  what happened rather than being quietly corrected.
+
+- **The gate says the guard costs nothing, and this is the whole of what it
+  says.** Re-cutting the three Spanish baselines over 1.1M characters changed one
+  line in each file, `"pack": "es@0.1.0"` to `"es@0.2.0"`, and moved no count and
+  no fingerprint. No Spanish corpus contains a German inward quotation, so the
+  corpora cannot speak to the defect at all; what they establish is the other
+  half, that the narrowing does not decline a guillemet Spanish publishers
+  actually set. `test/es.test.ts` carries the defect itself, both halves of it
+  separately, and three shapes the rule must still fix.
+
+- **`fr` has the same hazard and is deliberately not fixed here.** On the same
+  input `fr.normalize` returns `Er sagte<NNBSP>»Wort«<NNBSP>und ging.`: it reads
+  the German closing `«` as an opening guillemet and rewrites the ordinary word
+  spaces on the outside of the quotation into narrow no-break spaces. It welds
+  nothing, because the French rules insert and convert where the Spanish ones
+  delete, so the defect is a wrong space rather than a missing one. The guard is
+  the same two lookarounds. It is held back because it would move `fr@0.2.0` to
+  `fr@0.3.0` and split 2.4M characters of French corpus into a new era for a
+  hazard no French corpus contains, which is a bigger decision than this release.
+  `de-DE`, `de-CH` and `nl` are all correct on this input already.
+
+- **Found by inventorying the rules for a refactor, not by a gate.** The corpora
+  are drawn from one publisher's text per language, and a cross-language hazard
+  is by construction not in any of them. It is the second thing in two releases
+  that no corpus could have found, after the `looksMachine` filter, and the
+  argument for the corpora as the primary evidence is weaker for it.
+
 ## 0.2.0
 
 **A fifth pack: `nl@0.1.0`, Dutch, per the Nederlandse Taalunie.** Subpath export

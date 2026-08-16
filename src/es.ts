@@ -29,7 +29,14 @@ import { looksMachine } from './prose.ts';
 
 const ORTOGRAFIA = 'RAE, Ortografía de la lengua española (2010)';
 
-const VERSION = '0.1.0';
+/** Bumps when a rule changes, and never for a release that does not touch one.
+ *
+ * 0.2.0 put the cross-language guard on both guillemet rules. Under `es@0.1.0`
+ * a German inward quotation inside Spanish text had both its spaces deleted and
+ * its words welded; under `es@0.2.0` it is left alone. No Spanish corpus
+ * contains one, so no committed count moves, and the two stamps still have to be
+ * told apart: `normalize` returns something different for text that reaches it. */
+const VERSION = '0.2.0';
 
 /** Space, U+00A0 and U+202F. Spanish permits none of the three where these
  * rules look, so all three are the defect. */
@@ -54,9 +61,22 @@ const rules: readonly Rule[] = [
     // would have been a switch statement wearing a table's clothes: same
     // character, same position, opposite requirement.
     //
-    // Safe to fix for the same reason French's insertion is safe: guillemets are
-    // unambiguous, so there is no other construction to damage.
-    pattern: new RegExp(`«${ANY_SPACE}+`, 'g'),
+    // Safe to fix because guillemets are unambiguous *within a language*, which
+    // is a weaker licence than it sounds and is what the lookbehind is for.
+    // Guillemets are not unambiguous across languages: `«` opens a quotation in
+    // Spanish, in French and in Switzerland, and *closes* one in Germany and
+    // Austria. Without the guard this rule reads the `«` of a German `»Wort«
+    // und` as an opening mark and deletes the space after it, welding two words
+    // together. A `«` with a letter or a digit immediately before it is closing
+    // something, whatever this pack believes.
+    //
+    // Both German packs have carried this guard since they were written and this
+    // rule shipped without it, while `de-CH.ts` described its own rule as "the
+    // same pattern and replacement as the Spanish rule". It was not: it was this
+    // rule plus the guard. That is the second time a comment claiming parity
+    // with another pack outlived the parity, after `de.space-before-punctuation`
+    // cited `es.ts` for a `looksMachine` filter it did not have.
+    pattern: new RegExp(`(?<![\\p{L}\\p{N}])«${ANY_SPACE}+`, 'gu'),
     replacement: '«',
   }),
 
@@ -64,7 +84,11 @@ const rules: readonly Rule[] = [
     id: 'es.guillemet-close-space',
     summary: 'Space before a closing guillemet; Spanish sets `«texto»` closed up',
     cite: `${ORTOGRAFIA}, "Las comillas"`,
-    pattern: new RegExp(`${RUN_START}${ANY_SPACE}+»`, 'g'),
+    // The mirror guard, and the mirror hazard: `»` closes a quotation here and
+    // *opens* one in Germany, so a `»` with a letter or a digit immediately
+    // after it is opening something and the space before it is a word boundary
+    // rather than padding inside a quotation.
+    pattern: new RegExp(`${RUN_START}${ANY_SPACE}+»(?![\\p{L}\\p{N}])`, 'gu'),
     replacement: '»',
   }),
 

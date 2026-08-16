@@ -2,7 +2,7 @@
   "gate": "findings",
   "corpus": "fundeu-rae-es",
   "note": "FundéuRAE articles. The foundation the Real Academia Española promotes with the Agencia EFE, whose subject is correct Spanish, so a typographic finding in its own prose is worth reading.",
-  "pack": "es@0.1.0",
+  "pack": "es@0.2.0",
   "standard": "Real Academia Española",
   "units": 300,
   "characters": 641015,

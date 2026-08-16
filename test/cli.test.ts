@@ -10,6 +10,7 @@ import { join, resolve } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+import { es } from '../src/es.ts';
 import { NO_BREAK } from '../src/pack.ts';
 
 const CLI = resolve(fileURLToPath(import.meta.url), '..', '..', 'src', 'cli.ts');
@@ -124,7 +125,11 @@ test('--json carries the stamp and the findings', () => {
     files: { findings: { rule: string; fixable: boolean }[] }[];
   };
   assert.match(parsed.tool, /^typocheck /);
-  assert.equal(parsed.pack, 'es@0.1.0');
+  // From the pack, not from a literal. What this test is for is that the CLI
+  // reports *a* stamp and reports the pack's own; a literal here turns every
+  // pack version bump into a failure in a file that is not about pack versions,
+  // and `test/es.test.ts` is where the stamp's value is asserted.
+  assert.equal(parsed.pack, es.id);
   assert.ok(parsed.files[0]!.findings.some((f) => f.rule === 'es.unpaired-question' && !f.fixable));
 });
 

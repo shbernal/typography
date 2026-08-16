@@ -95,7 +95,7 @@ Its centre of gravity is the apostrophe, where Dutch is unusually demanding:
 
 ## Status
 
-`0.2.0`, and pre-1.0 is the accurate thing to say. Every language has been run
+`0.2.1`, and pre-1.0 is the accurate thing to say. Every language has been run
 past real published text: 2.4M characters of French, 2.4M of German, 1.1M of
 Spanish, 880k of Dutch, 699k of Swiss German. French additionally reproduces the
 implementation it was extracted from byte for byte over 11,058 real values.

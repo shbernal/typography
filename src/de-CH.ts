@@ -38,6 +38,15 @@ const rules: readonly Rule[] = [
     // different standard. They are not shared, and should not be: the day RAE
     // and Duden disagree, a shared constant would have to be split under time
     // pressure by whoever is holding the release.
+    //
+    // That sentence was false for two pack versions and is worth leaving the
+    // scar on. This rule had the lookbehind below and the Spanish one did not,
+    // so the two were the same rule only in the comment, and `es.normalize`
+    // welded the words either side of a German inward quotation until
+    // `es@0.2.0`. A comment asserting parity with another pack is an assertion
+    // nothing tests, which is the same shape as `de.space-before-punctuation`
+    // citing `es.ts` for a filter it did not have.
+    //
     // The lookbehind guards the same hazard `de-DE.ts` documents, pointed the
     // other way: `«` closes a quotation in Germany, so a `«` with a letter
     // immediately before it is closing something and the space before it is a

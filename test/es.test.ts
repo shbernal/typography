@@ -72,6 +72,26 @@ test('a space after an opening mark is fixable; a space before punctuation is no
   assert.equal(es.normalize('const y = a ? b : c;'), 'const y = a ? b : c;');
 });
 
+test('a German quotation inside Spanish text keeps its spaces', () => {
+  // Under `es@0.1.0` this returned `Er sagte»Wort«und ging.` and welded two
+  // pairs of words. `«` opens a quotation in Spanish and closes one in Germany,
+  // and the guillemet rules read the German marks as Spanish ones. Both German
+  // packs had the guard from the start; this rule shipped without it.
+  assert.equal(es.normalize('Er sagte »Wort« und ging.'), 'Er sagte »Wort« und ging.');
+  // Each half of the defect on its own, so a regression in one guard cannot
+  // hide behind the other.
+  assert.equal(es.normalize('»Wort« und'), '»Wort« und');
+  assert.equal(es.normalize('Er sagte »Wort«'), 'Er sagte »Wort«');
+});
+
+test('the guard does not cost the Spanish rule anything', () => {
+  // Everything the rule is actually for still fixes. The guard only declines a
+  // guillemet with a word character on the side a Spanish one never has one.
+  assert.equal(es.normalize('dijo: « hola »'), 'dijo: «hola»');
+  assert.equal(es.normalize('« hola », dijo.'), '«hola», dijo.');
+  assert.equal(es.normalize('(« hola »)'), '(«hola»)');
+});
+
 test('the pack stamps an era', () => {
-  assert.equal(es.id, 'es@0.1.0');
+  assert.equal(es.id, 'es@0.2.0');
 });
