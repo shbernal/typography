@@ -53,6 +53,7 @@ import {
 } from './pack.ts';
 import { looksMachine } from './prose.ts';
 import { apostrophe } from './rules/apostrophe.ts';
+import { ballot } from './rules/ballot.ts';
 import { spaceBeforePunctuation } from './rules/space-before-punctuation.ts';
 import { straightDoubleQuote } from './rules/straight-double-quote.ts';
 
@@ -117,46 +118,37 @@ const OPENERS = {
  */
 const OPENING = `(?<![\\p{L}\\p{N}])([${OPENERS.single}${OPENERS.double}${OPENERS.low}])(?=[^\\s])`;
 
-/** How many openings of each family voted. Additive, like the French ballot, so
- * this could be folded across a corpus if a host ever needed it to be. */
-interface Ballot {
-  readonly single: number;
-  readonly double: number;
-  readonly low: number;
-}
-
-function tally(value: string): Ballot {
-  let single = 0;
-  let double = 0;
-  let low = 0;
-  for (const m of value.matchAll(new RegExp(OPENING, 'gu'))) {
-    if (m[1] === OPENERS.single) single++;
-    else if (m[1] === OPENERS.double) double++;
-    else low++;
-  }
-  return { single, double, low };
-}
-
 /**
- * Which system a document settles on.
+ * The three systems, in precedence order, as the marks that open them.
  *
- * The order below breaks a tie, and only its last place is cited: Onze Taal
- * records the low pair as falling out of use, so a document that uses it exactly
- * as often as a high pair is likelier to be drifting out of it than into it.
+ * The order breaks a tie, and only its last place is cited: Onze Taal records
+ * the low pair as falling out of use, so a document that uses it exactly as
+ * often as a high pair is likelier to be drifting out of it than into it.
  * Between the two high pairs the order is arbitrary and stable, which is all a
  * check-only rule needs it to be. Nothing is rewritten on the strength of this,
  * so an arbitrary tiebreak costs a reader one report on a document that is
  * genuinely using two systems in equal measure and is inconsistent either way.
+ *
+ * The same shared ballot `fr` counts no-break spaces with. Two languages, one
+ * counting two widths and one counting three quotation systems, turned out to be
+ * one machine with two alphabets: `rules/ballot.ts`.
  */
-const PRECEDENCE = ['double', 'single', 'low'] as const;
+const PRECEDENCE = [OPENERS.double, OPENERS.single, OPENERS.low] as const;
 
-type Family = (typeof PRECEDENCE)[number];
+type Opener = (typeof PRECEDENCE)[number];
 
-function verdictOf(counts: Ballot): Family {
-  let winner: Family = PRECEDENCE[0];
-  for (const family of PRECEDENCE) if (counts[family] > counts[winner]) winner = family;
-  return winner;
+function isOpener(mark: string | undefined): mark is Opener {
+  return PRECEDENCE.includes(mark as Opener);
 }
+
+const system = ballot({
+  candidates: PRECEDENCE,
+  pattern: new RegExp(OPENING, 'gu'),
+  // The class in `OPENING` holds exactly these three, so nothing abstains. The
+  // check is here because a widened class that forgot to widen the candidates
+  // would otherwise vote for a mark that is not standing.
+  vote: (m) => (isOpener(m[1]) ? m[1] : null),
+});
 
 /**
  * The opening marks of every family this text uses but did not settle on, as a
@@ -167,14 +159,8 @@ function verdictOf(counts: Ballot): Family {
  * runs once per value, and a value here is a whole document.
  */
 function minorityOpeners(value: string): string | null {
-  const counts = tally(value);
-  const used = PRECEDENCE.filter((family) => counts[family] > 0);
-  if (used.length < 2) return null;
-  const verdict = verdictOf(counts);
-  return used
-    .filter((family) => family !== verdict)
-    .map((family) => OPENERS[family])
-    .join('');
+  const minority = system.minority(system.tally(value));
+  return minority.length === 0 ? null : minority.join('');
 }
 
 const rules: readonly Rule[] = [

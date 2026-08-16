@@ -50,6 +50,7 @@ import {
   type TypographyPack,
 } from './pack.ts';
 import { apostrophe } from './rules/apostrophe.ts';
+import { ballot } from './rules/ballot.ts';
 import { innerSpace } from './rules/inner-space.ts';
 import { ANY_SPACE_OR_THIN } from './rules/space.ts';
 import { straightDoubleQuote } from './rules/straight-double-quote.ts';
@@ -118,45 +119,32 @@ const NO_BREAK_SPACE = `[${NO_BREAK}${NARROW_NO_BREAK}]`;
  * never, and a rule with nothing in dispute does not need a ballot. */
 const BALLOT = `(?<=\u00AB)(.)|(.)(?=\u00BB)|(.)(?=[;!?])`;
 
-/** How many of each width voted. Additive: the tally of two values concatenated
- * is the tally of one plus the tally of the other, which is the whole reason
- * `surveyWidth` can fold a corpus without re-deriving the ballot. */
-interface Ballot {
-  readonly full: number;
-  readonly narrow: number;
-}
-
-function tally(value: string): Ballot {
-  let full = 0;
-  let narrow = 0;
-  for (const m of value.matchAll(new RegExp(BALLOT, 'gs'))) {
-    const space = m[1] ?? m[2] ?? m[3];
-    if (space === NO_BREAK) full++;
-    else if (space === NARROW_NO_BREAK) narrow++;
-  }
-  return { full, narrow };
-}
-
 /**
- * Which width a ballot settles on.
+ * The two widths, in precedence order.
  *
  * A tie, and a ballot with no evidence either way, goes to U+202F: it is the
  * width the Lexique sets its own pages in, so it is the better default, and
  * breaking the tie toward a fixed side is also what makes `normalize`
- * idempotent. Every fix moves the count further toward the side already chosen
- * and never away from it, so the second pass reaches the same verdict as the
- * first.
+ * idempotent. `rules/ballot.ts` states that property once for every style that
+ * has one, and here it is what puts the narrow space first in this array.
+ *
+ * The candidates are the widths themselves rather than names for them, so a
+ * verdict is already the string a repair is spelled in and there is no table
+ * between the two to get out of step.
  */
-function verdictOf({ full, narrow }: Ballot): string {
-  return full > narrow ? NO_BREAK : NARROW_NO_BREAK;
-}
-
-/** The width a ballot uses but did not settle on, or null if it uses at most
- * one. Null is the ordinary answer and means there is nothing to report. */
-function minorityOf(counts: Ballot): string | null {
-  if (counts.full === 0 || counts.narrow === 0) return null;
-  return verdictOf(counts) === NO_BREAK ? NARROW_NO_BREAK : NO_BREAK;
-}
+const width = ballot({
+  candidates: [NARROW_NO_BREAK, NO_BREAK],
+  pattern: new RegExp(BALLOT, 'gs'),
+  // Most of what sits in these positions is an ordinary character and abstains.
+  // Only the two no-break spaces are votes, which is why the pattern captures
+  // whatever is there rather than only the widths: a position holding a breaking
+  // space is evidence of a defect, not evidence for a width.
+  vote: (m) => {
+    const space = m[1] ?? m[2] ?? m[3];
+    if (space === NO_BREAK) return NO_BREAK;
+    return space === NARROW_NO_BREAK ? NARROW_NO_BREAK : null;
+  },
+});
 
 /**
  * Which no-break space this text already uses, and so which one a repair to it
@@ -167,16 +155,16 @@ function minorityOf(counts: Ballot): string | null {
  * cases and it is not the same grain: a registry normalized field by field can
  * still be inconsistent across rows, which is the defect the harness this was
  * extracted from exists to catch one level up. `surveyWidth` and `withWidth`
- * below are that level up; this function is unchanged and still decides per
- * value, which is what keeps `fr` itself exactly as it was.
+ * below are that level up; this function still decides per value, which is what
+ * keeps `fr` itself exactly as it was.
  */
 function houseWidth(value: string): string {
-  return verdictOf(tally(value));
+  return width.verdict(width.tally(value));
 }
 
 /** The width this text uses but did not settle on, or null if it uses only one. */
 function minorityWidth(value: string): string | null {
-  return minorityOf(tally(value));
+  return width.minority(width.tally(value))[0] ?? null;
 }
 
 const rules: readonly Rule[] = [
@@ -398,21 +386,14 @@ export interface WidthSurvey {
  * reaching for `withWidth`, because harmonizing rewrites text that is correct.
  */
 export function surveyWidth(values: Iterable<string>): WidthSurvey {
-  let full = 0;
-  let narrow = 0;
-  for (const value of values) {
-    const counts = tally(value);
-    full += counts.full;
-    narrow += counts.narrow;
-  }
-  const counts: Ballot = { full, narrow };
-  const minority = minorityOf(counts);
+  const counts = width.fold(values);
+  const minority = width.minority(counts)[0] ?? null;
   return {
-    full,
-    narrow,
-    verdict: verdictOf(counts),
+    full: counts[NO_BREAK],
+    narrow: counts[NARROW_NO_BREAK],
+    verdict: width.verdict(counts),
     minority,
-    minorityCount: minority === null ? 0 : minority === NO_BREAK ? full : narrow,
+    minorityCount: minority === null ? 0 : counts[minority],
   };
 }
 
