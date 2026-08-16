@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
 
 **A fifth pack: `nl@0.1.0`, Dutch, per the Nederlandse Taalunie.** Subpath export
 `@shbernal/typography/nl`. Seven rules, two of them fixable.
