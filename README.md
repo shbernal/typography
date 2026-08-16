@@ -122,11 +122,10 @@ Its centre of gravity is the apostrophe, where Dutch is unusually demanding:
 
 ## Status
 
-`0.2.1` is the published version and pre-1.0 is the accurate thing to say. **The
-tree is ahead of it and the next release breaks every consumer**: styles are
-composed, rule ids are global, stamps are derived, `--lang` is `--style`, and
-`en` is new. [CHANGELOG.md](CHANGELOG.md) has the migration, one line per thing
-that moved.
+`0.3.0` is the published version and pre-1.0 is the accurate thing to say. **It
+breaks every consumer of `0.2.1`**: styles are composed, rule ids are global,
+stamps are derived, `--lang` is `--style`, and `en` is new.
+[CHANGELOG.md](CHANGELOG.md) has the migration, one line per thing that moved.
 
 The four original languages have been run past real published text: 2.4M
 characters of French, 2.4M of German, 1.1M of Spanish, 880k of Dutch, 699k of

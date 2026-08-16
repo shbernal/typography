@@ -1,15 +1,15 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
 **The packs become composable styles.** A rule is the primitive now and a style
 is a rule list with a name, built by `compose` out of the builders in
 `@shbernal/typography/rules`, which is exactly how the shipped ones are built. A
 user can compose one, name it, and it stamps and reports the way `fr` does.
 
-This breaks every consumer, and the release number is not decided yet: the
-heading says `Unreleased` on purpose, and `scripts/check-release-tag.mjs` refuses
-to publish while it does.
+This breaks every consumer, and it is a minor bump because the package is
+pre-1.0 and says so. Everything a caller touches has a new spelling, and the
+sections below are the migration, one entry per thing that moved.
 
 **Why the project turned.** The input this package is for is a model's output.
 The question a corpus of professionally typeset text answers is "does this rule

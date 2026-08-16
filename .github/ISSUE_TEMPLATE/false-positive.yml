@@ -49,7 +49,7 @@ body:
       label: Version
       description: >
         The line typocheck stamps on its report, e.g.
-        `typocheck 0.2.1 (es@8a1408a1e177)`. The part after the `@` is derived
+        `typocheck 0.3.0 (es@8a1408a1e177)`. The part after the `@` is derived
         from the rules, so it says which rules ran better than a version does.
     validations:
       required: true

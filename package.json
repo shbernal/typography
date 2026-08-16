@@ -1,6 +1,6 @@
 {
   "name": "@shbernal/typography",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Orthotypography rules for English, French, Spanish, German and Dutch as data: check text against a cited convention, or fix the subset that is safe to fix unattended.",
   "keywords": [
     "typography",
