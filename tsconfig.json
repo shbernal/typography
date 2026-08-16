@@ -16,5 +16,5 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src", "test", "scripts"]
+  "include": ["src", "test", "scripts", "charcheck.config.ts"]
 }

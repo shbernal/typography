@@ -6,6 +6,7 @@ import { test } from 'node:test';
 
 import { check } from '../src/check.ts';
 import { es } from '../src/es.ts';
+import { NARROW_NO_BREAK } from '../src/pack.ts';
 
 const ids = (text: string) => check(es, text).map((f) => f.rule);
 
@@ -60,7 +61,7 @@ test('and it is never fixable', () => {
 test('guillemets are closed up, the opposite of French', () => {
   assert.equal(es.normalize('« hola »'), '«hola»');
   assert.equal(es.normalize('«hola»'), '«hola»');
-  assert.equal(es.normalize('« hola »'), '«hola»');
+  assert.equal(es.normalize(`«${NARROW_NO_BREAK}hola${NARROW_NO_BREAK}»`), '«hola»');
 });
 
 test('a space after an opening mark is fixable; a space before punctuation is not', () => {

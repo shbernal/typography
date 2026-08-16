@@ -1,0 +1,15 @@
+# pnpm 11 keeps its settings here rather than in package.json, in a
+# single-package repo too. The only entry is the postinstall approval lefthook
+# needs: its npm package puts the binary in place from a postinstall script,
+# which pnpm blocks by default, and until it is approved `lefthook` fails with
+# ERR_PNPM_IGNORED_BUILDS while `prepare` still looks like it worked. Committed
+# so a fresh clone does not hit that.
+allowBuilds:
+  lefthook: true
+
+# The global minimum release age holds a fresh publish back for a day, which is
+# the right default for a dependency and the wrong one for a tool published from
+# this machine: the release being waited out is the maintainer's own, and every
+# repo here would sit a day behind a fix filed from one of them.
+minimumReleaseAgeExclude:
+  - charcheck

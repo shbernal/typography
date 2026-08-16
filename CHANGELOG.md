@@ -167,6 +167,32 @@ stamp.
   a fixture never re-cuts a baseline and nobody learns to re-cut one without
   looking.
 
+### The character rules become a config, and git hooks run them
+
+- **`scripts/check-no-emdash.ts` is replaced by
+  [charcheck](https://github.com/shbernal/charcheck) and
+  `charcheck.config.ts`**, a dev dependency and a config rather than a scanner
+  this repo maintained. `pnpm lint:text` becomes `pnpm lint:chars`, and
+  `test/no-emdash.test.ts` becomes `test/chars.test.ts`, which loads the same
+  config rather than restating the character list. The rules gain the surface a
+  filesystem walk could not reach at all: the commit message.
+
+- **The invisible-character rule is enforced rather than remembered.** It was a
+  convention in three documents and nothing checked it. It found two test
+  assertions carrying a literal U+202F, in `test/cli.test.ts` and
+  `test/es.test.ts`, both of which now build the character from `NO_BREAK` and
+  friends, and it is why `src/pack.ts` defines those constants as escapes. No
+  rule and no style moved: `pnpm battery` is byte for byte what it was, which
+  the digests in `test/battery.test.ts` assert independently.
+
+- **Git hooks, in `lefthook.yml`.** charcheck and Biome over the staged content
+  on `pre-commit`, charcheck and the shared `no-ai-attribution` rule from
+  `shbernal/lefthook-rules` on `commit-msg`. `prepare` installs them through
+  `scripts/install-hooks.ts`, which skips rather than fails where lefthook does
+  not own the hooks directory, since a `prepare` that exits non-zero takes every
+  `pnpm run` in the repo down with it. The hooks are a fast pre-filter, skippable
+  with `--no-verify`; `pnpm check` and CI remain the gate.
+
 ### The skill
 
 `skills/typography-check/` gains `references/en.md`, and its frontmatter names

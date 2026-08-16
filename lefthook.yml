@@ -1,0 +1,46 @@
+# Git hooks. Installed by `scripts/install-hooks.ts` from the `prepare` script,
+# so a fresh `pnpm install` arms them; a hook nobody installed enforces nothing.
+#
+# A hook is a fast pre-filter, not the gate. `pnpm check` and CI are the gate,
+# and anything here has to stay under a second on staged files. Bypass with
+# `git commit --no-verify`, or `LEFTHOOK=0 git ...` to disable every hook.
+
+# The commit-message rules every repo here shares, so the patterns have one
+# definition rather than one copy per project. Lefthook fetches this on
+# `install` and caches it under `.git/info/lefthook-remotes/`; `refetch_frequency`
+# is what lets a fix in the shared repo ever arrive. The tag is pinned on
+# purpose: a branch would mean any push there changes what this repo runs.
+#
+# Jobs merge rather than override, so the local `commit-msg` job below does not
+# displace this one.
+remotes:
+  - git_url: https://github.com/shbernal/lefthook-rules
+    ref: v1
+    configs:
+      - rules/no-ai-attribution.yml
+    refetch_frequency: 24h
+
+pre-commit:
+  jobs:
+    # `--staged` reads each file's content from the index rather than from the
+    # working tree, so the hook reports what the commit contains and never
+    # blames an edit deliberately left unstaged. No `--fix`: every rule here
+    # bans a character in text somebody wrote on purpose, and the repair is a
+    # rewording rather than a substitution.
+    - name: charcheck
+      run: node node_modules/charcheck/dist/cli.js --staged
+      # Biome, on what is being committed. The full `pnpm check` belongs to CI:
+      # mirroring it here would put a typecheck and the whole test suite in
+      # front of every commit.
+    - name: biome
+      glob: '*.ts'
+      run: node node_modules/@biomejs/biome/bin/biome check --write --no-errors-on-unmatched {staged_files}
+      stage_fixed: true
+
+commit-msg:
+  jobs:
+    # The one surface the filesystem scanner this replaced could not reach: a
+    # commit message is not a file in the tree, and it is where an em dash
+    # arrives from a model most reliably.
+    - name: charcheck
+      run: node node_modules/charcheck/dist/cli.js --commit-msg {1}

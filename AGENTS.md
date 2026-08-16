@@ -34,6 +34,14 @@ pnpm build
 pnpm battery        # every style over every fixture, as a diffable dump
 ```
 
+Git hooks are lefthook's, installed by `prepare` on `pnpm install` and declared
+in `lefthook.yml`: charcheck and Biome over the staged content on `pre-commit`,
+charcheck and the shared `no-ai-attribution` rule on `commit-msg`. They are a
+fast pre-filter rather than the gate, they are skippable with `--no-verify`, and
+`scripts/install-hooks.ts` steps around a `core.hooksPath` lefthook does not own
+rather than failing the install, because `prepare` failing takes every `pnpm run`
+down with it.
+
 `pnpm check` is the whole gate and needs no network. The nine corpora and the two
 gate scripts that used to sit beside it are gone; `audit` replaced them, holding a
 style to idempotence, conformance and non-interference. What the corpora
@@ -80,7 +88,13 @@ change to `src/prose.ts` or to a shared helper.
   U+202F and U+2009 are indistinguishable in a source file, and a test using them
   literally passes while asserting the wrong thing. Use `NO_BREAK` and friends.
 - **A report must never quote raw text.** Use `reveal` / `excerptAt`.
-- **No em dashes (U+2014).** Enforced in lint and again in the test suite.
+- **No em dashes (U+2014).** That rule and the one above it are both
+  `charcheck.config.ts` now, which is the only place either character list
+  exists: `pnpm lint:chars`, the `pre-commit` and `commit-msg` hooks, and
+  `test/chars.test.ts` all read it. A file that must *name* one of these
+  characters writes the escape, as `src/pack.ts` does; a line that
+  must carry one takes a `charcheck-disable-line` comment, which says so in the
+  diff.
 - **Zero runtime dependencies**, and **a style must not import
   `translation-harness`.** `{ id, normalize }` is the whole contract, satisfied
   structurally, with no registration call in either direction.

@@ -68,12 +68,20 @@ reasoning behind the first four.
   U+202F and U+2009 are indistinguishable in a source file, and a test using them
   literally passes while asserting the wrong thing. Use the `NO_BREAK`,
   `NARROW_NO_BREAK` and `THIN` constants, or an escape. This paragraph is not
-  hypothetical: an earlier draft of it contained a literal U+00A0.
+  hypothetical: an earlier draft of it contained a literal U+00A0, and two test
+  assertions held a literal U+202F until `no-invisible-characters` in
+  `charcheck.config.ts` was there to find them. `src/pack.ts` defines the three
+  constants as escapes for the same reason, and keeps their literal types, which
+  is what lets `surveyWidth` key a tally by width.
 - **A report must never quote raw text.** Use `reveal` / `excerptAt`. A raw
   excerpt shows a reader two identical-looking strings and looks fine.
-- **No em dashes (U+2014).** `scripts/check-no-emdash.ts` enforces it, in lint
-  and again in the test suite. A module that must *name* the character builds it
-  with `String.fromCharCode(0x2014)`.
+- **No em dashes (U+2014).** This and the rule above it are the three rules in
+  `charcheck.config.ts`, which is the only place either character list exists.
+  `pnpm lint:chars` runs them over the tree, `test/chars.test.ts` runs them again
+  so they hold for anyone who runs only `pnpm test`, and the `lefthook.yml` hooks
+  run them over the staged content and over the commit message. A module that
+  must *name* one of these characters builds it from its code point; a line that
+  must carry one takes a `charcheck-disable-line` comment.
 - **Zero runtime dependencies.** Not an aspiration: it is what makes
   `npx @shbernal/typography` fetch one tarball rather than resolve a tree, which
   is what makes the public entry point tolerable and what the skill leans on.

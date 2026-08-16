@@ -111,13 +111,18 @@ Strict TypeScript, ESM, small pure functions, Biome for formatting. Match the
 surrounding comment density: in `src/fr.ts` every narrowing says what it is
 protecting, and that is the standard rather than an accident.
 
-No em dashes (U+2014) anywhere in the repo. `scripts/check-no-emdash.ts` enforces
-it in lint and again in the test suite. A module that must name the character
-builds it with `String.fromCharCode(0x2014)`.
+No em dashes (U+2014) anywhere in the repo, and no pasted invisible characters:
+U+0020, U+00A0 and U+202F look identical in a source file, and a test using them
+literally passes while asserting something else. Use the exported `NO_BREAK` and
+`NARROW_NO_BREAK`, and where a module has to *name* one of these characters,
+write it as an escape or build it from its code point.
 
-Never paste an invisible character into a test. U+0020, U+00A0 and U+202F look
-identical in a source file, and a test using them literally passes while
-asserting something else. Use the exported `NO_BREAK` and `NARROW_NO_BREAK`.
+Both rules are [charcheck](https://github.com/shbernal/charcheck)'s, declared
+once in `charcheck.config.ts` and read from there by `pnpm lint:chars`, by
+`test/chars.test.ts` and by the git hooks, so nothing restates the character
+list. The hooks are lefthook's, installed by `prepare` on `pnpm install`: they
+check the staged content before a commit and the commit message itself, which
+is the one surface a scan of the tree cannot reach.
 
 ## Reporting a false positive
 

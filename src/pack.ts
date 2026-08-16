@@ -382,17 +382,25 @@ export function composeNormalize(rules: readonly Rule[]): (value: string) => str
 // Making a finding visible
 // ---------------------------------------------------------------------------
 
+// All three are written as escapes rather than pasted, which is what
+// `no-invisible-characters` in `charcheck.config.ts` enforces everywhere else in
+// the repo, and these are the definitions, so nothing here is exempt from it: a
+// literal would be a character in the file that names it, indistinguishable from
+// the ordinary space beside it. An escape rather than `String.fromCharCode`
+// because these three keep their literal types, which is what lets a tally be
+// keyed by width in `src/fr.ts`.
+
 /** U+00A0, the full no-break space. */
-export const NO_BREAK = ' ';
+export const NO_BREAK = '\u00a0';
 /** U+202F, the narrow no-break space. Imprimerie nationale distinguishes the two
  * and Unicode encodes them separately, so a pack that used one for both would be
  * wrong in a way no reader could see. */
-export const NARROW_NO_BREAK = ' ';
+export const NARROW_NO_BREAK = '\u202f';
 /** U+2009, the thin space. The trap in this family: it is the right *width* and
  * the wrong breaking behaviour, so a proof looks correct and the line comes
  * apart in a browser. 18 of them sit inside guillemets in the French corpora,
  * which is why the rules name it rather than treating it as an ordinary space. */
-export const THIN = String.fromCharCode(0x2009);
+export const THIN = '\u2009';
 /** U+2019, the right single quotation mark, used as the French apostrophe. */
 export const RIGHT_SINGLE_QUOTE = '’';
 /** U+2018, the left single quotation mark. Named because it is the mark an

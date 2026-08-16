@@ -25,6 +25,11 @@ on:
 permissions:
   contents: read
 
+# No hooks on a runner, so `prepare` has nothing to install and no reason to
+# fetch the shared rules repo. See the same setting in `ci.yml`.
+env:
+  LEFTHOOK: '0'
+
 jobs:
   publish:
     runs-on: ubuntu-latest

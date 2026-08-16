@@ -11,6 +11,14 @@ on:
 permissions:
   contents: read
 
+# `prepare` installs the git hooks on every `pnpm install`, and installing them
+# fetches the shared rules repo. A runner has no hooks to fire, so that is a
+# network call this workflow otherwise does not need, on a job whose whole point
+# is that `pnpm check` needs none. The hooks are a local pre-filter; the gate
+# below is the same one they mirror.
+env:
+  LEFTHOOK: '0'
+
 jobs:
   check:
     # Both platforms. Nothing here spawns a process or touches a path, so the

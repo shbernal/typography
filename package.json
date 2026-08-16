@@ -91,18 +91,21 @@
     "clean": "node --eval \"import('node:fs').then(fs => fs.rmSync('dist', { recursive: true, force: true }))\"",
     "build": "pnpm run clean && tsc -p tsconfig.build.json",
     "prepack": "pnpm run build",
+    "prepare": "node scripts/install-hooks.ts",
     "check": "pnpm run typecheck && pnpm run lint && pnpm test",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "lint": "biome check src test scripts && pnpm run lint:text",
-    "lint:text": "node scripts/check-no-emdash.ts",
-    "lint:fix": "biome check --write src test scripts",
-    "format": "biome format --write src test scripts",
+    "lint": "biome check src test scripts charcheck.config.ts && pnpm run lint:chars",
+    "lint:chars": "charcheck",
+    "lint:fix": "biome check --write src test scripts charcheck.config.ts",
+    "format": "biome format --write src test scripts charcheck.config.ts",
     "test": "node --test \"test/**/*.test.ts\"",
     "battery": "node scripts/battery.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.8",
     "@types/node": "^26.2.0",
+    "charcheck": "^0.2.5",
+    "lefthook": "^2.1.10",
     "typescript": "^7.0.2"
   }
 }

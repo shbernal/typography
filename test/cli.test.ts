@@ -11,7 +11,7 @@ import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 import { es } from '../src/es.ts';
-import { NO_BREAK } from '../src/pack.ts';
+import { NARROW_NO_BREAK, NO_BREAK } from '../src/pack.ts';
 
 const CLI = resolve(fileURLToPath(import.meta.url), '..', '..', 'src', 'cli.ts');
 
@@ -77,7 +77,7 @@ test('fix --write rewrites, and the two runs agree on what moved', () => {
   const wet = run(['fix', '--style', 'fr', '--write', path]);
   assert.match(dry.stdout, /would rewrite/);
   assert.match(wet.stdout, /^fix: rewrote/m);
-  assert.equal(readFileSync(path, 'utf8'), '« mot »');
+  assert.equal(readFileSync(path, 'utf8'), `«${NARROW_NO_BREAK}mot${NARROW_NO_BREAK}»`);
 });
 
 test('fix leaves the unfixable findings alone and says so', () => {
