@@ -118,8 +118,9 @@ export function innerSpace(spec: {
    * What it cannot do is resolve a mark that is ambiguous in context rather than
    * in isolation. `X « Y` is a German closer with a stray space in front of it
    * and a French opener with a legitimate one after it, and those are the same
-   * string; `FOLLOW-UPS.md` 1d is that case and it needs pairing, which is a
-   * parse. The guard reads the character immediately outside the mark and
+   * string. Resolving that one needs pairing, which is a parse; `de-DE` on a
+   * French quotation is the live case and `test/hazards.test.ts` asserts what it
+   * does. The guard reads the character immediately outside the mark and
    * nothing else.
    */
   guard: boolean;

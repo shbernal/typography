@@ -151,7 +151,7 @@ it.
 precedent to follow.** At `fr@0.1.0` they fired on every guillemet in 2.4M
 characters of correctly set French. The fix was not to pick the other width: the
 citation does not fix one, so the rules were narrowed to the spacing that is
-wrong under either reading. Two lessons that generalise, and neither is about
+wrong under either reading. Three lessons that generalise, and none is about
 French:
 
 - A style must not assert what its citation does not fix.
@@ -161,6 +161,12 @@ French:
   prior implementation had to re-space. Measure before concluding a gate forbids
   a change. The same reasoning was wrong the same way about global rule ids and
   the committed baselines, one refactor later.
+- **A recorded decision carries its reason forward whether or not the reason is
+  still true.** The cross-language guard `fr` now carries was held back because
+  turning it on would split 2.4M characters of French corpus into a new era, and
+  that argument was still being quoted in three files four commits after the
+  corpora were deleted. A deletion has to go looking for the arguments that were
+  resting on what it deleted.
 
 **A zero is not automatically a result.** A rule reports nothing either because
 the text was set correctly or because it contained nothing the rule could match,

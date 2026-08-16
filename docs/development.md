@@ -46,8 +46,10 @@ asserts that **every rule in every style fires on at least one fixture**, becaus
 a property over samples that reach nothing passes for any set of rules; if you
 add a rule, add the fixture that reaches it or the suite goes quiet about it. And
 it holds **the rules that rewrite machine text** to a written-down list, which is
-a ratchet rather than an approval: every row is a defect with a `FOLLOW-UPS.md`
-entry, and a rule that joins them fails the test by name.
+a ratchet rather than an approval: every row is a known defect, and a rule that
+joins them fails the test by name. A ratchet is the right shape for a defect
+nobody is fixing yet, because the exposure is measured, it cannot grow quietly
+while the decision waits, and the row disappears the day somebody repairs it.
 
 ## The invariants
 
@@ -144,6 +146,12 @@ for the comment density expected: every narrowing says what it is protecting.
 4. The citation is the style's, never the builder's. Sharing a pattern across
    languages is the point; sharing a citation would be a rule asserting an
    authority that never spoke.
+5. **A prose parameter can be checked against the pattern it describes.**
+   `apostropheElision` takes its summary's examples as clitics and refuses to
+   build if one of them is not in the alternation it was given, so a summary
+   cannot drift from the rule it summarises. That is the never-write-twice rule
+   solved by construction rather than by review, and it is available wherever a
+   builder takes a string a reader will believe.
 
 ## Adding a style
 
@@ -223,6 +231,24 @@ If the diff is the change you meant, re-cut the digest table from the tail of
 That is what the committed gate baselines used to buy, at seven lines and no
 network.
 
+**Past a few dozen lines, attribute the diff rather than read it.** Reading seven
+hundred changed lines is not evidence of anything. Write the condition the change
+is supposed to be confined to, then check every moved input against it: the
+cross-language guard moved 713 distinct inputs, and a throwaway script confirmed
+every one of them has a letter or a digit immediately outside a guillemet, which
+is the guard's condition and nothing wider. "The tests still pass" and "the
+change is confined to its own domain" are different statements and the second is
+the one a rule change owes.
+
+**A recorded decision carries its reason forward whether or not the reason is
+still true.** The same guard was held back for a release because it would split
+2.4M characters of French corpus into a new era, and that argument outlived the
+corpora it named: it sat in `src/fr.ts`, in `rules/inner-space.ts` and in an open
+question, quoted as live, for four commits after the corpora were deleted. A
+deletion has to go looking for the arguments that were resting on what it
+deleted, the same way a rule change has to measure before concluding a gate
+forbids it.
+
 ## Cutting a release
 
 1. Update `CHANGELOG.md` with a `## <version>` heading. Not "Unreleased":
@@ -249,3 +275,22 @@ by hand and cannot be given a provenance attestation retroactively.
   narrowed and why, write it into the comment above the rule, and into
   [provenance.md](provenance.md) if a reader of the style needs it too. Counts
   from one run and what you tried before it worked belong in the commit message.
+- **A number in prose that describes the rule set is a fact with no test behind
+  it.** "Ten of the seventeen rule ids have no fix" was a heading in
+  `provenance.md` the day `en` made it eleven of nineteen. Compute the ones you
+  write from `styles` before writing them, which is the only way this kind of
+  error is ever found, and expect the stale ones to be the ones written before
+  the last style shipped.
+- **An explanation of a failure that does not happen is a liability.**
+  `src/config.ts` shipped a translated message for a `.js` config loading as
+  CommonJS, written from memory, and a probe showed Node has detected module
+  syntax in `.js` since 22.7. It was deleted rather than kept as insurance,
+  because a reader would otherwise have had to disprove it. Probe the runtime
+  before documenting its behaviour.
+- **A page that argues a thesis rots; a page that describes an API does not.**
+  `docs/api.md` needed nothing at all through the pivot, because every step that
+  changed the API had to change it. `design.md` and the README needed rewriting,
+  because nothing forced them to move while the code moved under them. Those are
+  the files a change of direction has to visit, along with anything that asks a
+  stranger for something: the issue templates were the last place the old thesis
+  was still load bearing on somebody else's behaviour.

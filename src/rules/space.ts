@@ -34,9 +34,11 @@ export const ANY_SPACE = `[ ${NO_BREAK}${NARROW_NO_BREAK}]`;
  * The other three styles rule that the position takes no space at all, which
  * makes a thin space there wrong by their own summaries, and they do not match
  * it: `es.normalize` and `deCH.normalize` both leave `«<THINSP>hola<THINSP>»`
- * exactly as they found it. That is an inconsistency this merge made visible
- * rather than one it introduced, it changes behaviour to fix, and step 1 is a
- * pure refactor. `FOLLOW-UPS.md` 3 holds it.
+ * exactly as they found it. That is an inconsistency the merge made visible
+ * rather than one it introduced, and it is still open: widening the other three
+ * to `ANY_SPACE_OR_THIN` is a one-line change here and moves what four styles
+ * return, which is a decision rather than a tidy-up. What the merge bought is
+ * that it is now one default on one shared class instead of four.
  */
 export const ANY_SPACE_OR_THIN = `[ ${NO_BREAK}${NARROW_NO_BREAK}${THIN}]`;
 

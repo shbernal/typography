@@ -131,9 +131,9 @@ export const PROSE: readonly Sample[] = [
  * One convention's quotation inside another's prose.
  *
  * The class of hazard no corpus could ever have held, since each corpus was one
- * publisher writing one language correctly (`FOLLOW-UPS.md` 1c). It is the
- * ordinary case in generated text: a German paragraph quoting a French title, a
- * French one quoting a German paper, an English phrase anywhere.
+ * publisher writing one language correctly. It is the ordinary case in generated
+ * text: a German paragraph quoting a French title, a French one quoting a German
+ * paper, an English phrase anywhere.
  */
 export const MIXED: readonly Sample[] = [
   { name: 'french-title-in-german', text: 'Er las « Le Monde » gestern Abend.' },

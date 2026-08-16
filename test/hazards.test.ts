@@ -104,12 +104,16 @@ test('every style holds idempotence, conformance and non-interference', () => {
  * each one rewrites.
  *
  * **Every entry here is a defect**, and the list exists because writing "no rule
- * touches machine text" would have been false. `FOLLOW-UPS.md` 4 holds the
- * apostrophe one, which is the same rewrite in four styles: `it's` between two
- * letters is an elision in prose and a string delimiter in code, and nothing in
- * `apostrophe` looks at which. The French pair is the same shape one position
- * over, where `a ? b : c` inside a code span is a ternary and gets a no-break
- * space in front of both marks.
+ * touches machine text" would have been false. The apostrophe one is the same
+ * rewrite in four styles: `it's` between two letters is an elision in prose and
+ * a string delimiter in code, and nothing in `apostrophe` looks at which.
+ * `looksMachine` is not the repair either, since the token around the apostrophe
+ * inside a fence is `"it's`, which looks like prose because it is prose, in a
+ * string, in a program; the repair is a skipped region computed once per value
+ * and honoured by every rule, which is the first thing here that would be about
+ * the document rather than about the characters. The French pair is the same
+ * shape one position over, where `a ? b : c` inside a code span is a ternary and
+ * gets a no-break space in front of both marks.
  *
  * A rule appearing here that is not written down fails the test, which is the
  * point: this is a ratchet on how much syntax the package is willing to rewrite,
@@ -223,7 +227,7 @@ test('the joined-words property bites', () => {
     replace: [
       innerSpace({
         summary: 'Space after an opening guillemet, with the cross-language guard removed',
-        cite: 'FOLLOW-UPS.md 1, reconstructing es@0.1.0',
+        cite: 'es@0.1.0, reconstructed: the guard this rule shipped without',
         mark: '«',
         side: 'open',
         spaces: ANY_SPACE,
@@ -232,7 +236,7 @@ test('the joined-words property bites', () => {
       }),
       innerSpace({
         summary: 'Space before a closing guillemet, with the cross-language guard removed',
-        cite: 'FOLLOW-UPS.md 1, reconstructing es@0.1.0',
+        cite: 'es@0.1.0, reconstructed: the guard this rule shipped without',
         mark: '»',
         side: 'close',
         spaces: ANY_SPACE,
@@ -254,9 +258,9 @@ test('the joined-words property bites', () => {
 
 test('what each style does to a French quotation inside its own prose', () => {
   // Mixed-language quotation is the hazard no corpus could hold, since each was
-  // one publisher writing one language correctly (`FOLLOW-UPS.md` 1c). It is
-  // ordinary in generated text, so what each style does to it is written down
-  // rather than left to be discovered.
+  // one publisher writing one language correctly. It is ordinary in generated
+  // text, so what each style does to it is written down rather than left to be
+  // discovered.
   const german = fixture('french-title-in-german');
 
   // Swiss German uses the same pair pointing the same way, so closing it up is a
@@ -264,7 +268,8 @@ test('what each style does to a French quotation inside its own prose', () => {
   assert.equal(deCH.normalize(german), 'Er las «Le Monde» gestern Abend.');
   assert.equal(es.normalize(german), 'Er las «Le Monde» gestern Abend.');
 
-  // **de-DE moves both spaces to the outside of the marks.** `FOLLOW-UPS.md` 1d.
+  // **de-DE moves both spaces to the outside of the marks**, which is wrong
+  // under both conventions and is the one open defect in this family.
   // Germany points the pair the other way, so `«` is a closing mark here and the
   // guard, which reads the character immediately outside the mark, cannot tell a
   // German closer with a stray space in front of it from a French opener with a
