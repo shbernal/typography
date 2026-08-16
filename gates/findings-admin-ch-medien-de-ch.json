@@ -28,7 +28,7 @@
     "U+202F NNBSP": 9
   },
   "rules": {
-    "de.apostrophe": {
+    "apostrophe": {
       "fixable": true,
       "severity": "error",
       "findings": 2,
@@ -38,7 +38,7 @@
         "newnsb-2VPWG78YrVs4eAVeiklQx.txt  \" des Postulates 22.4411 Z'graggen \\\"Strategie Digita\""
       ]
     },
-    "de.space-before-punctuation": {
+    "punctuation-spacing": {
       "fixable": false,
       "severity": "error",
       "findings": 1,
@@ -47,7 +47,7 @@
         "newnsb-5jMuPiRcSv0d-fvRWVloF.txt  \"47 kB19. Juni 2026\\nRésumé : Cinquième rapport du Go\""
       ]
     },
-    "de.straight-double-quote": {
+    "straight-double-quote": {
       "fixable": false,
       "severity": "warning",
       "findings": 1,
@@ -56,7 +56,7 @@
         "newnsb-2VPWG78YrVs4eAVeiklQx.txt  \"ulates 22.4411 Z'graggen \\\"Strategie Digitale Souver\""
       ]
     },
-    "de-CH.guillemet-open-space": {
+    "guillemet-open-space": {
       "fixable": true,
       "severity": "error",
       "findings": 1,
@@ -65,7 +65,7 @@
         "newnsb-4QQaZtyT4UdUfxowNZdux.txt  \"r vom 13. September 2012 <LAQUO> Durchsetzung zuverlässige\""
       ]
     },
-    "de-CH.guillemet-close-space": {
+    "guillemet-close-space": {
       "fixable": true,
       "severity": "error",
       "findings": 2,
@@ -75,7 +75,7 @@
         "newnsb-4QQaZtyT4UdUfxowNZdux.txt  \"werte im Gesundheitswesen <RAQUO> gutgeheissen.\\nWeitere In\""
       ]
     },
-    "de-CH.inward-guillemets": {
+    "guillemet-direction": {
       "fixable": false,
       "severity": "error",
       "findings": 1,

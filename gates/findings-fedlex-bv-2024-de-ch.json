@@ -28,42 +28,42 @@
     "U+202F NNBSP": 0
   },
   "rules": {
-    "de.apostrophe": {
+    "apostrophe": {
       "fixable": true,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "de.space-before-punctuation": {
+    "punctuation-spacing": {
       "fixable": false,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "de.straight-double-quote": {
+    "straight-double-quote": {
       "fixable": false,
       "severity": "warning",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "de-CH.guillemet-open-space": {
+    "guillemet-open-space": {
       "fixable": true,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "de-CH.guillemet-close-space": {
+    "guillemet-close-space": {
       "fixable": true,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "de-CH.inward-guillemets": {
+    "guillemet-direction": {
       "fixable": false,
       "severity": "error",
       "findings": 0,

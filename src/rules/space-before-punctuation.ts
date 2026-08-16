@@ -30,14 +30,18 @@ import { conformRule, detectRule, type Rule } from '../pack.ts';
 import { looksMachine } from '../prose.ts';
 import { ANY_SPACE } from './space.ts';
 
+/** One id for the position, named once for the two builders that answer it.
+ * Two literals would be the same defect this directory exists to remove, one
+ * character wide and invisible in a report. */
+const PUNCTUATION_SPACING = 'punctuation-spacing';
+
 export function spaceBeforePunctuation(spec: {
-  id: string;
   /** The language, in English, completing `..., which ${language} does not take`. */
   language: string;
   cite: string;
 }): Rule {
   return detectRule({
-    id: spec.id,
+    id: PUNCTUATION_SPACING,
     summary: `Space before \`; : ! ?\`, which ${spec.language} does not take`,
     cite: spec.cite,
     // The letter before is what keeps this off a bare `:` after a bracket, and
@@ -69,7 +73,6 @@ export function spaceBeforePunctuation(spec: {
  * which is the whole difference between the two.
  */
 export function requireSpaceBeforePunctuation(spec: {
-  id: string;
   summary: string;
   cite: string;
   /** Every space that turns up in this position, as a class body. */
@@ -87,7 +90,7 @@ export function requireSpaceBeforePunctuation(spec: {
   // run here would let this rule and the guillemet rules fight over `» ;`.
   const already = spec.admissible === null ? '' : `(?!${spec.admissible})`;
   return conformRule({
-    id: spec.id,
+    id: PUNCTUATION_SPACING,
     summary: spec.summary,
     cite: spec.cite,
     pattern: new RegExp(`${already}${spec.spaces}(?=${spec.marks})`, 'gu'),

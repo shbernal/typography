@@ -38,7 +38,6 @@ const rules: readonly Rule[] = [
   // same hazard the guard exists for, met with a whole missing rule because the
   // guard would not have been enough.
   innerSpace({
-    id: 'de-DE.low-quote-space',
     summary: 'Space after the opening low quotation mark; German sets it closed up',
     cite: `${DUDEN}, "Anführungszeichen"`,
     mark: '„',
@@ -53,7 +52,6 @@ const rules: readonly Rule[] = [
   // claim that they are mirror images is now true by construction rather than
   // asserted in a comment.
   innerSpace({
-    id: 'de-DE.guillemet-open-space',
     summary: 'Space after the opening guillemet `»`; German sets `»Wort«` closed up',
     cite: `${DUDEN}, "Anführungszeichen"`,
     mark: '»',
@@ -64,7 +62,6 @@ const rules: readonly Rule[] = [
   }),
 
   innerSpace({
-    id: 'de-DE.guillemet-close-space',
     summary: 'Space before the closing guillemet `«`; German sets `»Wort«` closed up',
     cite: `${DUDEN}, "Anführungszeichen"`,
     mark: '«',
@@ -79,7 +76,6 @@ const rules: readonly Rule[] = [
   // argument for why swapping the two characters is not a safe repair even
   // though it is an obvious one.
   guillemetDirection({
-    id: 'de-DE.outward-guillemets',
     opens: '»',
     convention: 'Swiss and French',
     cite: `${DUDEN}, "Anführungszeichen"`,

@@ -13,7 +13,7 @@ One pack, no regions. The Taalunie is a treaty body whose spelling binds the
 Netherlands, Flanders and Suriname alike, so `nl` is bare in the way `fr` and `es`
 are and unlike `de`.
 
-## `nl.mixed-quotation-marks` (warning, not fixable)
+## `mixed-quotation-marks` (warning, not fixable)
 
 The document opens quotations with more than one of `‘…’`, `“…”` and `„…”`. Every
 opening mark of the minority system is reported.
@@ -37,7 +37,7 @@ which system is in the minority, and let the author choose.
 The low pair `„…”` is obsolescent - Onze Taal calls it "hoe langer hoe meer in
 onbruik" - but a document that uses it consistently is correct, not defective.
 
-## `nl.apostrophe` (fixable)
+## `apostrophe` (fixable)
 
 A straight quote **or a U+2018** between two letters becomes U+2019.
 
@@ -49,7 +49,7 @@ opening a quotation, so it can only be a smart-quote pass that turned the wrong
 way. The standard uses U+2018 to open a quotation 144 times and as an apostrophe
 never.
 
-## `nl.apostrophe-elision` (fixable)
+## `apostrophe-elision` (fixable)
 
 A word-initial elision: `'s morgens`, `'t huis`, `'n keer`, `'s-Gravenhage`.
 
@@ -62,19 +62,19 @@ closing it. `'strand'` fails on the second, since `s` is followed by `t`.
 If a user asks why it did not fix some other word-initial apostrophe, that is the
 answer: outside the closed set the tool cannot tell an elision from a quotation.
 
-## `nl.apostrophe-after-symbol` (not fixable)
+## `apostrophe-after-symbol` (not fixable)
 
 `A4'tje`, `80'ers`, `2'en`, `D66'er`, `65+'er`, `@'je`. Dutch attaches a suffix to
 a number, an initialism or a symbol with an apostrophe.
 
 Reported rather than fixed, for the same reason as
-`es.space-before-punctuation`: a digit to the left of a straight quote followed by
+`punctuation-spacing`: a digit to the left of a straight quote followed by
 letters is also a sized literal in a hardware description language (`4'b1010`,
 `8'hFF`), and a foot-and-inch measure is the same characters again. The
 letter-to-letter rule has a lookbehind that separates prose from those. Here the
 digit *is* the context, so there is nothing left to narrow with.
 
-## `nl.ij-capital` (not fixable)
+## `ij-capital` (not fixable)
 
 A word-initial `Ij`.
 
@@ -87,7 +87,7 @@ wrong does not tell you which way to correct it. `Ijs` starting a sentence wants
 `IJs`; the same word inside one wants `ijs`. Choosing means knowing where the
 sentence began and whether the word is a proper noun. Ask the user.
 
-## `nl.space-before-punctuation` (not fixable)
+## `punctuation-spacing` (not fixable)
 
 Dutch takes no space before `; : ! ?`.
 
@@ -98,14 +98,14 @@ pack is `nl` and not `nl-BE` plus `nl-NL`.
 
 Check-only for the usual reason: `a ? b : c` is a ternary.
 
-## `nl.straight-double-quote` (warning, not fixable)
+## `straight-double-quote` (warning, not fixable)
 
 Reported, never converted. The two ends are the same character, and Dutch has
 three admissible pairs to choose between rather than two.
 
 ## Note on evidence
 
-Two of these rules - `nl.mixed-quotation-marks` and `nl.space-before-punctuation`
+Two of these rules - `mixed-quotation-marks` and `punctuation-spacing`
 - cite Taaladvies.net, which states plainly that its advice has "geen kracht van
 wet of ander bindend karakter". It is the joint service of the Taalunie, the
 Instituut voor de Nederlandse Taal and Onze Taal, and it is the most authoritative

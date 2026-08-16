@@ -1,11 +1,11 @@
 // The space on the inside of a quotation mark.
 //
-// Nine rules across four packs, and this file is the argument that they are one
+// Nine rules across four styles, and this file is the argument that they are one
 // family. It is not an obvious argument, because the family contains rules that
-// contradict each other: `es.guillemet-open-space` deletes the space after `«`
-// and `fr.guillemet-open` requires one there, using the identical character in
-// the identical position. `es.ts` gave exactly that as the reason there could be
-// no shared rule engine.
+// contradict each other: Spanish deletes the space after `«` and French requires
+// one there, using the identical character in the identical position. `es.ts`
+// gave exactly that as the reason there could be no shared rule engine. Both are
+// `guillemet-open-space` now, which is the argument stated as an id.
 //
 // **That was an argument about standards bodies, not about rules.** It held
 // while a rule's identity came from the clause that authorised it, because then
@@ -23,7 +23,7 @@
 // existing summary its wording for nothing.
 //
 // **The family is not only guillemets**, which is why this module is not called
-// `guillemet-inner-space` as the plan had it. `de-DE.low-quote-space` is about
+// `guillemet-inner-space` as the plan had it. `low-quote-open-space` is about
 // U+201E and belongs here on every axis that matters: same position, same
 // pattern, same repair. It is also the one member with `guard: false` for a good
 // reason rather than an unresolved one.
@@ -62,8 +62,26 @@ export type InnerSpacing =
 const NOT_WORD_BEFORE = `(?<![\\p{L}\\p{N}])`;
 const NOT_WORD_AFTER = `(?![\\p{L}\\p{N}])`;
 
+/**
+ * Which position each mark occupies, for the rule id.
+ *
+ * The id names the position and the position is (this family of mark, this
+ * side), so it is derived rather than passed: `guillemet-open-space` is the
+ * inside of the mark that opens a quotation, and *which character that is* is
+ * the style's business. Germany opens with `»` and Switzerland with `«`, and
+ * both rules are `guillemet-open-space`, which is the whole point of a global
+ * id and is not something a caller should be able to spell differently.
+ *
+ * Adding a mark here is the moment to choose its position's name, which is why
+ * an unlisted one throws rather than defaulting to something.
+ */
+const FAMILY: Record<string, string> = {
+  '«': 'guillemet',
+  '»': 'guillemet',
+  '„': 'low-quote',
+};
+
 export function innerSpace(spec: {
-  id: string;
   summary: string;
   cite: string;
   /** The mark itself. */
@@ -87,7 +105,7 @@ export function innerSpace(spec: {
    * letter or a digit immediately on its outside is closing something, whatever
    * the style believes.
    *
-   * Set it false only for a reason you can state. `de-DE.low-quote-space` does,
+   * Set it false only for a reason you can state. `low-quote-open-space` does,
    * because U+201E has exactly one job in every language that uses it. `fr` does
    * not: it has the same hazard in a milder form and turning the guard on there
    * would move `fr@0.2.0` to `fr@0.3.0` for a defect no French corpus contains.
@@ -97,6 +115,14 @@ export function innerSpace(spec: {
    */
   guard: boolean;
 }): Rule {
+  const family = FAMILY[spec.mark];
+  if (family === undefined)
+    throw new Error(
+      `innerSpace: no position is named for ${JSON.stringify(spec.mark)}. ` +
+        'Add it to FAMILY, which is where a new rule id gets chosen.',
+    );
+  const id = `${family}-${spec.side}-space`;
+
   // Narrowed at each use rather than through `closedUp`, which the checker does
   // not follow back to the union.
   const closedUp = spec.correct === '';
@@ -113,7 +139,7 @@ export function innerSpace(spec: {
   if (spec.side === 'open') {
     const already = admissible === null ? '' : `(?!${admissible}(?!${spec.spaces}))`;
     return conformRule({
-      id: spec.id,
+      id,
       summary: spec.summary,
       cite: spec.cite,
       // The mark fixes where the run starts, the lookahead rejects the spellings
@@ -126,7 +152,7 @@ export function innerSpace(spec: {
 
   const already = admissible === null ? '' : `(?!${admissible}${spec.mark})`;
   return conformRule({
-    id: spec.id,
+    id,
     summary: spec.summary,
     cite: spec.cite,
     // The mirror, anchored on its left by `runStart` instead of by the mark,

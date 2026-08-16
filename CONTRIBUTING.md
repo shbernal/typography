@@ -25,7 +25,7 @@ assertion would start silently passing for the wrong reason.
 
 **A rule that can find something it cannot safely repair gets a `find` and no
 `fix`.** `check` is a superset of `fix`, and `pack.normalize` is the fix set
-exactly. The canonical case is `es.unpaired-question`: a Spanish sentence ending
+exactly. The canonical case is `unpaired-question`: a Spanish sentence ending
 in `?` with no `¿` is unambiguously wrong, and knowing that is not knowing where
 the `¿` goes, because the mark opens the interrogative clause rather than the
 sentence. `Si vienes, ¿me avisas?` is correct and no substitution produces it.

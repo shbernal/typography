@@ -172,14 +172,12 @@ const rules: readonly Rule[] = [
   // extracted from split 711/974 between the straight and the curly form across
   // 2,125 rows, with 4 rows carrying both.
   apostrophe({
-    id: 'fr.apostrophe',
     language: 'French',
     wrong: `[']`,
     cite: `${LEXIQUE}, "Apostrophe"`,
   }),
 
   colonSpacing({
-    id: 'fr.space-before-colon',
     cite: `${LEXIQUE}, "Ponctuation"`,
   }),
 
@@ -191,7 +189,6 @@ const rules: readonly Rule[] = [
   // because the reasoning was any better. `admissible` is what holds it off, the
   // same field and the same argument as in the two guillemet rules below.
   requireSpaceBeforePunctuation({
-    id: 'fr.space-before-high-punctuation',
     summary: 'Breaking space before `; ! ?`; French requires a no-break space',
     cite: `${LEXIQUE}, "Ponctuation"`,
     spaces: ANY_SPACE_OR_THIN,
@@ -218,7 +215,6 @@ const rules: readonly Rule[] = [
   // visible `false` here and it was an absent lookaround before, which is a
   // large part of what this extraction is worth.
   innerSpace({
-    id: 'fr.guillemet-open',
     summary: 'Opening guillemet whose inner space is breaking, doubled or missing',
     cite: `${LEXIQUE}, "Guillemets"`,
     mark: '\u00AB',
@@ -229,7 +225,6 @@ const rules: readonly Rule[] = [
   }),
 
   innerSpace({
-    id: 'fr.guillemet-close',
     summary: 'Closing guillemet whose inner space is breaking, doubled or missing',
     cite: `${LEXIQUE}, "Guillemets"`,
     mark: '\u00BB',
@@ -254,7 +249,7 @@ const rules: readonly Rule[] = [
   // there is evidence of a defect rather than evidence for a width; this rule
   // reports only the positions actually spelled in the losing width.
   minorityReport({
-    id: 'fr.mixed-no-break-space',
+    id: 'mixed-no-break-space',
     summary: 'Both U+00A0 and U+202F used inside guillemets or before `; ! ?`',
     cite: `${LEXIQUE}, "Guillemets" and "Ponctuation"`,
     ballot: width,
@@ -269,7 +264,6 @@ const rules: readonly Rule[] = [
   // space that is absent, and French requires one before all four marks. It is
   // only *which* no-break space that the colon is exempt from.
   missingPunctuationSpace({
-    id: 'fr.missing-space-before-high-punctuation',
     cite: `${LEXIQUE}, "Ponctuation"`,
   }),
 
@@ -278,7 +272,6 @@ const rules: readonly Rule[] = [
   // closing guillemet is a parse. French is the one style here with a single
   // admissible pair, and it still cannot say which end it is looking at.
   straightDoubleQuote({
-    id: 'fr.straight-double-quote',
     instead: 'French quotation marks are the guillemets',
     cite: `${LEXIQUE}, "Guillemets"`,
   }),
@@ -387,7 +380,6 @@ export function surveyWidth(values: Iterable<string>): WidthSurvey {
 function harmonizingRules(width: string): readonly Rule[] {
   return [
     requireSpaceBeforePunctuation({
-      id: 'fr.space-before-high-punctuation',
       summary: `Space before \`; ! ?\` that is not the corpus's no-break space`,
       cite: `${LEXIQUE}, "Ponctuation"`,
       spaces: ANY_SPACE_OR_THIN,
@@ -396,7 +388,6 @@ function harmonizingRules(width: string): readonly Rule[] {
       choose: () => width,
     }),
     innerSpace({
-      id: 'fr.guillemet-open',
       summary: `Opening guillemet whose inner space is not the corpus's no-break space`,
       cite: `${LEXIQUE}, "Guillemets"`,
       mark: '«',
@@ -406,7 +397,6 @@ function harmonizingRules(width: string): readonly Rule[] {
       guard: false,
     }),
     innerSpace({
-      id: 'fr.guillemet-close',
       summary: `Closing guillemet whose inner space is not the corpus's no-break space`,
       cite: `${LEXIQUE}, "Guillemets"`,
       mark: '»',
@@ -464,7 +454,7 @@ export function withWidth(width: string): TypographyPack {
 
   const harmonizing = new Map(harmonizingRules(width).map((rule) => [rule.id, rule]));
   const derived = rules.flatMap((rule) =>
-    rule.id === 'fr.mixed-no-break-space' ? [] : [harmonizing.get(rule.id) ?? rule],
+    rule.id === 'mixed-no-break-space' ? [] : [harmonizing.get(rule.id) ?? rule],
   );
 
   return {

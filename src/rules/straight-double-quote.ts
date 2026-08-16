@@ -22,7 +22,6 @@
 import { detectRule, type Rule } from '../pack.ts';
 
 export function straightDoubleQuote(spec: {
-  id: string;
   /** Completes `Straight double quote; ...`: what this style sets instead.
    * The shared half of the sentence stays shared, which is the half a reader
    * comparing two reports is entitled to see spelled the same way. */
@@ -30,7 +29,7 @@ export function straightDoubleQuote(spec: {
   cite: string;
 }): Rule {
   return detectRule({
-    id: spec.id,
+    id: 'straight-double-quote',
     summary: `Straight double quote; ${spec.instead}`,
     cite: spec.cite,
     severity: 'warning',

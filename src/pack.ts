@@ -41,8 +41,27 @@ export interface Match {
  * a human or a model has to decide, not that nobody got round to it.
  */
 export interface Rule {
-  /** Stable, `<lang>.<name>`. It appears in reports and in committed gate counts,
-   * so renaming one is a breaking change to a baseline. */
+  /**
+   * Stable, global, and **it names the position rather than the verdict**.
+   *
+   * Ids used to be `<lang>.<name>`, which filed Spanish's rule about the space
+   * after `«` and French's rule about the same space after the same `«` under two
+   * different names, differing only in what each one thought should be there. Under
+   * composition a style is a bundle with defaults rather than a standards body,
+   * so what a rule *is* comes from where it looks: `guillemet-open-space` is one
+   * question, and deleting the space, requiring a no-break one and imposing a
+   * width are three answers to it. A reader comparing two styles can then read
+   * down one column.
+   *
+   * The consequence to keep in view is that the same id means opposite repairs in
+   * two styles, deliberately, and that ids collide across styles by design. They
+   * still have to be unique *within* a style, which `test/packs.test.ts` holds.
+   *
+   * Rule builders in `rules/` own their ids rather than taking one, so a style
+   * cannot introduce a near-duplicate by naming a rule slightly differently. The
+   * two builders that serve more than one position derive the id from the
+   * position.
+   */
   readonly id: string;
   /** One line, in English, saying what is wrong rather than what to do. */
   readonly summary: string;
@@ -300,8 +319,8 @@ export function reveal(text: string): string {
       .replaceAll(RIGHT_SINGLE_QUOTE, '<RSQUO>')
       // The curved quotation marks, named for the same reason as the spaces and
       // added when `nl` arrived. U+2018 and U+2019 differ by which way the mark
-      // curls, which at a report's font size is nothing, and `nl.apostrophe`
-      // converts one into the other while `nl.mixed-quotation-marks` reports
+      // curls, which at a report's font size is nothing, and `apostrophe`
+      // converts one into the other while `mixed-quotation-marks` reports
       // which of them opened a quotation. Before this, an excerpt of `‘nee’`
       // printed the closing mark as `<RSQUO>` and the opening one raw, so the
       // one rule whose entire subject is telling two marks apart showed a

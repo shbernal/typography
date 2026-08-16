@@ -28,7 +28,7 @@
     "U+202F NNBSP": 11
   },
   "rules": {
-    "fr.apostrophe": {
+    "apostrophe": {
       "fixable": true,
       "severity": "error",
       "findings": 71,
@@ -44,7 +44,7 @@
         "questionsdecommunication-43180.txt  \" indique ainsi<NBSP>: <LAQUO><NBSP>Mais c'est vrai que les commenta\""
       ]
     },
-    "fr.space-before-colon": {
+    "colon-spacing": {
       "fixable": true,
       "severity": "error",
       "findings": 38,
@@ -60,7 +60,7 @@
         "questionsdecommunication-43928.txt  \"polysémique. Quand je dis : <LSQUO>je vais<RSQUO> écouter <LSQUO>les \""
       ]
     },
-    "fr.space-before-high-punctuation": {
+    "punctuation-spacing": {
       "fixable": true,
       "severity": "error",
       "findings": 9,
@@ -76,7 +76,7 @@
         "rfsic-19687.txt  \"tions <RAQUO>, ¿ Interrogations ? Revue pluridisciplinair\""
       ]
     },
-    "fr.guillemet-open": {
+    "guillemet-open-space": {
       "fixable": true,
       "severity": "error",
       "findings": 51,
@@ -92,7 +92,7 @@
         "rfsic-19687.txt  \"1\\nChamak B. et Cohen D., <LAQUO> Transformations des repré\""
       ]
     },
-    "fr.guillemet-close": {
+    "guillemet-close-space": {
       "fixable": true,
       "severity": "error",
       "findings": 48,
@@ -108,7 +108,7 @@
         "rfsic-19687.txt  \" Littéralement <LAQUO> lieu sûr <RAQUO>. Une safe place ou safe \""
       ]
     },
-    "fr.mixed-no-break-space": {
+    "mixed-no-break-space": {
       "fixable": false,
       "severity": "warning",
       "findings": 2,
@@ -118,7 +118,7 @@
         "terrain-29023.txt  \"dans une forêt japonaise.<NNBSP><RAQUO> Bien qu<RSQUO>il existe certa\""
       ]
     },
-    "fr.missing-space-before-high-punctuation": {
+    "missing-punctuation-space": {
       "fixable": false,
       "severity": "error",
       "findings": 355,
@@ -134,7 +134,7 @@
         "questionsdecommunication-43180.txt  \"ustodians of the Internet: Platforms, Content Moder\""
       ]
     },
-    "fr.straight-double-quote": {
+    "straight-double-quote": {
       "fixable": false,
       "severity": "warning",
       "findings": 6,

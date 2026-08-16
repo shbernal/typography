@@ -28,28 +28,28 @@
     "U+202F NNBSP": 6
   },
   "rules": {
-    "es.guillemet-open-space": {
+    "guillemet-open-space": {
       "fixable": true,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "es.guillemet-close-space": {
+    "guillemet-close-space": {
       "fixable": true,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "es.opening-mark-space": {
+    "opening-mark-space": {
       "fixable": true,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "es.unpaired-question": {
+    "unpaired-question": {
       "fixable": false,
       "severity": "error",
       "findings": 1,
@@ -58,21 +58,21 @@
         "462975.txt  \"ocede de What<RSQUO>s your name? y se usa en Cádiz para r\""
       ]
     },
-    "es.unpaired-exclamation": {
+    "unpaired-exclamation": {
       "fixable": false,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "es.space-before-punctuation": {
+    "punctuation-spacing": {
       "fixable": false,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "es.straight-double-quote": {
+    "straight-double-quote": {
       "fixable": false,
       "severity": "warning",
       "findings": 0,

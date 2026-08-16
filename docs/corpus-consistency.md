@@ -24,7 +24,7 @@ fr.normalize(`«${NARROW_NO_BREAK}non${NARROW_NO_BREAK}»`);  // unchanged
 ```
 
 Both rows are correct. Together they are a corpus that splits, and nothing in
-`fr` compares two rows. `fr.mixed-no-break-space` is the right rule at the wrong
+`fr` compares two rows. `mixed-no-break-space` is the right rule at the wrong
 scope: its survey runs within one value, so it never sees the second row.
 
 ## The two functions
@@ -133,7 +133,7 @@ the argument that separates `fr@0.1.0` from `fr@0.2.0`, and a stamp that read
 `fr@0.2.0` on both would say the two corpora were set the same way. If you store
 the stamp with the corpus, this is the part that keeps it honest.
 
-### `fr.mixed-no-break-space` is not in the derived pack
+### `mixed-no-break-space` is not in the derived pack
 
 Its whole content is that choosing a width is the author's call, and calling
 `withWidth` is the author making it. It would also be a lie in the report: it is

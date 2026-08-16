@@ -30,7 +30,6 @@ export const germanCommonRules: readonly Rule[] = [
   // and leaves `100'000` alone, and 22 Swiss thousands separators in the Swiss
   // corpora would otherwise have been repaired into apostrophes.
   apostrophe({
-    id: 'de.apostrophe',
     language: 'German',
     wrong: `[']`,
     cite: `${DUDEN}, "Apostroph"`,
@@ -41,7 +40,6 @@ export const germanCommonRules: readonly Rule[] = [
   // shipped here without the `looksMachine` filter while its own comment cited
   // the Spanish file that had it; the builder is where that cannot happen again.
   spaceBeforePunctuation({
-    id: 'de.space-before-punctuation',
     language: 'German',
     cite: `${DUDEN}, "Zeichensetzung"`,
   }),
@@ -50,7 +48,6 @@ export const germanCommonRules: readonly Rule[] = [
   // which end of a straight quote they were looking at would still have to
   // choose. That is one more reason on top of the builder's.
   straightDoubleQuote({
-    id: 'de.straight-double-quote',
     instead: 'German quotation marks are a matched pair',
     cite: `${DUDEN}, "Anführungszeichen"`,
   }),

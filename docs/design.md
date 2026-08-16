@@ -30,9 +30,9 @@ two spellings of one thing.
 
 | Constructor | Use it when | Example |
 |---|---|---|
-| `replaceRule` | The defect and its repair both fall out of one pattern | `fr.apostrophe` |
-| `conformRule` | The standard admits two spellings and the defect is using neither | `fr.guillemet-open` |
-| `detectRule` | The repair needs information the pattern does not have | `es.unpaired-question` |
+| `replaceRule` | The defect and its repair both fall out of one pattern | `apostrophe` |
+| `conformRule` | The standard admits two spellings and the defect is using neither | `guillemet-open-space` |
+| `detectRule` | The repair needs information the pattern does not have | `unpaired-question` |
 
 `replaceRule` derives `find` and `fix` from a single pattern, so the report and
 the rewrite cannot disagree about what the rule matches. **Never write a rule

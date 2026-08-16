@@ -162,18 +162,35 @@ test('the references exist and one is read only once the language is known', () 
   }
 });
 
-test('every rule id the references name still exists', () => {
+test('the references name every rule, and no rule that is gone', () => {
   // The references cite rules by id, and a rule id appears in committed gate
-  // counts, so renaming one silently invalidates both. This is the check that
-  // makes the rename visible.
-  const known = new Set(packs.flatMap((p) => p.rules.map((r) => r.id)));
-  const prefixes = [...new Set(packs.flatMap((p) => [p.lang, primary(p.lang)]))]
-    .map((tag) => tag.replace('-', '\\-'))
-    .join('|');
+  // counts, so renaming one silently invalidates both. This used to look for a
+  // language prefix, which global ids removed; matching on the prefix now finds
+  // nothing and passes vacuously, so the fixability note is the anchor instead.
+  // Every rule entry in a reference carries one, whether it is a heading or a
+  // bullet, and nothing else in these files does.
+  const heading = /^(.*\((?:warning, )?(?:not )?fixable\).*)$/gm;
   for (const { tag } of LANGUAGES) {
+    // By primary tag, because `de.md` covers both German regions and there is
+    // deliberately no bare `de` pack. Under global ids the two regions' rule
+    // sets overlap almost entirely, which is what makes one reference honest.
+    const known = new Set(
+      packs.filter((p) => primary(p.lang) === tag).flatMap((p) => p.rules.map((r) => r.id)),
+    );
     const body = readFileSync(join(SKILL_DIR, 'references', `${tag}.md`), 'utf8');
-    for (const m of body.matchAll(new RegExp(`\`((?:${prefixes})\\.[a-z-]+)\``, 'g')))
-      assert.ok(known.has(m[1]!), `references/${tag}.md names ${m[1]}, which no pack defines`);
+    const named = new Set<string>();
+    for (const [, line] of body.matchAll(heading))
+      for (const m of line!.matchAll(/`([a-z][a-z0-9-]*)`/g)) {
+        assert.ok(
+          known.has(m[1]!),
+          `references/${tag}.md names ${m[1]}, which ${tag} does not have`,
+        );
+        named.add(m[1]!);
+      }
+    // And the other direction, which the prefix version never checked: a rule
+    // added with no entry here is a rule a reader of the skill cannot look up.
+    for (const id of known)
+      assert.ok(named.has(id), `references/${tag}.md has no heading for ${tag}'s ${id}`);
   }
 });
 

@@ -40,7 +40,6 @@ const rules: readonly Rule[] = [
   // Now they are the same call with a different citation, and the parity is a
   // fact about the program.
   innerSpace({
-    id: 'de-CH.guillemet-open-space',
     summary: 'Space after the opening guillemet `«`; Swiss German sets `«Wort»` closed up',
     cite: `${DUDEN}, "Anführungszeichen"`,
     mark: '«',
@@ -51,7 +50,6 @@ const rules: readonly Rule[] = [
   }),
 
   innerSpace({
-    id: 'de-CH.guillemet-close-space',
     summary: 'Space before the closing guillemet `»`; Swiss German sets `«Wort»` closed up',
     cite: `${DUDEN}, "Anführungszeichen"`,
     mark: '»',
@@ -65,7 +63,6 @@ const rules: readonly Rule[] = [
   // argument to the same builder rather than a second pattern that has to keep
   // agreeing with the first.
   guillemetDirection({
-    id: 'de-CH.inward-guillemets',
     opens: '«',
     convention: 'German and Austrian',
     cite: `${DUDEN}, "Anführungszeichen"`,

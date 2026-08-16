@@ -3,8 +3,8 @@
 // `SECURITY.md` says so and calls such a pattern a vulnerability in this package,
 // which makes this file the assertion behind that claim rather than a benchmark.
 //
-// What it is guarding against, concretely. `fr.guillemet-open` and
-// `fr.guillemet-close` were once written as an alternation over
+// What it is guarding against, concretely. `guillemet-open-space` and
+// `guillemet-close-space` were once written as an alternation over
 // `ANY_SPACE*BREAKABLE ANY_SPACE*`, and `BREAKABLE` is a subset of `ANY_SPACE`,
 // so a run of ordinary spaces with no guillemet after it could be split at every
 // position in it. That cost 242 ms at 800 spaces, 1.5 s at 1,600 and 15 s for a

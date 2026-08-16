@@ -21,22 +21,29 @@ from a German mistake is worse than no stamp at all.
 `de-DE` for you: pass `de-DE` explicitly, so the substitution is visible to
 whoever reads the command later.
 
+This is also why the two regions below list the **same rule ids** under different
+headings. A rule id names a position, not a character: `guillemet-open-space` is
+the space inside whichever mark opens a quotation, which is `»` in Germany and
+`«` in Switzerland. The id being equal is what makes the two reports comparable;
+the *pack* is what says which mark it means. Read the stamp in the report footer
+before reading a finding.
+
 ## Shared by both regions
 
-### `de.apostrophe` (fixable)
+### `apostrophe` (fixable)
 
 Straight apostrophe between two letters becomes U+2019. `geht's`, `Ku'damm`.
 Letters on both sides, for the same reasons as French: it keeps the rule off
 quotes, code tokens and anything next to a digit.
 
-### `de.space-before-punctuation` (not fixable)
+### `punctuation-spacing` (not fixable)
 
 German takes no space before `; : ! ?`. Reported rather than fixed, because
 deleting the space corrupts `a ? b : c` in a code block. Over 2,393,884
 characters of published federal German this rule fired **zero** times, which is
 the number that matters: it is silent on text somebody set properly.
 
-### `de.straight-double-quote` (warning, not fixable)
+### `straight-double-quote` (warning, not fixable)
 
 The two ends are the same character, and German has two accepted pairs to choose
 between even once you know which end it is. So it is reported.
@@ -49,7 +56,7 @@ language one. That mix is why it is a warning.
 
 ## `de-DE` only
 
-- **`de-DE.low-quote-space`** (fixable): no space after `„`. That character has
+- **`low-quote-open-space`** (fixable): no space after `„`. That character has
   exactly one job, so closing it up damages nothing.
 
   There is deliberately **no matching rule for the closing U+201C**. That
@@ -57,22 +64,22 @@ language one. That mix is why it is a warning.
   English constantly, so deleting the space before it would weld
   `sagte "hello"` together. The asymmetry is the rule, not a gap.
 
-- **`de-DE.guillemet-open-space`, `de-DE.guillemet-close-space`** (fixable):
+- **`guillemet-open-space`, `guillemet-close-space`** (fixable):
   `» Wort «` becomes `»Wort«`.
 
-- **`de-DE.outward-guillemets`** (not fixable): `«Wort»` in a German document.
+- **`guillemet-direction`** (not fixable): `«Wort»` in a German document.
   The repair is mechanically obvious - swap both characters - and it is still not
   safe, because the text may be right and the *pack* wrong. A Swiss quotation
   inside a German document is a citation, not an error.
 
 ## `de-CH` only
 
-- **`de-CH.guillemet-open-space`, `de-CH.guillemet-close-space`** (fixable):
+- **`guillemet-open-space`, `guillemet-close-space`** (fixable):
   `« Wort »` becomes `«Wort»`. Same characters as French, closed up rather than
   spaced, which is the difference that makes running the wrong pack produce
   confident nonsense.
 
-- **`de-CH.inward-guillemets`** (not fixable): `»Wort«` in a Swiss document, the
+- **`guillemet-direction`** (not fixable): `»Wort«` in a Swiss document, the
   exact inverse of the rule above and unfixable for the same reason.
 
 Both regions' fix rules carry a guard so they never weld a word onto the other

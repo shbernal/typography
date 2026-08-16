@@ -29,14 +29,13 @@ import { RIGHT_SINGLE_QUOTE, type Rule, replaceRule } from '../pack.ts';
 const CLITIC = `(?:ns|[stnkmr])`;
 
 export function apostropheElision(spec: {
-  id: string;
   /** Everything that turns up in this position and is not U+2019. Shared with
    * the style's other apostrophe rules, which is why it is a parameter. */
   wrong: string;
   cite: string;
 }): Rule {
   return replaceRule({
-    id: spec.id,
+    id: 'apostrophe-elision',
     summary: 'Straight quote or U+2018 on a word-initial elision such as `’s` or `’t`',
     cite: spec.cite,
     pattern: new RegExp(`(?<![\\p{L}\\p{N}])${spec.wrong}(?=${CLITIC}[ \\-])`, 'gu'),

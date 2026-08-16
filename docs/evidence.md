@@ -27,7 +27,7 @@ itself.
 ## The French row used to be the bad one
 
 At `fr@0.1.0` it read 7,188 findings with 6,817 false, because
-`fr.guillemet-open` and `fr.guillemet-close` rewrote the space inside every
+`guillemet-open-space` and `guillemet-close-space` rewrote the space inside every
 guillemet to U+202F and both publishers use U+00A0. The rules were not finding a
 defect; they were retyping correctly set French.
 
@@ -38,13 +38,13 @@ and repairs in the width the document already uses. The same corpora now yield
 missing space. `fix --lang fr` is safe on well-set text.
 
 The remaining 355 are one check-only rule,
-`fr.missing-space-before-high-punctuation`, firing on English and Portuguese
+`missing-punctuation-space`, firing on English and Portuguese
 titles in bibliographies. It ships as a `find` with no `fix` for exactly that
 reason.
 
 ## The Spanish number is the one that went right
 
-`es.unpaired-question`, the rule this package's whole shape was designed around,
+`unpaired-question`, the rule this package's whole shape was designed around,
 met 332 correctly opened interrogatives and reported none of them. It also
 produced the single false positive in the table, an English phrase quoted inside
 Spanish.
@@ -89,13 +89,13 @@ not contain it.
   measured against Taaladvies has been checked for agreement with its author
   rather than for correctness. The ten real findings are the partial answer,
   since they are that publisher disagreeing with itself.
-- `nl.ij-capital` and `nl.apostrophe-after-symbol` have **no exposure at all**:
+- `ij-capital` and `apostrophe-after-symbol` have **no exposure at all**:
   the Dutch corpus contains no IJ digraph and no digit-plus-apostrophe, so their
   zeros are vacuous rather than clean. Both are cited and unit-tested and neither
   has met a line of published Dutch.
 - `de-CH` has no rule for a German `„Wort“` appearing in Swiss text, though it
   has one for the opposite direction.
-- `de-CH.inward-guillemets` reads a footnote marker after a closing guillemet as
+- `guillemet-direction` reads a footnote marker after a closing guillemet as
   a German-facing opening one. Once, in 698,683 characters, and it is check-only.
 - The French reproduction baseline cannot be rebuilt by anyone but the
   maintainer, because it diffs against an implementation that is not published.

@@ -53,8 +53,8 @@ test('and it does not touch a quoted word that begins with a clitic letter', () 
 
 test('an apostrophe after a digit or symbol is reported and not fixed', () => {
   // Cited and real: `A4'tje`, `80'ers`, `D66'er`.
-  assert.ok(ids("de 80'ers").includes('nl.apostrophe-after-symbol'));
-  assert.ok(ids("een A4'tje").includes('nl.apostrophe-after-symbol'));
+  assert.ok(ids("de 80'ers").includes('apostrophe-after-symbol'));
+  assert.ok(ids("een A4'tje").includes('apostrophe-after-symbol'));
   // And check-only, because the same three characters are a sized literal.
   assert.equal(nl.normalize("de 80'ers"), "de 80'ers");
   assert.equal(nl.normalize("assign x = 4'b1010;"), "assign x = 4'b1010;");
@@ -64,22 +64,22 @@ test('Ij is reported and never repaired', () => {
   // Wrong under every reading, which is what makes it detectable, and the repair
   // needs to know whether the sentence just started, which is what makes it
   // unfixable.
-  assert.ok(ids('Ijmuiden').includes('nl.ij-capital'));
-  const found = check(nl, 'Ijmuiden').find((f) => f.rule === 'nl.ij-capital');
+  assert.ok(ids('Ijmuiden').includes('ij-capital'));
+  const found = check(nl, 'Ijmuiden').find((f) => f.rule === 'ij-capital');
   assert.ok(found);
   assert.equal(found.fixable, false);
   assert.equal(nl.normalize('Ijmuiden'), 'Ijmuiden');
   // Both correct forms are silent.
-  assert.equal(ids('IJmuiden').includes('nl.ij-capital'), false);
-  assert.equal(ids('Ik eet ijs.').includes('nl.ij-capital'), false);
+  assert.equal(ids('IJmuiden').includes('ij-capital'), false);
+  assert.equal(ids('Ik eet ijs.').includes('ij-capital'), false);
 });
 
 test('mixing two systems of quotation mark is reported', () => {
   const mixed = `Hij zei ${LDQ}ja${RDQ} en zij zei ${LSQ}nee${RSQ}.`;
-  assert.ok(ids(mixed).includes('nl.mixed-quotation-marks'));
+  assert.ok(ids(mixed).includes('mixed-quotation-marks'));
   // The minority family is the one reported, and it is reported once per opening
   // mark rather than once per document.
-  const found = check(nl, mixed).filter((f) => f.rule === 'nl.mixed-quotation-marks');
+  const found = check(nl, mixed).filter((f) => f.rule === 'mixed-quotation-marks');
   assert.equal(found.length, 1);
   assert.equal(mixed[found[0]!.index], LSQ);
 });
@@ -93,7 +93,7 @@ test('and a text consistent in any one system is silent', () => {
     `Hij zei ${LOW}ja${RDQ} en ${LOW}nee${RDQ}.`,
   ]) {
     assert.equal(
-      ids(text).includes('nl.mixed-quotation-marks'),
+      ids(text).includes('mixed-quotation-marks'),
       false,
       `reported a consistent text: ${JSON.stringify(text)}`,
     );
@@ -106,12 +106,12 @@ test('apostrophes do not vote in the quotation ballot', () => {
   // as a document full of single quotations. The ballot reads openers only, and
   // the opening guard keeps a mis-set U+2018 out of it too.
   const text = `De auto${RSQ}s en de baby${RSQ}s stonden in ${LDQ}de straat${RDQ}.`;
-  assert.equal(ids(text).includes('nl.mixed-quotation-marks'), false);
+  assert.equal(ids(text).includes('mixed-quotation-marks'), false);
 });
 
 test('it is never fixable, however obvious the substitution looks', () => {
   const mixed = `${LDQ}ja${RDQ} en ${LSQ}nee${RSQ}`;
-  const found = check(nl, mixed).find((f) => f.rule === 'nl.mixed-quotation-marks');
+  const found = check(nl, mixed).find((f) => f.rule === 'mixed-quotation-marks');
   assert.ok(found);
   assert.equal(found.fixable, false);
   // Nothing is harmonised. U+2019 closes the single pair and is also the
@@ -120,14 +120,11 @@ test('it is never fixable, however obvious the substitution looks', () => {
 });
 
 test('a space before punctuation is reported and not deleted', () => {
-  assert.ok(ids('Wat vind je ?').includes('nl.space-before-punctuation'));
-  assert.ok(ids(`Wat vind je${NO_BREAK}?`).includes('nl.space-before-punctuation'));
+  assert.ok(ids('Wat vind je ?').includes('punctuation-spacing'));
+  assert.ok(ids(`Wat vind je${NO_BREAK}?`).includes('punctuation-spacing'));
   assert.equal(nl.normalize('Wat vind je ?'), 'Wat vind je ?');
   assert.equal(nl.normalize('const y = a ? b : c;'), 'const y = a ? b : c;');
-  assert.equal(
-    ids('Zie https://voorbeeld.nl/a?b=1 ;').includes('nl.space-before-punctuation'),
-    false,
-  );
+  assert.equal(ids('Zie https://voorbeeld.nl/a?b=1 ;').includes('punctuation-spacing'), false);
 });
 
 test('the pack has no rule about which quotation marks Dutch uses', () => {

@@ -15,9 +15,9 @@
 
 import { detectRule, type Rule } from '../pack.ts';
 
-export function ijCapital(spec: { id: string; cite: string }): Rule {
+export function ijCapital(spec: { cite: string }): Rule {
   return detectRule({
-    id: spec.id,
+    id: 'ij-capital',
     summary: 'Word-initial `Ij`; the Dutch digraph capitalises as `ij` or `IJ`, never `Ij`',
     cite: spec.cite,
     pattern: /(?<![\p{L}\p{N}])Ij(?=\p{Ll})/gu,

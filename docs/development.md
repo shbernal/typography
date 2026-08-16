@@ -104,7 +104,7 @@ than a benchmark.
 **Check what the standard declines to say, not only what it says.** `nl` is the
 worked example. Dutch has no rule about which quotation marks to use, so the pack
 has none, and the citation that says there is no rule is the same one that
-licenses `nl.mixed-quotation-marks`. A pack must not assert what its citation
+licenses `mixed-quotation-marks`. A pack must not assert what its citation
 does not fix, and the absence of a rule is sometimes the most citable thing about
 a language.
 

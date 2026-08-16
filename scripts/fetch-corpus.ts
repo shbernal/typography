@@ -113,7 +113,7 @@ interface CorpusSpec {
  * `sup` is absent for the same reason, and it has a consequence worth knowing
  * before reading a finding as a defect: a superscript footnote marker flattens
  * onto whatever preceded it, so `»<sup>1</sup>` reaches the rules as `»1` and
- * `de-CH.inward-guillemets` reads a correctly closed Swiss quotation as a
+ * `guillemet-direction` reads a correctly closed Swiss quotation as a
  * German-facing opening one. It happens once in that corpus. The alternative is
  * worse - a newline inside every `H<sub>2</sub>O` - so the answer is not to add
  * it here but to remember that an adjacency in the extracted text is not always

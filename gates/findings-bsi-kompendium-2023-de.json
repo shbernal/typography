@@ -28,21 +28,21 @@
     "U+202F NNBSP": 0
   },
   "rules": {
-    "de.apostrophe": {
+    "apostrophe": {
       "fixable": true,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "de.space-before-punctuation": {
+    "punctuation-spacing": {
       "fixable": false,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "de.straight-double-quote": {
+    "straight-double-quote": {
       "fixable": false,
       "severity": "warning",
       "findings": 128,
@@ -58,28 +58,28 @@
         "IT-GS-Kompendium-XML_Kompendium_2023.xml.txt  \"ehen. Aber auch \\\"normaler\\\" Brandrauch kann auf dies\""
       ]
     },
-    "de-DE.low-quote-space": {
+    "low-quote-open-space": {
       "fixable": true,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "de-DE.guillemet-open-space": {
+    "guillemet-open-space": {
       "fixable": true,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "de-DE.guillemet-close-space": {
+    "guillemet-close-space": {
       "fixable": true,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "de-DE.outward-guillemets": {
+    "guillemet-direction": {
       "fixable": false,
       "severity": "error",
       "findings": 0,

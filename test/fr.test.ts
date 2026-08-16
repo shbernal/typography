@@ -49,7 +49,7 @@ test('guillemets are the one inserting rule', () => {
   // Already correct: unchanged, and no finding.
   const correct = `«${NNBSP}mot${NNBSP}»`;
   assert.equal(fr.normalize(correct), correct);
-  assert.ok(!ids(correct).includes('fr.guillemet-open'));
+  assert.ok(!ids(correct).includes('guillemet-open-space'));
 });
 
 test('U+00A0 inside a guillemet is accepted, not retyped', () => {
@@ -95,7 +95,7 @@ test('mixing the two widths is reported and never repaired', () => {
   // because which one to settle on is the author's call, and on a near-even
   // split harmonising would silently retype half the document.
   const mixed = `«${NBSP}un${NBSP}» et «${NNBSP}deux${NNBSP}» et «${NBSP}trois${NBSP}»`;
-  const found = check(fr, mixed).filter((f) => f.rule === 'fr.mixed-no-break-space');
+  const found = check(fr, mixed).filter((f) => f.rule === 'mixed-no-break-space');
   assert.equal(found.length, 2, 'both minority occurrences are reported');
   assert.equal(found[0]!.severity, 'warning');
   assert.equal(found[0]!.fixable, false);
@@ -111,7 +111,7 @@ test('a document using one width consistently reports no mixing', () => {
     'aucune ponctuation francaise ici',
   ]) {
     assert.deepEqual(
-      ids(text).filter((r) => r === 'fr.mixed-no-break-space'),
+      ids(text).filter((r) => r === 'mixed-no-break-space'),
       [],
       `fired on ${JSON.stringify(text)}`,
     );
@@ -120,7 +120,7 @@ test('a document using one width consistently reports no mixing', () => {
 
 test('a missing space before punctuation is reported and not repaired', () => {
   // The French half of the finding this package is built around.
-  assert.ok(ids('Bonjour! Ca va?').includes('fr.missing-space-before-high-punctuation'));
+  assert.ok(ids('Bonjour! Ca va?').includes('missing-punctuation-space'));
   assert.equal(fr.normalize('Bonjour!'), 'Bonjour!');
 });
 
@@ -133,16 +133,13 @@ test('the missing-space rule stays off code and URLs', () => {
     'a ? b : c',
     'de 12:30 a 14:00',
   ]) {
-    assert.ok(
-      !ids(text).includes('fr.missing-space-before-high-punctuation'),
-      `fired on ${JSON.stringify(text)}`,
-    );
+    assert.ok(!ids(text).includes('missing-punctuation-space'), `fired on ${JSON.stringify(text)}`);
   }
 });
 
 test('a straight double quote is a warning, not an error', () => {
   const found = check(fr, 'il a dit "bonjour"');
-  const quote = found.find((f) => f.rule === 'fr.straight-double-quote');
+  const quote = found.find((f) => f.rule === 'straight-double-quote');
   assert.ok(quote);
   assert.equal(quote.severity, 'warning');
   assert.equal(quote.fixable, false);
@@ -255,7 +252,7 @@ test('an imposed width is a different era stamp', () => {
 
 test('an imposed width drops the rule that says the width is undecided', () => {
   const house = withWidth(NBSP);
-  assert.ok(!house.rules.some((r) => r.id === 'fr.mixed-no-break-space'));
+  assert.ok(!house.rules.some((r) => r.id === 'mixed-no-break-space'));
   // Dropping it loses no coverage: the three conform rules cover the same three
   // ballot positions, and every one of them is now fixable.
   assert.deepEqual(

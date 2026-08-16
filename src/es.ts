@@ -50,7 +50,6 @@ const rules: readonly Rule[] = [
   // this call site now, which is a thing a reader can see and a missing
   // lookaround is not.
   innerSpace({
-    id: 'es.guillemet-open-space',
     summary: 'Space after an opening guillemet; Spanish sets `«texto»` closed up',
     cite: `${ORTOGRAFIA}, "Las comillas"`,
     mark: '«',
@@ -61,7 +60,6 @@ const rules: readonly Rule[] = [
   }),
 
   innerSpace({
-    id: 'es.guillemet-close-space',
     summary: 'Space before a closing guillemet; Spanish sets `«texto»` closed up',
     cite: `${ORTOGRAFIA}, "Las comillas"`,
     mark: '»',
@@ -72,7 +70,6 @@ const rules: readonly Rule[] = [
   }),
 
   openingMarkSpace({
-    id: 'es.opening-mark-space',
     cite: `${ORTOGRAFIA}, "Los signos de interrogación y de exclamación"`,
   }),
 
@@ -85,16 +82,12 @@ const rules: readonly Rule[] = [
   // style here has a mark whose absence at the *other* end of a sentence is the
   // defect.
   unpairedMark({
-    id: 'es.unpaired-question',
     mark: '?',
-    opener: '¿',
     cite: `${ORTOGRAFIA}, "Los signos de interrogación y de exclamación"`,
   }),
 
   unpairedMark({
-    id: 'es.unpaired-exclamation',
     mark: '!',
-    opener: '¡',
     cite: `${ORTOGRAFIA}, "Los signos de interrogación y de exclamación"`,
   }),
 
@@ -103,7 +96,6 @@ const rules: readonly Rule[] = [
   // Spanish about it is that the defect is almost always a Frenchism a
   // translator carried over.
   spaceBeforePunctuation({
-    id: 'es.space-before-punctuation',
     language: 'Spanish',
     cite: `${ORTOGRAFIA}, "Los signos de puntuación"`,
   }),
@@ -113,7 +105,6 @@ const rules: readonly Rule[] = [
   // inner level. Neither of them is a straight quote, which is all this rule
   // needs, and choosing between them is still the parse the builder describes.
   straightDoubleQuote({
-    id: 'es.straight-double-quote',
     instead: 'Spanish quotation marks are `«»` then `""`',
     cite: `${ORTOGRAFIA}, "Las comillas"`,
   }),

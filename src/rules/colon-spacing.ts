@@ -10,9 +10,9 @@
 
 import { NO_BREAK, type Rule, replaceRule } from '../pack.ts';
 
-export function colonSpacing(spec: { id: string; cite: string }): Rule {
+export function colonSpacing(spec: { cite: string }): Rule {
   return replaceRule({
-    id: spec.id,
+    id: 'colon-spacing',
     summary: 'Breaking space before a colon; French requires U+00A0',
     cite: spec.cite,
     // Converts and never inserts. Inserting before a colon would fire on every

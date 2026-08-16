@@ -23,20 +23,26 @@ const SENTENCE_END = /[.!?\n…]/;
  * and most of what a placeholder or a template looks like. */
 const CAN_PRECEDE = /[\p{L}\p{N}\p{Pf}\p{Pe}'’]/u;
 
+/** The two pairs, and the id each one's rule carries. Everything a caller could
+ * get wrong by passing it separately is in here: the opener that goes with each
+ * mark, and the name of the position. A caller supplies the citation. */
+const PAIRS = {
+  '?': { opener: '¿', id: 'unpaired-question' },
+  '!': { opener: '¡', id: 'unpaired-exclamation' },
+} as const;
+
 export function unpairedMark(spec: {
-  id: string;
   /** The closing mark, which is also the character the rule scans for. */
-  mark: string;
-  /** The mark that should have opened the sentence. */
-  opener: string;
+  mark: keyof typeof PAIRS;
   cite: string;
 }): Rule {
+  const { opener, id } = PAIRS[spec.mark];
   return detectRule({
-    id: spec.id,
-    summary: `Sentence ends in \`${spec.mark}\` with no opening \`${spec.opener}\``,
+    id,
+    summary: `Sentence ends in \`${spec.mark}\` with no opening \`${opener}\``,
     cite: spec.cite,
     pattern: new RegExp(spec.mark.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
-    refine: (match, value) => unpaired(value, match.index, spec.opener),
+    refine: (match, value) => unpaired(value, match.index, opener),
   });
 }
 

@@ -6,7 +6,7 @@ something.
 
 ## The rules, and what each one is protecting
 
-### `fr.apostrophe` (fixable)
+### `apostrophe` (fixable)
 
 A straight apostrophe (U+0027) between two letters becomes U+2019.
 
@@ -19,7 +19,7 @@ Measured on a real 2,125-row corpus, the straight and curly forms split 711/974,
 with 4 rows carrying both. That is what a corpus looks like when every row was
 written in isolation and nothing ever compared two of them.
 
-### `fr.space-before-colon` (fixable), `fr.space-before-high-punctuation` (fixable)
+### `colon-spacing` (fixable), `punctuation-spacing` (fixable)
 
 An existing breaking space before `:` becomes U+00A0. Before `;`, `!` or `?` it
 becomes a no-break space too, in whichever width the document already uses.
@@ -34,7 +34,7 @@ literal or a product name. What a real corpus holds is the space already: 137
 rows before a colon in the corpus above, so conversion covers the whole measured
 defect.
 
-### `fr.guillemet-open`, `fr.guillemet-close` (fixable)
+### `guillemet-open-space`, `guillemet-close-space` (fixable)
 
 A guillemet must have exactly one no-break space inside it. The rules fire on a
 breaking space (U+0020 or U+2009), on more than one space, and on no space at
@@ -53,14 +53,14 @@ Inserting is licensed only because guillemets are unambiguous: there is no other
 construction to mistake them for, and a guillemet with no space inside it is
 wrong however it got there.
 
-### `fr.mixed-no-break-space` (warning, not fixable)
+### `mixed-no-break-space` (warning, not fixable)
 
 The document uses U+00A0 in some of these positions and U+202F in others. Both
 are admissible and using both is not. Not fixable because *which* one to settle
 on is the author's call, and on a document near an even split the repair would
 silently retype half of it.
 
-### `fr.missing-space-before-high-punctuation` (not fixable)
+### `missing-punctuation-space` (not fixable)
 
 No space at all before `; : ! ?`, where French requires one. `Bonjour!` should be
 `Bonjour !`.
@@ -72,7 +72,7 @@ constructions that must not be touched. The pattern is conservative in both
 directions (a letter before, whitespace or a closing mark after) and this is
 still the rule most likely to fire on technical prose.
 
-### `fr.straight-double-quote` (warning, not fixable)
+### `straight-double-quote` (warning, not fixable)
 
 French quotation marks are the guillemets. A `"` is reported and never converted,
 because the two ends are the same character: choosing between `«` and `»` means

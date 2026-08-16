@@ -40,12 +40,45 @@ test('a rule without a citation does not ship', () => {
     for (const rule of pack.rules) {
       assert.ok(rule.cite.length > 10, `${rule.id} has no usable citation`);
       assert.ok(rule.summary.length > 10, `${rule.id} has no usable summary`);
-      assert.ok(
-        rule.id.startsWith(`${pack.lang}.`) || rule.id.startsWith('de.'),
-        `${rule.id} is not namespaced to ${pack.lang}`,
-      );
+      // Ids are global and name the position rather than the verdict, so they
+      // carry no language and collide across styles on purpose. What this
+      // asserts is the shape, which is the thing a reintroduced `fr.` prefix
+      // would break: one lowercase kebab token, no dot, no tag.
+      assert.match(rule.id, /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/, `${rule.id} is not a global id`);
     }
   });
+});
+
+test('rules sharing an id are about the same position', () => {
+  // The invariant a global id buys, and the one nothing else here checks. Two
+  // styles may answer `guillemet-open-space` in opposite directions, which is
+  // the point, but they must not be answering two different questions under one
+  // name. A summary is the closest thing to the question in machine-readable
+  // form, so this holds the weaker property that is still worth having: a shared
+  // id means a shared citation topic is *not* asserted, but a shared id with
+  // wildly unrelated summaries is a naming mistake nobody would otherwise see.
+  const byId = new Map<string, Set<string>>();
+  everyPack((pack) => {
+    for (const rule of pack.rules) {
+      const seen = byId.get(rule.id) ?? new Set<string>();
+      seen.add(rule.summary);
+      byId.set(rule.id, seen);
+    }
+  });
+  for (const [id, summaries] of byId) {
+    // Every summary for one id has to share a word with every other. Opposite
+    // verdicts about one position always do, because they name the position:
+    // `Space after an opening guillemet` and `Opening guillemet whose inner
+    // space is breaking` share `guillemet`. Two unrelated rules filed under one
+    // id would not.
+    const words = [...summaries].map((s) => new Set(s.toLowerCase().match(/[a-z]{4,}/g) ?? []));
+    for (const a of words)
+      for (const b of words)
+        assert.ok(
+          [...a].some((w) => b.has(w)),
+          `${id} covers summaries with nothing in common, so it names two positions`,
+        );
+  }
 });
 
 test('rule ids are unique within a pack', () => {

@@ -20,9 +20,9 @@
 
 import { detectRule, type Rule } from '../pack.ts';
 
-export function missingPunctuationSpace(spec: { id: string; cite: string }): Rule {
+export function missingPunctuationSpace(spec: { cite: string }): Rule {
   return detectRule({
-    id: spec.id,
+    id: 'missing-punctuation-space',
     summary: 'No space at all before `; : ! ?`, where French requires one',
     cite: spec.cite,
     pattern: /\p{L}[;:!?](?=[\s»)\]"'’]|$)/gu,

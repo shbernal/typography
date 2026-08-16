@@ -34,12 +34,12 @@ test('the closing low-quote counterpart deliberately does not exist', () => {
 });
 
 test('de-DE reports Swiss guillemets and does not rewrite them', () => {
-  assert.ok(idsDE('Sie sagte «Wort» und ging.').includes('de-DE.outward-guillemets'));
+  assert.ok(idsDE('Sie sagte «Wort» und ging.').includes('guillemet-direction'));
   assert.equal(deDE.normalize('Sie sagte «Wort» und ging.'), 'Sie sagte «Wort» und ging.');
 });
 
 test('de-CH reports German guillemets and does not rewrite them', () => {
-  assert.ok(idsCH('Sie sagte »Wort« und ging.').includes('de-CH.inward-guillemets'));
+  assert.ok(idsCH('Sie sagte »Wort« und ging.').includes('guillemet-direction'));
   assert.equal(deCH.normalize('Sie sagte »Wort« und ging.'), 'Sie sagte »Wort« und ging.');
 });
 
@@ -52,7 +52,7 @@ test('neither pack welds a word onto the other region s quotation mark', () => {
 });
 
 test('a space before punctuation is reported in both and fixed in neither', () => {
-  assert.ok(idsDE('Hallo ; Welt').includes('de.space-before-punctuation'));
+  assert.ok(idsDE('Hallo ; Welt').includes('punctuation-spacing'));
   assert.equal(deDE.normalize('Hallo ; Welt'), 'Hallo ; Welt');
   assert.equal(deCH.normalize('const y = a ? b : c;'), 'const y = a ? b : c;');
 });
@@ -66,16 +66,16 @@ test('a space before punctuation in machine text is not reported', () => {
   const machine = 'Siehe https://beispiel.de/a ?b=1 und pfad/x : y hier.';
   for (const ids of [idsDE, idsCH])
     assert.deepEqual(
-      ids(machine).filter((id) => id === 'de.space-before-punctuation'),
+      ids(machine).filter((id) => id === 'punctuation-spacing'),
       [],
     );
   // And prose in the same value is still reported, so the filter narrowed the
   // rule rather than switching it off.
-  assert.ok(idsDE(`${machine} Hallo ; Welt`).includes('de.space-before-punctuation'));
+  assert.ok(idsDE(`${machine} Hallo ; Welt`).includes('punctuation-spacing'));
 });
 
 test('the two packs stamp two different eras', () => {
-  // Both moved to 0.2.0 together: `de.space-before-punctuation` is a common
+  // Both moved to 0.2.0 together: `punctuation-spacing` is a common
   // rule, so a change to it changes what both packs assert, and a stamp that
   // moved on only one of them would say a de-CH corpus had been checked by
   // rules it had not.

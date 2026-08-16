@@ -74,12 +74,12 @@ unambiguous defect, and inserting the `¿` means deciding where the interrogativ
 have produced it. So report those to the user and ask. Never rewrite them
 yourself, and never suggest a `sed` that does.
 
-`fr.mixed-no-break-space` is the other kind: the document uses U+00A0 in some
+`mixed-no-break-space` is the other kind: the document uses U+00A0 in some
 guillemets and U+202F in others. Both are admissible French and using both is
 not, so the finding is real, but which one the document should settle on belongs
 to whoever wrote it. Report the count and ask; do not harmonise on your own.
 
-`nl.mixed-quotation-marks` is the same kind with a sharper edge. Dutch has no
+`mixed-quotation-marks` is the same kind with a sharper edge. Dutch has no
 rule about which quotation marks to use and an explicit recommendation to pick
 one system and keep to it, so the finding is about the document rather than about
 any one mark. **Do not harmonise it yourself even if the user asks for a quick
@@ -116,7 +116,7 @@ purpose, so pass `de-DE`.
 ## Reading a report
 
 ```
-draft.fr.md:12:34  fixable fr.space-before-colon  Breaking space before a colon; French requires U+00A0
+draft.fr.md:12:34  fixable colon-spacing  Breaking space before a colon; French requires U+00A0
       "voici<NBSP>: ici"
       Imprimerie nationale, Lexique des règles typographiques (2002), "Ponctuation"
 ```

@@ -5,7 +5,7 @@ Source: `Ortografía de la lengua española` (Real Academia Española, 2010).
 Spanish is where this package's shape came from. Read the first rule below before
 answering any question about why the tool did not fix something.
 
-## `es.unpaired-question`, `es.unpaired-exclamation` (not fixable)
+## `unpaired-question`, `unpaired-exclamation` (not fixable)
 
 A sentence ending in `?` with no `¿` earlier in it, or `!` with no `¡`.
 
@@ -29,7 +29,7 @@ second question rather than letting the first one's `¿` excuse it. It skips
 tokens that look like URLs, query strings or paths, because `?b=1` is the same
 character doing a different job.
 
-## `es.space-before-punctuation` (not fixable)
+## `punctuation-spacing` (not fixable)
 
 Spanish takes no space before `; : ! ?`. It is almost always a Frenchism carried
 over by a translator.
@@ -39,7 +39,7 @@ technical Spanish, `a ? b : c` is a ternary and `1 : 2` is a ratio, and a fenced
 code block carries both. Closing those up silently corrupts code that rendered
 correctly. So it is reported, and a human decides.
 
-## `es.guillemet-open-space`, `es.guillemet-close-space` (fixable)
+## `guillemet-open-space`, `guillemet-close-space` (fixable)
 
 Spanish sets `«texto»` **closed up**. `« hola »` becomes `«hola»`.
 
@@ -51,7 +51,7 @@ other construction to damage.
 The quotation-mark order in Spanish is `«…»` first, then `"…"`, then `'…'` for a
 quote inside a quote inside a quote.
 
-## `es.opening-mark-space` (fixable)
+## `opening-mark-space` (fixable)
 
 `¿ Como estas?` becomes `¿Como estas?`.
 
@@ -59,7 +59,7 @@ Fixable where the closing half is not, and the difference is the whole argument:
 the `¿` is already in the text, so its position is known and only the spacing is
 wrong. Nothing has to be inferred.
 
-## `es.straight-double-quote` (warning, not fixable)
+## `straight-double-quote` (warning, not fixable)
 
 Reported, never converted. The two ends are the same character.
 

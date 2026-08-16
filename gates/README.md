@@ -128,7 +128,7 @@ all multiples of four. The number of `À lire aussi :` callouts in each of those
 documents is its delta divided by four, in all ten, and there are none in the
 other 33. Those callouts are the newsroom's template rather than anyone's prose,
 and the phrase sets a plain space before its colon, so they were also
-manufacturing 19 of the 25 `fr.space-before-colon` findings this corpus reported:
+manufacturing 19 of the 25 `colon-spacing` findings this corpus reported:
 the same mistake nineteen times, by a CMS, in a corpus whose whole purpose is to
 show what people who set French properly actually do. They are now removed at
 extraction by the `drop` in `gates/corpora.json`, which costs 1,782 characters and
@@ -236,7 +236,7 @@ That also settles a question this section used to leave open. The guillemets wer
 attributable to the withdrawn document by arithmetic, two pairs being four
 characters against a three-character edit, and the apostrophes were not. Running
 the old pack over the post-withdrawal corpus answers it directly: both straight
-apostrophes went with the withdrawn press release, and `de.apostrophe` now meets
+apostrophes went with the withdrawn press release, and `apostrophe` now meets
 23 curly apostrophes and no straight ones.
 
 The last of it is that the corpus was thin enough for one document to matter this
@@ -449,14 +449,14 @@ is a suspected false positive by construction.
 
 | Rule | OpenEdition | The Conversation | Verdict |
 |---|---|---|---|
-| `fr.apostrophe` | 71 | 109 | true positives |
-| `fr.space-before-colon` | 38 | 6 | true positives |
-| `fr.space-before-high-punctuation` | 9 | 9 | true positives |
-| `fr.guillemet-open` | 51 | 2 | true positives |
-| `fr.guillemet-close` | 48 | 2 | true positives |
-| `fr.mixed-no-break-space` | 2 | 0 | true positives |
-| `fr.missing-space-before-high-punctuation` | 355 | 0 | **355 false** |
-| `fr.straight-double-quote` | 6 | 0 | domain judgement |
+| `apostrophe` | 71 | 109 | true positives |
+| `colon-spacing` | 38 | 6 | true positives |
+| `punctuation-spacing` | 9 | 9 | true positives |
+| `guillemet-open-space` | 51 | 2 | true positives |
+| `guillemet-close-space` | 48 | 2 | true positives |
+| `mixed-no-break-space` | 2 | 0 | true positives |
+| `missing-punctuation-space` | 355 | 0 | **355 false** |
+| `straight-double-quote` | 6 | 0 | domain judgement |
 
 708 findings, 355 of them false, and every false one from a single check-only
 rule. Those are the numbers for `fr@0.2.0`.
@@ -470,8 +470,8 @@ diagnosis is more useful than the totals.
 
 ### The guillemet rules fired on every guillemet in well-set French
 
-At `fr@0.1.0`, `fr.guillemet-open` fired on all 3,305 opening guillemets in the
-corpus and `fr.guillemet-close` on 3,254 of 3,255 closing ones. Not on a subset.
+At `fr@0.1.0`, `guillemet-open-space` fired on all 3,305 opening guillemets in the
+corpus and `guillemet-close-space` on 3,254 of 3,255 closing ones. Not on a subset.
 On essentially every one.
 
 What is actually inside them:
@@ -498,7 +498,7 @@ that prescribes the fine space, which is a pointed thing to discover in a pack
 whose whole design premise is that `de-DE` and `de-CH` had to be split.
 
 The same review found a second-order inconsistency inside the pack.
-`fr.space-before-high-punctuation` converted a plain space before `; ! ?` to
+`punctuation-spacing` converted a plain space before `; ! ?` to
 U+202F and **left U+00A0 alone**, while the guillemet rules extended no such
 tolerance. The pack accepted U+00A0 before a question mark and rejected it after
 an opening guillemet, and no reading of the standard asks for that combination.
@@ -522,7 +522,7 @@ and the repair was made to depend on the document:
   uses, counted over its guillemets and its `; ! ?`. A tie, or no evidence at
   all, goes to U+202F. This needed a third rule constructor, `conformRule`,
   because a literal replacement cannot adapt to the text it is repairing.
-- **Using both widths in one document**: reported by `fr.mixed-no-break-space`
+- **Using both widths in one document**: reported by `mixed-no-break-space`
   and never repaired, because *which* one to settle on is the author's call and
   on a near-even split harmonising would silently retype half the document.
 
@@ -532,7 +532,7 @@ counter-example.
 
 The result is the table above. The guillemet rules now report 103 findings, which
 is exactly the count of real defects in the row-by-row breakdown, and
-`fr.mixed-no-break-space` reports 2, which is exactly the number of stray U+202F
+`mixed-no-break-space` reports 2, which is exactly the number of stray U+202F
 in a corpus that is otherwise entirely U+00A0. `fix --lang fr` is safe on
 well-set text.
 
@@ -542,7 +542,7 @@ counts stamped `fr@0.1.0` are a different era and are not comparable. And
 the private corpus contains no guillemet the prior implementation had to
 re-space, so the narrowing was invisible to the gate that appeared to forbid it.
 
-### The 355 `fr.missing-space-before-high-punctuation` are all foreign titles
+### The 355 `missing-punctuation-space` are all foreign titles
 
 Every one is in `openedition-journals-fr`, and `theconversation-fr`, which has no
 bibliography, produced none. Classified by the language of the surrounding
@@ -555,7 +555,7 @@ carrying a French subtitle.
 
 An English or Portuguese book title inside a French bibliography is set to its
 own language's rules, correctly, and French spacing does not govern it. This is
-the same false positive `es.unpaired-question` produced against an English phrase
+the same false positive `unpaired-question` produced against an English phrase
 quoted inside Spanish, at 355 times the volume, and it says the same thing: the
 unit these rules operate on is not reliably monolingual. The rule already ships
 as `find` with no `fix`, which is the outcome that matters, and this corpus is
@@ -563,15 +563,15 @@ the evidence that the decision was right rather than cautious.
 
 ### The 368 findings that are real
 
-`fr.apostrophe` fired 180 times on a straight apostrophe between two letters in
+`apostrophe` fired 180 times on a straight apostrophe between two letters in
 documents that use U+2019 everywhere else, including once in a sentence carrying
-both forms. `fr.space-before-colon` fired 63 times on a plain breaking space
-before a colon, and `fr.space-before-high-punctuation` 20 times on a breaking
+both forms. `colon-spacing` fired 63 times on a plain breaking space
+before a colon, and `punctuation-spacing` 20 times on a breaking
 space before `; ! ?`. The guillemet rules account for 103 and
-`fr.mixed-no-break-space` for 2. All of them are genuine, and all but the last
+`mixed-no-break-space` for 2. All of them are genuine, and all but the last
 two are fixable.
 
-The six `fr.straight-double-quote` are foreign words quoted inside brackets in
+The six `straight-double-quote` are foreign words quoted inside brackets in
 English abstracts. Domain judgement, which is why the rule is a warning.
 
 ## `de-DE`, reviewed 2026-08-10 against `bsi-kompendium-2023-de`
@@ -592,13 +592,13 @@ so that rule fired on all of them.
 
 | Rule | Findings | Verdict |
 |---|---|---|
-| `de.apostrophe` | 0 | fixable, silent over 2.4M characters |
-| `de.space-before-punctuation` | 0 | silent over 647 colons |
-| `de.straight-double-quote` | 128 | mixed, see below |
-| `de-DE.low-quote-space` | 0 | fixable, silent over 544 low quotes |
-| `de-DE.guillemet-open-space` | 0 | fixable, no exposure |
-| `de-DE.guillemet-close-space` | 0 | fixable, no exposure |
-| `de-DE.outward-guillemets` | 0 | no exposure |
+| `apostrophe` | 0 | fixable, silent over 2.4M characters |
+| `punctuation-spacing` | 0 | silent over 647 colons |
+| `straight-double-quote` | 128 | mixed, see below |
+| `low-quote-open-space` | 0 | fixable, silent over 544 low quotes |
+| `guillemet-open-space` | 0 | fixable, no exposure |
+| `guillemet-close-space` | 0 | fixable, no exposure |
+| `guillemet-direction` | 0 | no exposure |
 
 The 128 fall into three classes, counted rather than sampled:
 
@@ -614,7 +614,7 @@ The 128 fall into three classes, counted rather than sampled:
    the same house-style judgement Spanish produced.
 3. **6 closing quotes in bibliography entries** for English standard titles from
    IEC and ISO. A title quoted in its own language's convention, which is the
-   same false positive `fr.missing-space-before-high-punctuation` produces at
+   same false positive `missing-punctuation-space` produces at
    scale, and the reason this rule is a **warning** and is not fixable.
 
 The `„` count exceeds the `“` count by 25, and the 18 above are most of that gap.
@@ -635,20 +635,20 @@ rather than hides: this text quotes with `„ “` throughout.
 FundéuRAE is the foundation the Real Academia Española promotes with the Agencia
 EFE, and correct Spanish is its entire subject, so a typographic finding in its
 own prose is worth reading twice. The AEPD FAQ is here for one reason: every
-entry is a question, and it is the only material that puts `es.unpaired-question`
+entry is a question, and it is the only material that puts `unpaired-question`
 in front of correctly opened interrogatives at any volume.
 
 | Rule | BOE | AEPD | Fundéu | Exposure across the three |
 |---|---|---|---|---|
-| `es.guillemet-open-space` | 0 | 0 | 0 | 1,068 opening guillemets |
-| `es.guillemet-close-space` | 0 | 0 | 0 | 1,066 closing guillemets |
-| `es.opening-mark-space` | 0 | 0 | 0 | 370 `¿`, 1 `¡` |
-| `es.unpaired-question` | 0 | 0 | **1** | 370 `¿`, 370 `?` |
-| `es.unpaired-exclamation` | 0 | 0 | 0 | 1 `¡`, 1 `!` |
-| `es.space-before-punctuation` | 0 | 0 | 0 | 287 `;`, 415 `:` |
-| `es.straight-double-quote` | 0 | **162** | 0 | 162 straight quotes |
+| `guillemet-open-space` | 0 | 0 | 0 | 1,068 opening guillemets |
+| `guillemet-close-space` | 0 | 0 | 0 | 1,066 closing guillemets |
+| `opening-mark-space` | 0 | 0 | 0 | 370 `¿`, 1 `¡` |
+| `unpaired-question` | 0 | 0 | **1** | 370 `¿`, 370 `?` |
+| `unpaired-exclamation` | 0 | 0 | 0 | 1 `¡`, 1 `!` |
+| `punctuation-spacing` | 0 | 0 | 0 | 287 `;`, 415 `:` |
+| `straight-double-quote` | 0 | **162** | 0 | 162 straight quotes |
 
-### The one `es.unpaired-question`, which is the finding the design turns on
+### The one `unpaired-question`, which is the finding the design turns on
 
 > `guachisnai, que procede de What’s your name? y se usa en Cádiz`
 
@@ -667,7 +667,7 @@ The other number matters more than the finding: **332 correctly opened
 interrogatives in the AEPD FAQ, and zero false positives.** The rule the whole
 package's shape was designed around has now met real published Spanish.
 
-### The 162 `es.straight-double-quote`, which split cleanly in two
+### The 162 `straight-double-quote`, which split cleanly in two
 
 They land in 21 of the 116 AEPD documents, and the split is the same one German
 produced independently:
@@ -705,12 +705,12 @@ zeros are gone:
 
 | Rule | Findings | Exposure | Verdict |
 |---|---|---|---|
-| `de.apostrophe` | 2 | 24 straight `'`, 100 `’` | true positives |
-| `de.space-before-punctuation` | 1 | 690 `;`, 460 `:` | **1 false** |
-| `de.straight-double-quote` | 1 | 1 straight `"` | true positive |
-| `de-CH.guillemet-open-space` | 1 | 198 `«` | true positive |
-| `de-CH.guillemet-close-space` | 2 | 199 `»` | true positives |
-| `de-CH.inward-guillemets` | 1 | 199 `»` | **1 false** |
+| `apostrophe` | 2 | 24 straight `'`, 100 `’` | true positives |
+| `punctuation-spacing` | 1 | 690 `;`, 460 `:` | **1 false** |
+| `straight-double-quote` | 1 | 1 straight `"` | true positive |
+| `guillemet-open-space` | 1 | 198 `«` | true positive |
+| `guillemet-close-space` | 2 | 199 `»` | true positives |
+| `guillemet-direction` | 1 | 199 `»` | **1 false** |
 
 Eight findings over 698,683 characters of federal Swiss German, six of them real.
 Nothing about the pack changed to produce them; `de-CH@0.2.0` read 4.5 times as
@@ -723,7 +723,7 @@ titles in one sentence, `«Rückführbarkeit von Messergebnissen auf bekannte
 Referenzwerte im Gesundheitswesen»` closed up and correct, and then `« Durchsetzung
 zuverlässiger und richtiger Messwerte im Gesundheitswesen »` with a plain space
 inside each guillemet. Same paragraph, same author, both conventions. That is
-`de-CH.guillemet-open-space` and one of the two `de-CH.guillemet-close-space`, and
+`guillemet-open-space` and one of the two `guillemet-close-space`, and
 it is the failure the pack exists for: French spacing inside Swiss German
 quotation marks, in text nobody would call badly set.
 
@@ -746,7 +746,7 @@ same press release, in a document that gets its guillemets right. Duden sets
 
 That last one is where the pack's narrowing earns its keep. The corpus contains
 24 straight apostrophes and 22 of them are the Swiss thousands separator:
-`98'200`, `100'000`, `2'324`. `de.apostrophe` requires a letter on **both** sides,
+`98'200`, `100'000`, `2'324`. `apostrophe` requires a letter on **both** sides,
 so it reports the two names and none of the numbers. A rule matching a straight
 apostrophe anywhere would have produced 22 false positives on federal Swiss text
 and would have *repaired* them, turning `100'000` into `100’000`. The narrowing
@@ -758,15 +758,15 @@ was written for `Ku'damm` and it holds a case nobody had thought of.
 an otherwise entirely German press release. French takes a space before its
 colon; German does not, and the rule cannot see that the sentence changed
 language. This is the third language to produce this same finding, after
-`es.unpaired-question` on an English phrase and 355
-`fr.missing-space-before-high-punctuation` on foreign titles, and it is why the
-rule ships as `find` with no `fix`. The comment above `de.space-before-punctuation`
+`unpaired-question` on an English phrase and 355
+`missing-punctuation-space` on foreign titles, and it is why the
+rule ships as `find` with no `fix`. The comment above `punctuation-spacing`
 predicted it in as many words - "in German corpora this fires almost exclusively
 on text a French-speaking translator touched" - which is now evidence rather than
 a guess.
 
 **`der Parteien.»1 Trotz allem`**, where a correct closing guillemet is followed
-by a footnote marker. `de-CH.inward-guillemets` matches `»` followed by a letter
+by a footnote marker. `guillemet-direction` matches `»` followed by a letter
 or digit, on the reasoning that a `»` opening something is the German setting; a
 superscript `1` is a digit by the time the reader sees it. Check-only, so it
 costs a human one glance rather than a corrupted document, and narrowing it to
@@ -795,12 +795,12 @@ runs with the Instituut voor de Nederlandse Taal and Onze Taal. Twelve findings.
 
 | Rule | Findings | Values |
 |---|---|---|
-| `nl.apostrophe-elision` | 10 | 5 |
-| `nl.mixed-quotation-marks` | 2 | 2 |
+| `apostrophe-elision` | 10 | 5 |
+| `mixed-quotation-marks` | 2 | 2 |
 | every other `nl` rule | 0 | 0 |
 
 **All twelve are real, and the ten are one mechanism.** Every
-`nl.apostrophe-elision` finding is U+2018 where U+2019 belongs, and every one of
+`apostrophe-elision` finding is U+2018 where U+2019 belongs, and every one of
 them is word-initial: `‘k eens lekker`, `‘s-Hertogenbosch`, `‘r`, `‘ns`. Three of
 the five documents carry the correct U+2019 form of the same word within a line
 or two of the wrong one, and one prints `‘ns / ’s` in a single list.
@@ -808,7 +808,7 @@ or two of the wrong one, and one prints `‘ns / ’s` in a single list.
 That pattern is a smart-quote pass, not a typist. An algorithm deciding whether
 `'` opens a quotation or stands in for a letter looks at what precedes it, and at
 the start of a word there is nothing there, so it turns the mark the wrong way.
-It is also exactly why `nl.apostrophe` reports **zero** across the same 880,407
+It is also exactly why `apostrophe` reports **zero** across the same 880,407
 characters: mid-word the algorithm has a letter to look at and gets it right. The
 pack's two apostrophe rules split along the seam of the defect rather than along
 a grammatical category, and that was not designed in. The corpus found it.
@@ -817,7 +817,7 @@ Worth stating plainly, because it is the strongest evidence this gate has
 produced for any pack: the Taalunie's own advice service mis-sets the Dutch
 word-initial apostrophe, in prose whose subject is correct Dutch.
 
-**The two `nl.mixed-quotation-marks` are both genuine mixtures.** One document
+**The two `mixed-quotation-marks` are both genuine mixtures.** One document
 opens two quotations with `“` and one with `‘`; the other does the reverse, two
 `‘` against one `“`. In each the minority mark is reported and the majority is
 left alone, which is the behaviour the rule claims. Against 863 `‘` and 3 `“` in
@@ -827,16 +827,16 @@ places it is not.
 **The zeros are worth reading individually**, since a zero is only evidence where
 the corpus exposes the rule:
 
-- `nl.space-before-punctuation`: 0 against 1,805 colons, 1,776 semicolons and 605
+- `punctuation-spacing`: 0 against 1,805 colons, 1,776 semicolons and 605
   question marks. That is a real zero and a strong one. An earlier hand-rolled
   extraction of the same posts reported 121 findings here, every one of them
   manufactured by replacing inline tags with spaces so that `<b>ANS</b>:` became
   `ANS :`. The number in the table is from `fetch-corpus.ts`, which does not do
   that. The lesson is the one this file keeps relearning: a finding count is a
   property of the extraction as much as of the rules.
-- `nl.straight-double-quote`: 0 against 0 straight double quotes. Vacuous, and
+- `straight-double-quote`: 0 against 0 straight double quotes. Vacuous, and
   the exposure block says so.
-- `nl.ij-capital` and `nl.apostrophe-after-symbol`: 0 against **no exposure at
+- `ij-capital` and `apostrophe-after-symbol`: 0 against **no exposure at
   all**. Neither an IJ digraph nor a digit-plus-apostrophe occurs in this corpus.
   These two rules are currently unevidenced; see the gaps below.
 
@@ -882,13 +882,13 @@ publisher disagreeing with itself.
 ## Gaps the corpora found and the packs do not close
 
 **`de-CH` has no rule for `„Wort“`.** `admin-ch-medien-de-ch` contains one `„`,
-the German low quote, in Swiss federal text. `de-CH.inward-guillemets` catches
+the German low quote, in Swiss federal text. `guillemet-direction` catches
 the other direction, a German `»Wort«` appearing in Swiss text, but there is no
 `de-CH` rule for the low quote. The asymmetry is not deliberate and the corpus is
 what surfaced it. Adding the rule is a judgement about `de-CH`'s scope rather
 than a bug fix, so it is recorded here rather than made quietly.
 
-**`de-CH.inward-guillemets` reads a footnote marker as an opening guillemet.**
+**`guillemet-direction` reads a footnote marker as an opening guillemet.**
 `»(?=[\p{L}\p{N}])` treats a `»` followed by a digit as German-facing, and a
 superscript footnote after a closing quotation is exactly that once the markup is
 gone. One finding in 698,683 characters, check-only, so the cost is a glance;
@@ -896,8 +896,8 @@ narrowing it to letters would stop it catching `»2. Weltkrieg«`, which is a re
 German setting. Recorded rather than fixed because the trade is a judgement and
 neither side of it is obviously right.
 
-**Two `nl` rules have no corpus at all.** `nl.ij-capital` and
-`nl.apostrophe-after-symbol` report zero against zero exposure: `taaladvies-nl`
+**Two `nl` rules have no corpus at all.** `ij-capital` and
+`apostrophe-after-symbol` report zero against zero exposure: `taaladvies-nl`
 contains no IJ digraph and no digit-plus-apostrophe. Both rules are cited to the
 Technische Handleiding and unit-tested, and neither has been in front of a line
 of published Dutch. This is the sharper version of the single-corpus weakness
@@ -917,12 +917,16 @@ corpus is here for, and comparing those declarations across the corpora of one
 language says something else: which rules would have no evidence at all if one
 publisher were dropped.
 
-| Rule | Only exposed by | Exposure |
-|---|---|---|
-| every `de-CH` quotation rule, `de.apostrophe`, `de.straight-double-quote` | `admin-ch-medien-de-ch` | the Constitution has no quotation mark and no apostrophe at all |
-| `es.straight-double-quote` | `aepd-faq-es` | 162 straight quotes, and the other two Spanish corpora have none |
-| `es.unpaired-exclamation` | `fundeu-rae-es` | one `¡` and one `!` in 1.1M characters |
-| `fr.straight-double-quote` | `openedition-journals-fr` | six straight quotes, all in English abstracts |
+The corpus is the subject here rather than the rule, because a rule id names a
+position and not a language: `straight-double-quote` appears three times below,
+once for each style whose only evidence for it comes from one publisher.
+
+| Only exposed by | Rules resting on it alone |
+|---|---|
+| `admin-ch-medien-de-ch` | every `de-CH` quotation rule, plus `apostrophe` and `straight-double-quote`: the Constitution has no quotation mark and no apostrophe at all |
+| `aepd-faq-es` | `straight-double-quote` for `es`: 162 straight quotes, and the other two Spanish corpora have none |
+| `fundeu-rae-es` | `unpaired-exclamation`: one `¡` and one `!` in 1.1M characters |
+| `openedition-journals-fr` | `straight-double-quote` for `fr`: six straight quotes, all in English abstracts |
 
 `de-DE` is not on that list only because it has one corpus by design, which the
 Kompendium can carry alone. The others are worth reading as the same kind of

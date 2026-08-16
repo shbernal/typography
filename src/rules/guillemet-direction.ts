@@ -35,7 +35,6 @@ export type Guillemet = keyof typeof DIRECTION;
 const CLOSES: Record<Guillemet, Guillemet> = { '«': '»', '»': '«' };
 
 export function guillemetDirection(spec: {
-  id: string;
   /** The guillemet **this style opens a quotation with**. The rule is about the
    * other one, which is what makes one parameter produce both members. */
   opens: Guillemet;
@@ -47,7 +46,7 @@ export function guillemetDirection(spec: {
   const foreign = CLOSES[spec.opens];
   const direction = DIRECTION[foreign];
   return detectRule({
-    id: spec.id,
+    id: 'guillemet-direction',
     summary:
       `Guillemets point ${direction} (\`${foreign}Wort${CLOSES[foreign]}\`), ` +
       `which is the ${spec.convention} setting`,

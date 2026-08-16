@@ -1,7 +1,7 @@
 {
   "gate": "findings",
   "corpus": "theconversation-fr",
-  "note": "The Conversation France. Academic authors edited by a newsroom, which is a different register from the journals: direct questions and exclamations, the interrogative punctuation formal academic prose barely contains. This is where fr.space-before-high-punctuation meets real question marks. English-language articles in the French feed were dropped by checking the extracted text, since English prose manufactures French findings the publisher never wrote. The drop removes the inline 'À lire aussi :' callouts, 19 of them across 10 of the 43 documents and 1782 characters. They are the CMS speaking rather than an author or a sub-editor, and the phrase sets U+0020 before its colon, so 19 of the 25 fr.space-before-colon findings this corpus used to report were the template making the same mistake nineteen times. They also cost two real findings: the headline each callout reproduces carries a correct no-break space in seven of the eight sampled, and the eighth does not. That is the trade, and it is worth taking because the callouts are also where this corpus stopped being reproducible: it rebuilt 76 characters shorter from a data centre than from a maintainer's connection, every per-document delta a multiple of four, and the number of callouts in each document was its delta divided by four. The four characters are the label: the publisher serves 'A lire aussi :' at 14 characters and 'Read more:' at 10 by where the request comes from rather than by which edition is being read, so the same French article carries an English label to a data centre and to the archive. The drop matches either, as one alternation inside the same anchor, because two labels are a fact about this CMS and a pattern loose enough to catch a third uninstructed would be loose enough to catch prose. The pattern is anchored to the structure as well as the phrase so that a restyle stops it matching: the blocks come back, the fingerprint moves, and the gate says so.",
+  "note": "The Conversation France. Academic authors edited by a newsroom, which is a different register from the journals: direct questions and exclamations, the interrogative punctuation formal academic prose barely contains. This is where punctuation-spacing meets real question marks. English-language articles in the French feed were dropped by checking the extracted text, since English prose manufactures French findings the publisher never wrote. The drop removes the inline 'À lire aussi :' callouts, 19 of them across 10 of the 43 documents and 1782 characters. They are the CMS speaking rather than an author or a sub-editor, and the phrase sets U+0020 before its colon, so 19 of the 25 colon-spacing findings this corpus used to report were the template making the same mistake nineteen times. They also cost two real findings: the headline each callout reproduces carries a correct no-break space in seven of the eight sampled, and the eighth does not. That is the trade, and it is worth taking because the callouts are also where this corpus stopped being reproducible: it rebuilt 76 characters shorter from a data centre than from a maintainer's connection, every per-document delta a multiple of four, and the number of callouts in each document was its delta divided by four. The four characters are the label: the publisher serves 'A lire aussi :' at 14 characters and 'Read more:' at 10 by where the request comes from rather than by which edition is being read, so the same French article carries an English label to a data centre and to the archive. The drop matches either, as one alternation inside the same anchor, because two labels are a fact about this CMS and a pattern loose enough to catch a third uninstructed would be loose enough to catch prose. The pattern is anchored to the structure as well as the phrase so that a restyle stops it matching: the blocks come back, the fingerprint moves, and the gate says so.",
   "pack": "fr@0.2.0",
   "standard": "Imprimerie nationale",
   "units": 43,
@@ -28,7 +28,7 @@
     "U+202F NNBSP": 0
   },
   "rules": {
-    "fr.apostrophe": {
+    "apostrophe": {
       "fixable": true,
       "severity": "error",
       "findings": 109,
@@ -44,7 +44,7 @@
         "attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"e pratique <LAQUO> normale <RAQUO>.\\nC'est vendredi soir. Vous v\""
       ]
     },
-    "fr.space-before-colon": {
+    "colon-spacing": {
       "fixable": true,
       "severity": "error",
       "findings": 6,
@@ -58,7 +58,7 @@
         "attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"façonner le décor de fond : ce message discret mais\""
       ]
     },
-    "fr.space-before-high-punctuation": {
+    "punctuation-spacing": {
       "fixable": true,
       "severity": "error",
       "findings": 9,
@@ -74,7 +74,7 @@
         "attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"problèmes liés à l'alcool ;\\nfixer des règles claire\""
       ]
     },
-    "fr.guillemet-open": {
+    "guillemet-open-space": {
       "fixable": true,
       "severity": "error",
       "findings": 2,
@@ -84,7 +84,7 @@
         "attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \" qu'est une consommation <LAQUO> normale <RAQUO>.\\nCela ne signif\""
       ]
     },
-    "fr.guillemet-close": {
+    "guillemet-close-space": {
       "fixable": true,
       "severity": "error",
       "findings": 2,
@@ -94,21 +94,21 @@
         "attention-quand-on-boit-de-lalcool-devant-ses-enfants-287209.txt  \"ne consommation <LAQUO> normale <RAQUO>.\\nCela ne signifie pas qu\""
       ]
     },
-    "fr.mixed-no-break-space": {
+    "mixed-no-break-space": {
       "fixable": false,
       "severity": "warning",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "fr.missing-space-before-high-punctuation": {
+    "missing-punctuation-space": {
       "fixable": false,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "fr.straight-double-quote": {
+    "straight-double-quote": {
       "fixable": false,
       "severity": "warning",
       "findings": 0,

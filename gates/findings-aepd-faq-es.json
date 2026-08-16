@@ -1,7 +1,7 @@
 {
   "gate": "findings",
   "corpus": "aepd-faq-es",
-  "note": "The Spanish data protection agency's public FAQ. Every entry is a question, which is the only material here that puts es.unpaired-question in front of correctly opened interrogatives at any volume.",
+  "note": "The Spanish data protection agency's public FAQ. Every entry is a question, which is the only material here that puts unpaired-question in front of correctly opened interrogatives at any volume.",
   "pack": "es@0.2.0",
   "standard": "Real Academia Española",
   "units": 116,
@@ -28,49 +28,49 @@
     "U+202F NNBSP": 0
   },
   "rules": {
-    "es.guillemet-open-space": {
+    "guillemet-open-space": {
       "fixable": true,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "es.guillemet-close-space": {
+    "guillemet-close-space": {
       "fixable": true,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "es.opening-mark-space": {
+    "opening-mark-space": {
       "fixable": true,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "es.unpaired-question": {
+    "unpaired-question": {
       "fixable": false,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "es.unpaired-exclamation": {
+    "unpaired-exclamation": {
       "fixable": false,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "es.space-before-punctuation": {
+    "punctuation-spacing": {
       "fixable": false,
       "severity": "error",
       "findings": 0,
       "units": 0,
       "samples": []
     },
-    "es.straight-double-quote": {
+    "straight-double-quote": {
       "fixable": false,
       "severity": "warning",
       "findings": 162,

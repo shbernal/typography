@@ -46,7 +46,7 @@ test("there is no bare 'de'", () => {
 test('check reports and exits non-zero on an error finding', () => {
   const r = run(['check', '--lang', 'es', withFile('Como estas?')]);
   assert.equal(r.status, 1);
-  assert.match(r.stdout, /es\.unpaired-question/);
+  assert.match(r.stdout, /unpaired-question/);
   assert.match(r.stdout, /typocheck \d+\.\d+\.\d+ \(es@\d+\.\d+\.\d+\)/);
 });
 
@@ -106,7 +106,7 @@ test('fix --write - puts the repaired text on stdout and the report on stderr', 
   const r = run(['fix', '--lang', 'fr', '--write', '-'], 'Il a dit : oui');
   // The whole of stdout is the document, byte for byte, with nothing appended.
   assert.equal(r.stdout, `Il a dit${NO_BREAK}: oui`);
-  assert.match(r.stderr, /fr\.space-before-colon/);
+  assert.match(r.stderr, /colon-spacing/);
   assert.match(r.stderr, /^fix: rewrote <stdin>/m);
 });
 
@@ -130,7 +130,7 @@ test('--json carries the stamp and the findings', () => {
   // pack version bump into a failure in a file that is not about pack versions,
   // and `test/es.test.ts` is where the stamp's value is asserted.
   assert.equal(parsed.pack, es.id);
-  assert.ok(parsed.files[0]!.findings.some((f) => f.rule === 'es.unpaired-question' && !f.fixable));
+  assert.ok(parsed.files[0]!.findings.some((f) => f.rule === 'unpaired-question' && !f.fixable));
 });
 
 test('--strict is what makes a warning fail', () => {

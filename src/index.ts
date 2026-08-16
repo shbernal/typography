@@ -13,8 +13,8 @@
 // shape gets generalised, and not before.
 //
 // A second language now does, and the shape was still not generalised. Dutch
-// admits three systems of quotation mark and `nl.mixed-quotation-marks` reports
-// a document that mixes them, which is the `fr.mixed-no-break-space` half of the
+// admits three systems of quotation mark and `mixed-quotation-marks` reports
+// a document that mixes them, which is the `mixed-no-break-space` half of the
 // pattern arriving in a second language exactly as expected. The `withWidth`
 // half did not survive the crossing: imposing one no-break space is a
 // substitution, and imposing one quotation system is not, because U+2019 is both

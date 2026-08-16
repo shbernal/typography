@@ -19,7 +19,6 @@
 import { LEFT_SINGLE_QUOTE, RIGHT_SINGLE_QUOTE, type Rule, replaceRule } from '../pack.ts';
 
 export function apostrophe(spec: {
-  id: string;
   /** The language, in English, completing `...; ${language} uses U+2019`. */
   language: string;
   /** The marks that are wrong in this position, as a character class body.
@@ -28,7 +27,7 @@ export function apostrophe(spec: {
   cite: string;
 }): Rule {
   return replaceRule({
-    id: spec.id,
+    id: 'apostrophe',
     summary: summarize(spec.wrong, spec.language),
     cite: spec.cite,
     pattern: new RegExp(`(?<=\\p{L})${spec.wrong}(?=\\p{L})`, 'gu'),

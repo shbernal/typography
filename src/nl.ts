@@ -141,7 +141,6 @@ const rules: readonly Rule[] = [
   // smart-quote pass turned the wrong way, since the standard uses U+2018 to
   // open a quotation 144 times and as an apostrophe never.
   apostrophe({
-    id: 'nl.apostrophe',
     language: 'Dutch',
     wrong: WRONG_APOSTROPHE,
     cite: `${HANDLEIDING}, hoofdstuk 11 "Het weglatingsteken"`,
@@ -152,7 +151,6 @@ const rules: readonly Rule[] = [
   // `'n keer`, `'s-Gravenhage`. The closed clitic set and what it holds off are
   // in the builder.
   apostropheElision({
-    id: 'nl.apostrophe-elision',
     wrong: WRONG_APOSTROPHE,
     cite: `${HANDLEIDING}, hoofdstuk 11 "Het weglatingsteken"`,
   }),
@@ -164,7 +162,6 @@ const rules: readonly Rule[] = [
   // The standard sets 18 of these and 7 more after `@ & +`, which is what makes
   // it worth a rule in a pack this small.
   apostropheAfterSymbol({
-    id: 'nl.apostrophe-after-symbol',
     wrong: WRONG_APOSTROPHE,
     cite: `${HANDLEIDING}, paragraaf 11.5`,
   }),
@@ -179,7 +176,7 @@ const rules: readonly Rule[] = [
   // mark in opening position is both a vote and a candidate for the report,
   // because a mark is either one of the three systems or not a quotation mark.
   minorityReport({
-    id: 'nl.mixed-quotation-marks',
+    id: 'mixed-quotation-marks',
     summary: 'More than one system of quotation marks used in the same text',
     cite: `${TAALADVIES}, "Dubbele of enkele aanhalingstekens bij een citaat"`,
     ballot: system,
@@ -188,7 +185,6 @@ const rules: readonly Rule[] = [
   }),
 
   ijCapital({
-    id: 'nl.ij-capital',
     cite: `${HANDLEIDING}, paragraaf 2.4`,
   }),
 
@@ -198,7 +194,6 @@ const rules: readonly Rule[] = [
   // the Belgian half of the Taalunie's own authority rather than a Belgian
   // convention, which is why this is one pack and not `nl-BE` plus `nl-NL`.
   spaceBeforePunctuation({
-    id: 'nl.space-before-punctuation',
     language: 'Dutch',
     cite: `${TAALADVIES}, "Wel of geen spaties voor en na leestekens en symbolen"`,
   }),
@@ -207,7 +202,6 @@ const rules: readonly Rule[] = [
   // nothing in any citation that would settle which, so the parse the builder
   // declines to attempt is one branch wider here than anywhere else.
   straightDoubleQuote({
-    id: 'nl.straight-double-quote',
     instead: 'Dutch quotation marks are a matched curly pair',
     cite: `${TAALADVIES}, "Dubbele of enkele aanhalingstekens bij een citaat"`,
   }),

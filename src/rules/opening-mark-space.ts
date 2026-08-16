@@ -10,9 +10,9 @@
 import { type Rule, replaceRule } from '../pack.ts';
 import { ANY_SPACE } from './space.ts';
 
-export function openingMarkSpace(spec: { id: string; cite: string }): Rule {
+export function openingMarkSpace(spec: { cite: string }): Rule {
   return replaceRule({
-    id: spec.id,
+    id: 'opening-mark-space',
     summary: 'Space after `¿` or `¡`; the mark is set against the word it opens',
     cite: spec.cite,
     pattern: new RegExp(`(?<=[¿¡])${ANY_SPACE}+`, 'gu'),
