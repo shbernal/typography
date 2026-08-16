@@ -9,7 +9,8 @@
 // a reader needs: tell a Swiss quotation from a German mistake.
 
 import { DUDEN, germanCommonRules } from './de-common.ts';
-import { composeNormalize, detectRule, type Rule, type TypographyPack } from './pack.ts';
+import { composeNormalize, type Rule, type TypographyPack } from './pack.ts';
+import { guillemetDirection } from './rules/guillemet-direction.ts';
 import { innerSpace } from './rules/inner-space.ts';
 import { ANY_SPACE } from './rules/space.ts';
 
@@ -73,19 +74,15 @@ const rules: readonly Rule[] = [
     guard: true,
   }),
 
-  detectRule({
+  // Germany opens with `»`, so the rule is about `«` in opening position, which
+  // is `de-CH`'s setting appearing in a German document. The builder carries the
+  // argument for why swapping the two characters is not a safe repair even
+  // though it is an obvious one.
+  guillemetDirection({
     id: 'de-DE.outward-guillemets',
-    summary: 'Guillemets point outward (`«Wort»`), which is the Swiss and French setting',
+    opens: '»',
+    convention: 'Swiss and French',
     cite: `${DUDEN}, "Anführungszeichen"`,
-    // `«` immediately followed by a word character is `«` being used to *open* a
-    // quotation, which is correct in `de-CH` and wrong here.
-    //
-    // Check-only, and the reason is worth reading because it is not the usual
-    // one: the repair is mechanically obvious - swap both characters - and it is
-    // still not safe, because the text might be right and the *pack* wrong. A
-    // Swiss quotation inside a German document is a citation, not an error, and
-    // no rule can tell which without knowing where the sentence came from.
-    pattern: /«(?=[\p{L}\p{N}])/gu,
   }),
 ];
 

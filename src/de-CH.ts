@@ -11,7 +11,8 @@
 // common rules plus its own quotation marks.
 
 import { DUDEN, germanCommonRules } from './de-common.ts';
-import { composeNormalize, detectRule, type Rule, type TypographyPack } from './pack.ts';
+import { composeNormalize, type Rule, type TypographyPack } from './pack.ts';
+import { guillemetDirection } from './rules/guillemet-direction.ts';
 import { innerSpace } from './rules/inner-space.ts';
 import { ANY_SPACE } from './rules/space.ts';
 
@@ -60,14 +61,14 @@ const rules: readonly Rule[] = [
     guard: true,
   }),
 
-  detectRule({
+  // `de-DE.outward-guillemets` with the marks exchanged, which is now one
+  // argument to the same builder rather than a second pattern that has to keep
+  // agreeing with the first.
+  guillemetDirection({
     id: 'de-CH.inward-guillemets',
-    summary: 'Guillemets point inward (`»Wort«`), which is the German and Austrian setting',
+    opens: '«',
+    convention: 'German and Austrian',
     cite: `${DUDEN}, "Anführungszeichen"`,
-    // The exact inverse of `de-DE.outward-guillemets`, and check-only for the
-    // same reason: the text may be a correct German quotation inside a Swiss
-    // document rather than a mistake.
-    pattern: /»(?=[\p{L}\p{N}])/gu,
   }),
 ];
 

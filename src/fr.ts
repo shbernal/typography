@@ -52,6 +52,7 @@ import {
 import { apostrophe } from './rules/apostrophe.ts';
 import { ballot } from './rules/ballot.ts';
 import { innerSpace } from './rules/inner-space.ts';
+import { minorityReport } from './rules/minority-report.ts';
 import { ANY_SPACE_OR_THIN } from './rules/space.ts';
 import { straightDoubleQuote } from './rules/straight-double-quote.ts';
 
@@ -162,11 +163,6 @@ function houseWidth(value: string): string {
   return width.verdict(width.tally(value));
 }
 
-/** The width this text uses but did not settle on, or null if it uses only one. */
-function minorityWidth(value: string): string | null {
-  return width.minority(width.tally(value))[0] ?? null;
-}
-
 const rules: readonly Rule[] = [
   // The shared builder carries the pattern and the narrowing that makes it safe.
   // What is French about it is the measurement: the corpus this pack was
@@ -255,34 +251,26 @@ const rules: readonly Rule[] = [
   // Check only. Detectable, and not safely repairable by substitution.
   // -------------------------------------------------------------------------
 
-  detectRule<string | null>({
+  // The rule this pack has instead of a ruling on the width. Neither spelling is
+  // a defect and using both in one document is, which is a claim the citation
+  // supports precisely because it does not fix a width: the Lexique sets its own
+  // pages in the fine space and specifies the word space at p.149, so a document
+  // is entitled to either and not to both.
+  //
+  // The pattern is `BALLOT` restricted to the two widths. The ballot counts
+  // whatever character occupies those three positions, because a breaking space
+  // there is evidence of a defect rather than evidence for a width; this rule
+  // reports only the positions actually spelled in the losing width.
+  minorityReport({
     id: 'fr.mixed-no-break-space',
     summary: 'Both U+00A0 and U+202F used inside guillemets or before `; ! ?`',
     cite: `${LEXIQUE}, "Guillemets" and "Ponctuation"`,
-    severity: 'warning',
-    // The rule this pack has instead of a ruling on the width. Neither spelling
-    // is a defect and using both in one document is, which is a claim the
-    // citation supports precisely because it does not fix a width: the Lexique
-    // sets its own pages in the fine space and specifies the word space at
-    // p.149, so a document is entitled to either and not to both.
-    //
-    // Not fixable, and for the same reason `es.unpaired-question` is not: the
-    // substitution is obvious and the *decision* is not this package's. On a
-    // document near an even split, harmonising would silently retype half of it,
-    // which is the failure this whole rule exists to have stopped doing.
-    //
-    // The survey runs once per value. Counting inside `refine` would be
-    // quadratic, and the values here are whole documents.
+    ballot: width,
     pattern: new RegExp(
       `(?<=\u00AB)(${NO_BREAK_SPACE})|(${NO_BREAK_SPACE})(?=\u00BB)|(${NO_BREAK_SPACE})(?=[;!?])`,
       'g',
     ),
-    survey: minorityWidth,
-    refine: (match, _value, minority) => {
-      if (minority === null) return null;
-      const space = match[1] ?? match[2] ?? match[3];
-      return space === minority ? { index: match.index, length: 1 } : null;
-    },
+    spelling: (match) => match[1] ?? match[2] ?? match[3],
   }),
 
   detectRule({

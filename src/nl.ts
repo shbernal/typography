@@ -54,6 +54,7 @@ import {
 import { looksMachine } from './prose.ts';
 import { apostrophe } from './rules/apostrophe.ts';
 import { ballot } from './rules/ballot.ts';
+import { minorityReport } from './rules/minority-report.ts';
 import { spaceBeforePunctuation } from './rules/space-before-punctuation.ts';
 import { straightDoubleQuote } from './rules/straight-double-quote.ts';
 
@@ -150,19 +151,6 @@ const system = ballot({
   vote: (m) => (isOpener(m[1]) ? m[1] : null),
 });
 
-/**
- * The opening marks of every family this text uses but did not settle on, as a
- * character class body, or null when it uses at most one family.
- *
- * Null is the ordinary answer and means there is nothing to report, which is the
- * same shape `fr.mixed-no-break-space` uses and for the same reason: the survey
- * runs once per value, and a value here is a whole document.
- */
-function minorityOpeners(value: string): string | null {
-  const minority = system.minority(system.tally(value));
-  return minority.length === 0 ? null : minority.join('');
-}
-
 const rules: readonly Rule[] = [
   // Dutch reaches for the apostrophe far more often than French or German,
   // because the plural of a vowel-final noun takes one: `auto's`, `baby's`,
@@ -223,30 +211,22 @@ const rules: readonly Rule[] = [
       looksMachine(value, match.index) ? null : { index: match.index, length: 1 },
   }),
 
-  detectRule<string | null>({
+  // The rule this pack has instead of a ruling on quotation marks, and the
+  // second instance in this package of a standard declining to choose. Where
+  // `fr.mixed-no-break-space` infers its claim from a standard that specifies one
+  // width and typesets another, this one is told: Taaladvies says there are no
+  // fixed rules and then recommends picking one system and keeping to it.
+  //
+  // Unlike French, this pack ballots and reports over the same pattern. Every
+  // mark in opening position is both a vote and a candidate for the report,
+  // because a mark is either one of the three systems or not a quotation mark.
+  minorityReport({
     id: 'nl.mixed-quotation-marks',
     summary: 'More than one system of quotation marks used in the same text',
     cite: `${TAALADVIES}, "Dubbele of enkele aanhalingstekens bij een citaat"`,
-    severity: 'warning',
-    // The rule this pack has instead of a ruling on quotation marks, and the
-    // second instance in this package of a standard declining to choose. Where
-    // `fr.mixed-no-break-space` infers its claim from a standard that specifies
-    // one width and typesets another, this one is told: Taaladvies says there
-    // are no fixed rules and then recommends picking one system and keeping to
-    // it. So the defect is not a mark, it is a document.
-    //
-    // Not fixable, and here the reason is stronger than it is for French.
-    // Choosing between two no-break spaces is a substitution once the choice is
-    // made. Choosing between `‘…’` and `“…”` is not, because U+2019 closes the
-    // first and is also the apostrophe: see the header for the count. Which
-    // system to settle on is the author's call and carrying it out is not a
-    // regular expression's job even after they have made it.
+    ballot: system,
     pattern: new RegExp(OPENING, 'gu'),
-    survey: minorityOpeners,
-    refine: (match, _value, minority) => {
-      if (minority === null) return null;
-      return minority.includes(match[1]!) ? { index: match.index, length: 1 } : null;
-    },
+    spelling: (match) => match[1],
   }),
 
   detectRule({
