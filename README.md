@@ -1,8 +1,6 @@
 # @shbernal/typography
 
 [![CI](https://github.com/shbernal/typography/actions/workflows/ci.yml/badge.svg)](https://github.com/shbernal/typography/actions/workflows/ci.yml)
-[![Corpus links](https://github.com/shbernal/typography/actions/workflows/corpus-links.yml/badge.svg)](https://github.com/shbernal/typography/actions/workflows/corpus-links.yml)
-[![Corpus pins](https://github.com/shbernal/typography/actions/workflows/corpus-pins.yml/badge.svg)](https://github.com/shbernal/typography/actions/workflows/corpus-pins.yml)
 [![npm](https://img.shields.io/npm/v/@shbernal/typography)](https://www.npmjs.com/package/@shbernal/typography)
 [![No dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
 
@@ -42,8 +40,8 @@ typesets its own guillemets with U+202F and specifies U+00A0 in its own table,
 so the French pack rules on the spacing that is wrong under both readings and
 keeps whichever width a document already uses. The first version did not, and it
 "corrected" 6,462 guillemets in 2.4M characters of professionally typeset
-French. [How that was found and fixed](docs/evidence.md) is the most useful thing
-in this repo. Dutch is the same principle arrived at from the other side: its
+French. [How that was found and fixed](docs/provenance.md) is the most useful
+thing in this repo. Dutch is the same principle arrived at from the other side: its
 standard declines to choose between two systems of quotation mark, so the pack
 declines too, and reports only the documents that use both.
 
@@ -59,7 +57,7 @@ nothing else, and `{ id, normalize }` is the whole contract, so a host binds a
 pack without either package importing the other. The `id` is an era stamp:
 `fr@0.2.0`, moving only when a rule changes, so a corpus records which typography
 it was set in. If you normalize field by field and the fields must agree with
-each other, [corpus-consistency.md](docs/corpus-consistency.md) is the part you
+each other, the French width section of [api.md](docs/api.md) is the part you
 need.
 
 **Giving a coding agent typography it cannot guess at.** A Claude Code skill
@@ -100,14 +98,12 @@ past real published text: 2.4M characters of French, 2.4M of German, 1.1M of
 Spanish, 880k of Dutch, 699k of Swiss German. French additionally reproduces the
 implementation it was extracted from byte for byte over 11,058 real values.
 
-Dutch is the newest and the thinnest: one corpus, which is also one of its two
-citations, and two of its rules have no exposure in it at all. That is recorded
-in [gates/README.md](gates/README.md) rather than smoothed over.
-
-[docs/evidence.md](docs/evidence.md) has the table, what each number is worth,
-and what is thin. Zero findings can mean the text was set correctly or that it
-contained nothing the rule could match, so every gate report also counts how many
-times each character actually occurred.
+Dutch is the newest and the thinnest: it was measured against one corpus, which
+is also one of its two citations, and two of its rules met nothing they could
+match. That is recorded in [docs/provenance.md](docs/provenance.md) rather than
+smoothed over, along with what each number is worth and the narrowings the
+measurements bought. Zero findings can mean the text was set correctly or that it
+contained nothing the rule could match, and only the first is evidence.
 
 ## Documentation
 
@@ -115,8 +111,7 @@ times each character actually occurred.
 |---|---|
 | [docs/api.md](docs/api.md) | Library and CLI |
 | [docs/design.md](docs/design.md) | Why the package is shaped this way |
-| [docs/corpus-consistency.md](docs/corpus-consistency.md) | Normalizing many values that must agree |
-| [docs/evidence.md](docs/evidence.md) | What the numbers are worth |
+| [docs/provenance.md](docs/provenance.md) | Where the defaults came from and what was measured |
 | [docs/development.md](docs/development.md) | Changing a rule, adding a language, cutting a release |
 
 ## Contributing, and the report worth most
@@ -132,6 +127,4 @@ thing this repo cannot generate for itself.
 - [CONTRIBUTING.md](CONTRIBUTING.md), and the [security policy](SECURITY.md)
 - [Changelog](CHANGELOG.md) and [code of conduct](CODE_OF_CONDUCT.md)
 
-MIT, in [LICENSE](LICENSE). The license covers this repository; it does not cover
-the gate corpora, which are third-party published works and are not
-redistributed here.
+MIT, in [LICENSE](LICENSE).

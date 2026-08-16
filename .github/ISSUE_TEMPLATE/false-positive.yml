@@ -39,8 +39,8 @@ body:
       label: Where it was published
       description: >
         A URL or a citation. This decides how much the report weighs: text set by
-        somebody who sets type for a living is evidence, and may end up in a
-        corpus under gates/.
+        somebody who sets type for a living is evidence, and may end up as a
+        fixture.
     validations:
       required: true
   - type: input

@@ -9,16 +9,12 @@
 - [ ] A rule that reports something it cannot safely repair has `find` and no
       `fix`, rather than a guessed repair.
 
-## Gates
+## If this touches a rule, a style or the checker
 
-Only if this touches a rule, a pack or the checker:
-
-- [ ] `node scripts/gate-findings.ts` run, and `gates/README.md` updated with any
-      count that moved and why.
-- [ ] `node scripts/gate-fr-reproduction.ts` still reproduces, or the diff is
-      explained here.
-- [ ] The pack version moved if a rule changed, since a pack id is stamped onto
-      corpora as the era they were set in.
-
-<!-- If you cannot run the gates, say so. The corpora are not in this repo, and
-     an unrun gate stated plainly is fine. An unrun gate left unmentioned is not. -->
+- [ ] `audit` run over samples that reach the changed rules, with idempotence,
+      conformance and non-interference all clean.
+- [ ] Anything measured, or any narrowing a reader would otherwise undo, written
+      into the comment above the rule and into `docs/provenance.md` if a reader
+      of the style needs it too.
+- [ ] The stamp moved, which it does by itself when a rule moves. Say here what
+      it was and what it is now.

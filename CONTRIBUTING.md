@@ -58,37 +58,25 @@ coding agents but is the accurate list either way.
 3. `pnpm check`. `test/packs.test.ts` will hold you to idempotence, to a fixable
    rule changing the text exactly when it reports a finding, and to a rule
    matching its own output.
-4. Run the gates. **This is the part that is easy to skip and is the point.**
+4. Run `audit`. **This is the part that is easy to skip and is the point.**
 
-## The gates, and why a green test suite is not enough
+## `audit`, and why a green test suite is not enough
 
 Unit tests measure whether a rule fires on text written to make it fire. That is
-recall, and recall was never in doubt. The failure these rules actually have is
-firing on text that was set correctly, and the only way to measure it is to run
-over prose somebody published without any thought for this checker.
+recall, and recall was never in doubt. What a rule set does wrong is misbehave in
+company: a fix that does not settle, a fix that leaves behind something `check`
+still reports, or two rules that undo each other. `audit` is the export that
+holds a style to all three, and it is exported rather than kept in `test/`
+because the promise is about composed styles, and a style a user composed is held
+to it by nobody else.
 
-```bash
-node scripts/fetch-corpus.ts       # builds the corpora from frozen URL lists
-node scripts/gate-findings.ts      # the triage
-```
+Give it samples that actually reach the rules. An empty result over text that
+touches nothing is not evidence of anything.
 
-The corpora are third-party text and are not in this repo. The URL lists are, so
-you can rebuild them and compare fingerprints. `gates/README.md` records what
-each corpus is, what it exposes, and every finding class anyone has triaged.
-A rule change that moves a count is a change to that file too.
-
-**One gate you cannot run, and that is expected rather than a broken checkout.**
-The findings gate above runs anywhere: every corpus rebuilds from a committed URL
-list. The French *reproduction* gate does not, because it diffs the pack against
-a prior implementation that lives in a private working tree and is not published,
-so `gate-fr-reproduction.ts` will not start. Run what you can, say in the pull
-request what you could not run, and a maintainer runs the rest. An unrun gate
-stated plainly is fine; an unrun gate left unmentioned is not. `gates/README.md`
-explains why that one is different in kind from an unrebuildable corpus.
-
-If you add a language, it needs a corpus **before** the release, not after. A
-language whose rules have never met real published text has not been reviewed,
-whatever the unit tests say.
+Nine corpora of published text used to run beside the test suite and measure the
+false-positive rate instead. They are gone, with the question they answered;
+[docs/provenance.md](docs/provenance.md) records what they established, and every
+narrowing in the code that one of them paid for.
 
 ## Pack versions are era stamps
 

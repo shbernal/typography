@@ -1,11 +1,12 @@
 // French orthotypography, per the Imprimerie nationale.
 //
 // The five fixable rules below started as a verbatim extraction from a
-// production normalizer, and `gates/fr-reproduction` holds them to byte-for-byte
+// production normalizer, and a reproduction gate held them to byte-for-byte
 // agreement with it over every French value that normalizer ever touched. Two of
-// them have since been narrowed, and the gate still reports zero differences,
-// which is worth understanding before narrowing a third: a reproduction gate
-// constrains a rule only where its corpus exercises it.
+// them were narrowed afterwards and it went on reporting zero differences, which
+// is worth understanding before narrowing a third: a gate constrains a rule only
+// where its corpus exercises it. That gate is gone with the rest of the corpus
+// machinery; `docs/provenance.md` records what it established.
 //
 // **The narrowing, and why it is the most important thing in this file.** The
 // first version of the guillemet rules rewrote whatever space sat inside a

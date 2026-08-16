@@ -15,16 +15,13 @@ into `dist/`. The **published** package targets Node 22, and
 pnpm install
 pnpm check          # typecheck + lint + test. The done gate
 pnpm build
-pnpm corpus         # rebuild the gate corpora from gates/sources/*.urls
-pnpm gates:verify   # the release gates
 ```
 
-The corpora are third-party text and are gitignored. `pnpm corpus` reconstructs
-all nine corpora from the committed URL lists, so `pnpm gates:verify` needs a
-network and nothing else. The French *reproduction* gate is the exception: it reads both
-its corpora and the prior implementation it diffs against out of a private
-consumer tree at `../translation-agents`, so off that machine it cannot run at
-all.
+`pnpm check` is the whole gate and needs no network. The corpus gates that used
+to sit beside it are gone; what replaced them is `audit`, which holds a style to
+idempotence, conformance and non-interference over samples the caller supplies.
+[provenance.md](provenance.md) records what the corpora established before they
+left.
 
 ## The invariants
 
@@ -93,9 +90,9 @@ than a benchmark.
 2. A tag is as specific as the convention requires, and no more.
 3. Register it in `src/check.ts`'s `packs` and add a subpath export in
    `package.json`. Re-export it from `src/index.ts` too.
-4. A corpus in `gates/corpora.json` **before** the release, not after. A language
-   whose rules have never met real published text has not been reviewed,
-   whatever the unit tests say.
+4. Samples that reach every rule, run through `audit` **before** the release.
+   A rule set nobody has audited is a rule set whose fixes have never been shown
+   to converge, whatever the unit tests say.
 5. A `skills/typography-check/references/<primary-subtag>.md`, linked from
    `SKILL.md`, and the language named in the skill's frontmatter description.
    `test/skill.test.ts` derives all three from the registry and will fail until
@@ -117,9 +114,10 @@ does not fail when a language is added, it just stops covering it. Derive from
 
 ## Changing a rule
 
-[`gates/README.md`](../gates/README.md) owns this and is worth reading first.
-The French guillemet rules are settled, and [how they were settled](evidence.md)
-is the precedent to follow.
+[provenance.md](provenance.md) owns this and is worth reading first: it holds
+the narrowings that look like needless complication in the code and were each
+paid for with a corpus. The French guillemet rules are settled, and how they were
+settled is the precedent to follow.
 
 Bumping a pack version is a CHANGELOG entry. The version lives in the pack
 module and moves when a rule changes, never for a README fix; see the era stamp
@@ -147,6 +145,6 @@ by hand and cannot be given a provenance attestation retroactively.
 
 - Strict TypeScript, ESM, small pure functions. Match the surrounding style.
 - When you learn something durable, a measured property or a rule that had to be
-  narrowed and why, write it into the comment above the rule or into
-  `gates/README.md`. Counts from one run and what you tried before it worked
-  belong in the commit message.
+  narrowed and why, write it into the comment above the rule, and into
+  [provenance.md](provenance.md) if a reader of the style needs it too. Counts
+  from one run and what you tried before it worked belong in the commit message.

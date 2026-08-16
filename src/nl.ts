@@ -36,8 +36,8 @@
 //
 // Citations are to the Technische Handleiding (oktober 2016) for spelling and to
 // Taaladvies.net for punctuation. Taaladvies disclaims binding force, which is a
-// real weakness in two of these citations and is recorded in `gates/README.md`
-// rather than hidden: it is the joint advisory service of the Taalunie, the
+// real weakness in two of these citations and is recorded in
+// `docs/provenance.md` rather than hidden: it is the joint advisory service of the Taalunie, the
 // Instituut voor de Nederlandse Taal and Onze Taal, and it is the most
 // authoritative statement that exists on Dutch punctuation, because the treaty
 // body declined to make one.

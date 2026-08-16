@@ -37,9 +37,8 @@ Worth stating, because it is smaller than the word "linter" suggests:
   produces without anybody meaning to. The Spanish and German closing-quote rules
   were quadratic through an unanchored `ANY_SPACE+»`. All are fixed, and the
   shapes that broke them are in that test.
-- `scripts/fetch-corpus.ts` does make network requests, to the URLs listed in
-  `gates/sources/`. It is a development script, is not in the published tarball,
-  and never runs as part of installing or using the package.
+- No script in this repository makes a network request. The corpus fetcher that
+  used to be the one exception was deleted with the corpus gates.
 
 ## Publishing
 

@@ -16,25 +16,10 @@ import { pathToFileURL } from 'node:url';
 const EM_DASH = String.fromCharCode(0x2014);
 
 /** Files we scan; anything else is ignored. */
-const TEXT_EXTENSIONS = new Set([
-  '.ts',
-  '.md',
-  '.json',
-  '.mjs',
-  '.cjs',
-  '.txt',
-  '.yml',
-  '.yaml',
-  '.urls',
-]);
+const TEXT_EXTENSIONS = new Set(['.ts', '.md', '.json', '.mjs', '.cjs', '.txt', '.yml', '.yaml']);
 
 /** Directory names skipped wherever they appear. */
 const SKIP_NAMES = new Set(['node_modules', '.git', 'dist']);
-
-/** Subtrees whose contents are not ours to edit; skipped by path from the root.
- * The gate corpora are third-party published text, and an em dash in one of them
- * is evidence rather than a defect. */
-const SKIP_PATHS = new Set([join('gates', 'corpora')]);
 
 // A line containing this marker is exempt, for the rare doc that must name the
 // character. Assembled at runtime so this guard file stays clean itself.
@@ -58,7 +43,6 @@ export function scanForEmDashes(root: string): EmDashHit[] {
       const full = join(dir, entry.name);
       if (entry.isDirectory()) {
         if (SKIP_NAMES.has(entry.name)) continue;
-        if (SKIP_PATHS.has(relative(root, full))) continue;
         walk(full);
         continue;
       }

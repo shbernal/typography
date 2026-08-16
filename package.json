@@ -91,11 +91,7 @@
     "lint:text": "node scripts/check-no-emdash.ts",
     "lint:fix": "biome check --write src test scripts",
     "format": "biome format --write src test scripts",
-    "test": "node --test \"test/**/*.test.ts\"",
-    "corpus": "node scripts/fetch-corpus.ts",
-    "gates": "node scripts/gate-fr-reproduction.ts && node scripts/gate-findings.ts",
-    "gates:status": "node scripts/gates-status.ts",
-    "gates:verify": "node scripts/gate-fr-reproduction.ts --verify && node scripts/gate-findings.ts --verify"
+    "test": "node --test \"test/**/*.test.ts\""
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.8",

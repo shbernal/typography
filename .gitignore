@@ -7,8 +7,3 @@ dist/
 # output of `dist/`, which is already ignored, so committing one would ship a
 # stale copy of an artefact the release workflow builds from source.
 *.tgz
-
-# Corpora used by the release gate are third-party text and are not this repo's
-# to redistribute. What is committed is `gates/*.json` - per-rule counts and a
-# corpus fingerprint - so a release review is a delta rather than a re-triage.
-gates/corpora/

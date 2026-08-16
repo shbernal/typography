@@ -122,9 +122,49 @@ reveal('‘nee’');
 
 `@shbernal/typography/fr` exports two more things, `surveyWidth` and
 `withWidth`, for a host normalizing many values that must be consistent with
-each other. They are not on the root export, because they are about a question
-only French has. [corpus-consistency.md](corpus-consistency.md) is the whole
-story.
+each other. They are not on the root export, because they answer a question only
+French has: the Lexique admits both U+00A0 and U+202F inside a guillemet, so `fr`
+rules on the spacing that is wrong under either reading and repairs in the width
+the value already uses. That decision is made per value, which is the right grain
+for a document and the wrong grain for a registry of fields.
+
+```ts
+import { fr, surveyWidth, withWidth } from '@shbernal/typography/fr';
+
+fr.normalize(`«${NO_BREAK}oui${NO_BREAK}»`); // unchanged
+fr.normalize(`«${NARROW_NO_BREAK}non${NARROW_NO_BREAK}»`); // also unchanged
+```
+
+Both rows are correct and together they are a corpus that splits, because nothing
+in `fr` compares two rows.
+
+```ts
+const survey = surveyWidth(rows.map((r) => r.fr));
+survey.full; // positions spelled U+00A0
+survey.narrow; // positions spelled U+202F
+survey.verdict; // the width the corpus settles on
+survey.minority; // the width it uses but did not settle on, or null
+survey.minorityCount; // how many positions are in the minority width
+
+if (survey.minority === null) return; // already consistent, do nothing
+const house = withWidth(survey.verdict);
+const settled = values.map((v) => house.normalize(v));
+```
+
+They are two functions rather than one because `surveyWidth` reports and
+`withWidth` acts on the report, and harmonizing rewrites text that is correct:
+`minorityCount` is the size of what you would be retyping. `withWidth` returns a
+new style and leaves `fr` alone, so every other host keeps the per-value
+behaviour. It throws on any width but those two, because U+2009 is the right
+width and breaks lines.
+
+Three things about the derived style that are not obvious, all of them explained
+where they are implemented in [`src/fr.ts`](../src/fr.ts): the space before a
+colon stays U+00A0 under either width, since that is the one position the
+citation is explicit about; `mixed-no-break-space` is dropped, because reaching
+this function is the author making the call that rule reserves for them; and the
+stamp differs from `fr`'s and between the two widths, because a corpus with
+correct text retyped into an imposed width is not the same era as one without.
 
 ## CLI
 

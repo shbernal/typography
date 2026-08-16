@@ -99,8 +99,8 @@ A stamp that cannot tell the two apart is worse than no stamp at all.
 
 This is why the package version and the pack versions move independently, and
 why `0.1.0` shipped French at `fr@0.2.0` and the other three packs at `@0.1.0`.
-It is also why [`withWidth`](corpus-consistency.md) returns a pack whose id
-carries the width it imposes.
+It is also why [`withWidth`](api.md) returns a style whose stamp carries the
+width it imposes.
 
 ## A rule with no citation does not ship
 

@@ -22,18 +22,12 @@ package targets Node 22.
 ```powershell
 pnpm check          # typecheck + lint + test. The done gate
 pnpm build
-pnpm corpus         # rebuild the gate corpora from gates/sources/*.urls
-pnpm gates:status   # what the corpora are, from committed files, no network
-pnpm gates:verify   # the release gates
 ```
 
-`gates:status --fragility` is the same report one level down and is the one thing
-here that needs the corpora on disk: how much of each corpus's declared exposure
-sits in a single document. Read it before concluding that a count is evidence.
-
-All nine corpora are gitignored and rebuildable from committed URL lists. The
-French *reproduction* gate is the exception: it reads a private tree at
-`../translation-agents`, so off that machine it cannot run at all.
+`pnpm check` is the whole gate and needs no network. The nine corpora and the two
+gate scripts that used to sit beside it are gone; `audit` replaced them, holding a
+style to idempotence, conformance and non-interference. What the corpora
+established before they left is in `docs/provenance.md`.
 
 ## The rules that must not be broken
 
@@ -78,11 +72,11 @@ how a corpus splits invisibly. Bumping a pack version is a CHANGELOG entry.
 
 | Doing | Read |
 |---|---|
-| Changing a rule | [`gates/README.md`](gates/README.md), then [`docs/evidence.md`](docs/evidence.md) |
+| Changing a rule | [`docs/provenance.md`](docs/provenance.md) |
 | Adding a language | [`docs/development.md`](docs/development.md) |
 | Touching a pattern | [`docs/development.md`](docs/development.md), the linear-time section |
 | Changing the protocol | [`docs/design.md`](docs/design.md) |
-| Touching the French width logic | [`docs/corpus-consistency.md`](docs/corpus-consistency.md) |
+| Touching the French width logic | [`docs/api.md`](docs/api.md), then `withWidth` in `src/fr.ts` |
 | Cutting a release | [`docs/development.md`](docs/development.md) |
 
 **The French guillemet rules are settled, and the way they were settled is the
@@ -93,17 +87,17 @@ wrong under either reading. Two lessons that generalise, and neither is about
 French:
 
 - A pack must not assert what its citation does not fix.
-- **A reproduction gate constrains a rule only where its corpus exercises it.**
-  Narrowing those rules looked blocked by `gates/fr-reproduction`, which pins
-  `normalize` byte for byte. It was not: that corpus contains no guillemet the
+- **A gate constrains a rule only where its corpus exercises it.** Narrowing
+  those rules looked blocked by the French reproduction gate, which pinned
+  `normalize` byte for byte. It was not: that corpus contained no guillemet the
   prior implementation had to re-space. Measure before concluding a gate forbids
-  a change.
+  a change. The same reasoning was wrong the same way about global rule ids and
+  the committed baselines, one refactor later.
 
 **A zero is not automatically a result.** A rule reports nothing either because
-the publisher set the text correctly or because the text contained nothing it
-could match, and only the first is evidence. Every gate report carries an
-`exposure` block. If you add a corpus, declare it in `gates/corpora.json`; if you
-add a rule, check that some corpus exposes the character it is about.
+the text was set correctly or because it contained nothing the rule could match,
+and only the first is evidence. This outlived the corpora that produced it: give
+`audit` samples that actually reach the rules, or its empty result says nothing.
 
 ## Conventions
 
@@ -114,6 +108,6 @@ add a rule, check that some corpus exposes the character it is about.
   `skills/typography-check/SKILL.md`, which uses `npx` because it runs on
   whatever machine the end user has.
 - When you learn something durable, a measured property or a rule that had to be
-  narrowed and why, write it into the comment above the rule or into
-  `gates/README.md`. Counts from one run and what you tried before it worked
-  belong in the commit message.
+  narrowed and why, write it into the comment above the rule, and into
+  `docs/provenance.md` if a reader of the style needs it too. Counts from one run
+  and what you tried before it worked belong in the commit message.
