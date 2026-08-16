@@ -1,11 +1,14 @@
-// A space before `; : ! ?` in a style that does not take one.
+// The space before `; : ! ?`, in the two styles a standard can take on it.
 //
-// Three packs declared this and the pattern was character for character the same
-// in all three. It is *not* the French rule about the same characters: French
-// requires a space there and these forbid one, so the two are one family only
-// under a rule id that names the position rather than the verdict. That merge is
-// the `guillemet-inner-space` builder's problem and it is deliberately not this
-// one's.
+// Three packs declared the forbidding rule and the pattern was character for
+// character the same in all three. French requires a space in the same position,
+// which used to be given as the reason the two could not be one thing. They are
+// one *position* with two verdicts, and the position is what a rule id names, so
+// they live in one module and are two builders rather than one with a switch:
+// unlike the inner-space family, the two verdicts here share no pattern skeleton
+// at all. Forbidding takes the whole run and needs a letter in front of it;
+// requiring converts one space and needs to know which spellings are already
+// right.
 //
 // **Why no style fixes it**, which is the boundary worth stating because
 // deleting a space looks like the safest edit imaginable. It is not, on the text
@@ -23,7 +26,7 @@
 // A comment claiming parity with another pack is an assertion nothing tests,
 // and one builder is the assertion made true by construction.
 
-import { detectRule, type Rule } from '../pack.ts';
+import { conformRule, detectRule, type Rule } from '../pack.ts';
 import { looksMachine } from '../prose.ts';
 import { ANY_SPACE } from './space.ts';
 
@@ -45,5 +48,49 @@ export function spaceBeforePunctuation(spec: {
       looksMachine(value, match.index)
         ? null
         : { index: match.index + 1, length: match[0].length - 2 },
+  });
+}
+
+/**
+ * The other verdict: the position takes a no-break space, and what is there is
+ * not one.
+ *
+ * Fixable where the forbidding rule is not, and the asymmetry is not an
+ * oversight. Deleting a space corrupts a ternary or a ratio that rendered
+ * correctly; converting a space that is already there to a no-break space of the
+ * same visual width changes only how the line breaks. So this one repairs and
+ * never inserts, and the rule about the space that is *missing* is check-only and
+ * lives in `missing-punctuation-space.ts`.
+ *
+ * `admissible` is the same field, doing the same work, as in
+ * `inner-space.ts`: the spellings this style will not retype. French passes the
+ * two no-break spaces, so only a breaking space matches and a correct document is
+ * left alone; `withWidth` passes null and takes the position unconditionally,
+ * which is the whole difference between the two.
+ */
+export function requireSpaceBeforePunctuation(spec: {
+  id: string;
+  summary: string;
+  cite: string;
+  /** Every space that turns up in this position, as a class body. */
+  spaces: string;
+  /** The spellings already correct here, as a class body, or null to take the
+   * position whatever it holds. */
+  admissible: string | null;
+  /** The marks this rule is about, as a class body. French excludes the colon,
+   * which `colon-spacing.ts` rules on separately and without a ballot. */
+  marks: string;
+  /** The spelling this text is repaired in. Must be stable under its own fix. */
+  choose: (value: string) => string;
+}): Rule {
+  // One space, not a run: the position is a single character wide, and taking a
+  // run here would let this rule and the guillemet rules fight over `» ;`.
+  const already = spec.admissible === null ? '' : `(?!${spec.admissible})`;
+  return conformRule({
+    id: spec.id,
+    summary: spec.summary,
+    cite: spec.cite,
+    pattern: new RegExp(`${already}${spec.spaces}(?=${spec.marks})`, 'gu'),
+    choose: spec.choose,
   });
 }

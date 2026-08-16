@@ -40,20 +40,19 @@
 
 import {
   composeNormalize,
-  conformRule,
-  detectRule,
   NARROW_NO_BREAK,
   NO_BREAK,
   type Rule,
-  replaceRule,
-  THIN,
   type TypographyPack,
 } from './pack.ts';
 import { apostrophe } from './rules/apostrophe.ts';
 import { ballot } from './rules/ballot.ts';
+import { colonSpacing } from './rules/colon-spacing.ts';
 import { innerSpace } from './rules/inner-space.ts';
 import { minorityReport } from './rules/minority-report.ts';
+import { missingPunctuationSpace } from './rules/missing-punctuation-space.ts';
 import { ANY_SPACE_OR_THIN } from './rules/space.ts';
+import { requireSpaceBeforePunctuation } from './rules/space-before-punctuation.ts';
 import { straightDoubleQuote } from './rules/straight-double-quote.ts';
 
 const LEXIQUE = 'Imprimerie nationale, Lexique des règles typographiques (2002)';
@@ -74,14 +73,18 @@ const VERSION = '0.2.0';
 // `rules/space.ts`, along with why French names U+2009 and the other three
 // styles do not.
 
-/** The two that break a line, and so are wrong in these positions under every
- * reading of the standard. U+2009 is the interesting one: right width, wrong
- * behaviour, so it survives proofreading and comes apart when the text reflows. */
-const BREAKABLE = `[ ${THIN}]`;
-
 /** The two admissible spellings of the no-break space this pack has to choose
- * between, and never a third. */
+ * between, and never a third. Passed as `admissible` wherever a rule here has to
+ * leave a correct document alone: the two spellings that break a line are then
+ * exactly what is left, which is what the standard is about under either
+ * reading. U+2009 is the interesting one, right width and wrong behaviour, so it
+ * survives proofreading and comes apart when the text reflows. */
 const NO_BREAK_SPACE = `[${NO_BREAK}${NARROW_NO_BREAK}]`;
+
+/** The three marks whose space this pack ballots over. The colon is not among
+ * them: `colonSpacing` rules on it outright, because it is the one position
+ * where nothing is in dispute. */
+const HIGH_PUNCTUATION = `[;!?]`;
 
 /**
  * The run of spaces beside a guillemet is wrong unless it is exactly one
@@ -93,9 +96,9 @@ const NO_BREAK_SPACE = `[${NO_BREAK}${NARROW_NO_BREAK}]`;
  * **How it is spelled matters as much as what it says.** The direct translation
  * enumerates the three defects as an alternation:
  *
- *     (?:SPACE*BREAKABLE SPACE*|SPACE{2,}|absent)
+ *     (?:SPACE*BREAKING SPACE*|SPACE{2,}|absent)
  *
- * `BREAKABLE` is a subset of that class, so the first branch can split a run of
+ * A breaking space is a subset of `SPACE`, so the first branch can split a run of
  * spaces at every position in it and the second can re-match what the first gave
  * up. Against a run with no guillemet after it the engine walks that ambiguity:
  * 800 ordinary spaces took 242 ms, 1,600 took 1.5 s, and a single padded
@@ -175,36 +178,25 @@ const rules: readonly Rule[] = [
     cite: `${LEXIQUE}, "Apostrophe"`,
   }),
 
-  replaceRule({
+  colonSpacing({
     id: 'fr.space-before-colon',
-    summary: 'Breaking space before a colon; French requires U+00A0',
     cite: `${LEXIQUE}, "Ponctuation"`,
-    // Converts and never inserts. Inserting before a colon would fire on every
-    // `https://`, and there is no way to tell a French sentence from a URL with
-    // a lookbehind. What a real corpus holds is the space already (137 rows in
-    // the corpus above), so conversion is the whole measured defect.
-    //
-    // The only rule here that still names a width outright, because it is the
-    // only one where nothing is in dispute: the Lexique says the word space and
-    // the published corpora use it 2,458 times against no counter-example.
-    pattern: / (?=:)/g,
-    replacement: NO_BREAK,
   }),
 
-  conformRule({
+  // The Lexique specifies the fine space here and the publishers measured use
+  // U+00A0 for 610 of 612 of them, so this rule converts the breaking space and
+  // leaves the choice of width to the document. Before the narrowing it wrote
+  // U+202F unconditionally, which was one defect short of the guillemet problem:
+  // rarer only because a breaking space before `;` is rarer than a guillemet, not
+  // because the reasoning was any better. `admissible` is what holds it off, the
+  // same field and the same argument as in the two guillemet rules below.
+  requireSpaceBeforePunctuation({
     id: 'fr.space-before-high-punctuation',
     summary: 'Breaking space before `; ! ?`; French requires a no-break space',
     cite: `${LEXIQUE}, "Ponctuation"`,
-    // The Lexique specifies the fine space here and the publishers measured use
-    // U+00A0 for 610 of 612 of them, so this rule converts the breaking space
-    // and leaves the choice of width to the document. Before the narrowing it
-    // wrote U+202F unconditionally, which was one defect short of the guillemet
-    // problem: rarer only because a breaking space before `;` is rarer than a
-    // guillemet, not because the reasoning was any better.
-    //
-    // U+2009 is in scope and U+00A0 and U+202F are not: the first breaks lines
-    // and the other two do not, which is the property the standard is about.
-    pattern: new RegExp(`${BREAKABLE}(?=[;!?])`, 'g'),
+    spaces: ANY_SPACE_OR_THIN,
+    admissible: NO_BREAK_SPACE,
+    marks: HIGH_PUNCTUATION,
     choose: houseWidth,
   }),
 
@@ -273,24 +265,12 @@ const rules: readonly Rule[] = [
     spelling: (match) => match[1] ?? match[2] ?? match[3],
   }),
 
-  detectRule({
+  // The colon is back in scope here, and deliberately: this rule is about the
+  // space that is absent, and French requires one before all four marks. It is
+  // only *which* no-break space that the colon is exempt from.
+  missingPunctuationSpace({
     id: 'fr.missing-space-before-high-punctuation',
-    summary: 'No space at all before `; : ! ?`, where French requires one',
     cite: `${LEXIQUE}, "Ponctuation"`,
-    // This is the French half of the finding that shapes the whole package. The
-    // defect is real and common, and inserting the space is not a substitution:
-    // `https://`, `C:\\`, `!important`, `?query=` and every port number are the
-    // same three characters in a construction that must not be touched.
-    //
-    // So the pattern is deliberately conservative in both directions. A letter
-    // before rules out `12:30` and a bare `:` after a bracket. Whitespace, a
-    // closing mark or end-of-string after rules out `!important` and `?utf8`,
-    // where the punctuation is carrying syntax rather than ending a sentence.
-    // Even so this is the rule most likely to fire on technical prose, which is
-    // exactly why it reports and does not rewrite. On the journals corpus 355 of
-    // its 355 findings were foreign-language titles in bibliographies.
-    pattern: /\p{L}[;:!?](?=[\s»)\]"'’]|$)/gu,
-    refine: (match) => ({ index: match.index + 1, length: 1 }),
   }),
 
   // Check-only in every style that has it, for the reason the builder states:
@@ -406,11 +386,13 @@ export function surveyWidth(values: Iterable<string>): WidthSurvey {
  */
 function harmonizingRules(width: string): readonly Rule[] {
   return [
-    conformRule({
+    requireSpaceBeforePunctuation({
       id: 'fr.space-before-high-punctuation',
       summary: `Space before \`; ! ?\` that is not the corpus's no-break space`,
       cite: `${LEXIQUE}, "Ponctuation"`,
-      pattern: new RegExp(`${ANY_SPACE_OR_THIN}(?=[;!?])`, 'g'),
+      spaces: ANY_SPACE_OR_THIN,
+      admissible: null,
+      marks: HIGH_PUNCTUATION,
       choose: () => width,
     }),
     innerSpace({

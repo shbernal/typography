@@ -42,18 +42,12 @@
 // authoritative statement that exists on Dutch punctuation, because the treaty
 // body declined to make one.
 
-import {
-  composeNormalize,
-  detectRule,
-  LEFT_SINGLE_QUOTE,
-  RIGHT_SINGLE_QUOTE,
-  type Rule,
-  replaceRule,
-  type TypographyPack,
-} from './pack.ts';
-import { looksMachine } from './prose.ts';
+import { composeNormalize, LEFT_SINGLE_QUOTE, type Rule, type TypographyPack } from './pack.ts';
 import { apostrophe } from './rules/apostrophe.ts';
+import { apostropheAfterSymbol } from './rules/apostrophe-after-symbol.ts';
+import { apostropheElision } from './rules/apostrophe-elision.ts';
 import { ballot } from './rules/ballot.ts';
+import { ijCapital } from './rules/ij-capital.ts';
 import { minorityReport } from './rules/minority-report.ts';
 import { spaceBeforePunctuation } from './rules/space-before-punctuation.ts';
 import { straightDoubleQuote } from './rules/straight-double-quote.ts';
@@ -72,23 +66,6 @@ const VERSION = '0.1.0';
 
 /** Everything that turns up where a Dutch apostrophe belongs and is not one. */
 const WRONG_APOSTROPHE = `['${LEFT_SINGLE_QUOTE}]`;
-
-/**
- * The words that may carry a word-initial apostrophe.
- *
- * A closed set, and it has to be closed. Word-initial is the position where a
- * Dutch apostrophe and an opening single quotation mark are the same character
- * in the same place: `'s morgens` is an elision and `'strand'` is a quoted word,
- * and no amount of lookaround distinguishes them in general. What does
- * distinguish them is that the elisions are a short list the standard
- * enumerates - `'s 't 'n 'k 'm 'r 'ns` - and every one of them is a whole word,
- * so a following space or hyphen closes it. `'strand'` fails on both counts:
- * `s` is followed by `t`, not by a boundary.
- *
- * `ns` precedes the single letters in the alternation because the engine takes
- * the first branch that matches, and `n` alone would strand the `s` of `'ns`.
- */
-const CLITIC = `(?:ns|[stnkmr])`;
 
 /** The three families of quotation mark that occur in Dutch, keyed by the mark
  * that opens each. The opener is the discriminator and the closer cannot be:
@@ -170,45 +147,26 @@ const rules: readonly Rule[] = [
     cite: `${HANDLEIDING}, hoofdstuk 11 "Het weglatingsteken"`,
   }),
 
-  replaceRule({
+  // The rule that has no counterpart in the other three packs, because no other
+  // language here elides at the front of a word: `'s morgens`, `'t huis`,
+  // `'n keer`, `'s-Gravenhage`. The closed clitic set and what it holds off are
+  // in the builder.
+  apostropheElision({
     id: 'nl.apostrophe-elision',
-    summary: 'Straight quote or U+2018 on a word-initial elision such as `’s` or `’t`',
+    wrong: WRONG_APOSTROPHE,
     cite: `${HANDLEIDING}, hoofdstuk 11 "Het weglatingsteken"`,
-    // The rule that has no counterpart in the other three packs, because no
-    // other language here elides at the front of a word. `'s morgens`,
-    // `'t huis`, `'n keer`, `'s-Gravenhage`.
-    //
-    // Fixable only because `CLITIC` is closed and the boundary after it is
-    // required; see the comment there for what that is holding off. Widening
-    // either one turns this into a rule that retypes the opening quotation mark
-    // of any quoted word beginning with s, t, n, k, m or r, which is a defect
-    // this pack would be introducing rather than finding.
-    pattern: new RegExp(`(?<![\\p{L}\\p{N}])${WRONG_APOSTROPHE}(?=${CLITIC}[ \\-])`, 'gu'),
-    replacement: RIGHT_SINGLE_QUOTE,
   }),
 
   // -------------------------------------------------------------------------
   // Check only. Detectable, and not safely repairable by substitution.
   // -------------------------------------------------------------------------
 
-  detectRule({
+  // The standard sets 18 of these and 7 more after `@ & +`, which is what makes
+  // it worth a rule in a pack this small.
+  apostropheAfterSymbol({
     id: 'nl.apostrophe-after-symbol',
-    summary: 'Straight quote after a digit or symbol where Dutch takes U+2019',
+    wrong: WRONG_APOSTROPHE,
     cite: `${HANDLEIDING}, paragraaf 11.5`,
-    // Dutch attaches a suffix to a number, an initialism or a symbol with an
-    // apostrophe: `A4'tje`, `80'ers`, `2'en`, `D66'er`, `65+'er`, `@'je`. The
-    // standard sets 18 of these and 7 more after `@ & +`.
-    //
-    // Check-only, and the reason is the one `es.space-before-punctuation` gives
-    // at length. A digit to the left of a straight quote followed by letters is
-    // also a sized literal in hardware description languages - `4'b1010`,
-    // `8'hFF` - and a foot-and-inch measure is the same three characters again.
-    // The letter-to-letter rule above has a lookbehind that separates prose from
-    // those; here there is none, because the digit *is* the context. The repair
-    // is obvious and it is still not this pack's to make unattended.
-    pattern: new RegExp(`(?<=[\\p{N}@&+])${WRONG_APOSTROPHE}(?=\\p{L})`, 'gu'),
-    refine: (match, value) =>
-      looksMachine(value, match.index) ? null : { index: match.index, length: 1 },
   }),
 
   // The rule this pack has instead of a ruling on quotation marks, and the
@@ -229,23 +187,9 @@ const rules: readonly Rule[] = [
     spelling: (match) => match[1],
   }),
 
-  detectRule({
+  ijCapital({
     id: 'nl.ij-capital',
-    summary: 'Word-initial `Ij`; the Dutch digraph capitalises as `ij` or `IJ`, never `Ij`',
     cite: `${HANDLEIDING}, paragraaf 2.4`,
-    // The most Dutch rule in this package and a clean instance of the shape the
-    // whole thing is built around. IJ is one letter written with two signs, so
-    // it capitalises whole: `IJmuiden`, `IJszee`, `IJzermonding`, and `ijs`
-    // lowercase in the middle of a sentence. `Ij` is therefore wrong under every
-    // reading, which is exactly what makes it detectable.
-    //
-    // And not repairable, for the reason `es.unpaired-question` is not: knowing
-    // the form is wrong does not tell you which way to correct it. `Ijs` at the
-    // start of a sentence wants `IJs` and the same word inside one wants `ijs`,
-    // and choosing between them means knowing where the sentence began and
-    // whether the word is a proper noun. That is a parse. The standard's own
-    // text has 63 lowercase `ij`, 3 `IJ` and no `Ij` at all.
-    pattern: /(?<![\p{L}\p{N}])Ij(?=\p{Ll})/gu,
   }),
 
   // Worth having in a Dutch style specifically, which is not obvious from a

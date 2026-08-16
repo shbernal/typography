@@ -4,9 +4,9 @@
 // Spanish use the identical pair of quotation marks with opposite spacing rules,
 // which this file used to give as the reason there could be no shared rule
 // engine. That was an argument about two standards bodies disagreeing, and it
-// does not survive the composition pivot: opposite is a parameter value, and the
-// `guillemet-inner-space` builder is where those two rules are going. What is
-// shared already is in `rules/`.
+// does not survive the composition pivot: opposite is a parameter value, and
+// `rules/inner-space.ts` is where both rules now live. Every rule this pack
+// declares is a call into `rules/`.
 //
 // The sharper point was always the opening marks anyway. `¿` and `¡` are
 // obligatory and paired, so a sentence ending in `?` with no `¿` is a real,
@@ -20,19 +20,13 @@
 // Citations are section-level, to `Ortografía de la lengua española` (RAE,
 // 2010).
 
-import {
-  composeNormalize,
-  detectRule,
-  type Match,
-  type Rule,
-  replaceRule,
-  type TypographyPack,
-} from './pack.ts';
-import { looksMachine } from './prose.ts';
+import { composeNormalize, type Rule, type TypographyPack } from './pack.ts';
 import { innerSpace } from './rules/inner-space.ts';
+import { openingMarkSpace } from './rules/opening-mark-space.ts';
 import { ANY_SPACE } from './rules/space.ts';
 import { spaceBeforePunctuation } from './rules/space-before-punctuation.ts';
 import { straightDoubleQuote } from './rules/straight-double-quote.ts';
+import { unpairedMark } from './rules/unpaired-mark.ts';
 
 const ORTOGRAFIA = 'RAE, Ortografía de la lengua española (2010)';
 
@@ -44,9 +38,6 @@ const ORTOGRAFIA = 'RAE, Ortografía de la lengua española (2010)';
  * contains one, so no committed count moves, and the two stamps still have to be
  * told apart: `normalize` returns something different for text that reaches it. */
 const VERSION = '0.2.0';
-
-/** Ends a sentence for the purpose of the paired-mark scan below. */
-const SENTENCE_END = /[.!?\n…]/;
 
 const rules: readonly Rule[] = [
   // The same builder as `fr.guillemet-open`, on the identical character in the
@@ -80,46 +71,31 @@ const rules: readonly Rule[] = [
     guard: true,
   }),
 
-  replaceRule({
+  openingMarkSpace({
     id: 'es.opening-mark-space',
-    summary: 'Space after `¿` or `¡`; the mark is set against the word it opens',
     cite: `${ORTOGRAFIA}, "Los signos de interrogación y de exclamación"`,
-    // Fixable where the closing half is not, and the difference is the whole
-    // argument of this package: `¿` is already in the text, so its position is
-    // known and only the spacing is wrong. Nothing has to be inferred.
-    pattern: new RegExp(`(?<=[¿¡])${ANY_SPACE}+`, 'gu'),
-    replacement: '',
   }),
 
   // -------------------------------------------------------------------------
   // Check only.
   // -------------------------------------------------------------------------
 
-  detectRule({
+  // The two rules this package's design turns on, and the builder carries the
+  // argument. What is Spanish about them is that they exist at all: no other
+  // style here has a mark whose absence at the *other* end of a sentence is the
+  // defect.
+  unpairedMark({
     id: 'es.unpaired-question',
-    summary: 'Sentence ends in `?` with no opening `¿`',
+    mark: '?',
+    opener: '¿',
     cite: `${ORTOGRAFIA}, "Los signos de interrogación y de exclamación"`,
-    // The rule this package's design turns on. RAE requires both halves, and
-    // omitting the opening one is the single most common defect in Spanish
-    // written by speakers of languages that have no opening mark - which is to
-    // say, in most translated Spanish.
-    //
-    // The scan walks back to the start of the sentence and asks whether a `¿`
-    // appeared. That is as far as a safe implementation goes: knowing the
-    // sentence has no opening mark does not tell you where the *interrogative
-    // clause* began, and in Spanish the mark goes at the start of the clause,
-    // not the sentence. `Si vienes, ¿me avisas?` is correct and no substitution
-    // could have produced it.
-    pattern: /\?/g,
-    refine: (match, value) => unpaired(value, match.index, '¿'),
   }),
 
-  detectRule({
+  unpairedMark({
     id: 'es.unpaired-exclamation',
-    summary: 'Sentence ends in `!` with no opening `¡`',
+    mark: '!',
+    opener: '¡',
     cite: `${ORTOGRAFIA}, "Los signos de interrogación y de exclamación"`,
-    pattern: /!/g,
-    refine: (match, value) => unpaired(value, match.index, '¡'),
   }),
 
   // The builder carries the pattern, the `looksMachine` filter and the argument
@@ -142,29 +118,6 @@ const rules: readonly Rule[] = [
     cite: `${ORTOGRAFIA}, "Las comillas"`,
   }),
 ];
-
-/**
- * A closing mark with no matching opening mark earlier in its sentence.
- *
- * Returns the match to report, or null when the text is fine or when the
- * character is not being used as punctuation at all.
- */
-function unpaired(value: string, index: number, opener: string): Match | null {
-  if (looksMachine(value, index)) return null;
-
-  // The character before has to be something a sentence can end on. This rules
-  // out `??`, `!!`, a bare `?` after a bracket, and most of what a placeholder
-  // or a template looks like.
-  const before = value[index - 1];
-  if (!before || !/[\p{L}\p{N}\p{Pf}\p{Pe}'’]/u.test(before)) return null;
-
-  for (let i = index - 1; i >= 0; i--) {
-    const ch = value[i]!;
-    if (ch === opener) return null;
-    if (SENTENCE_END.test(ch)) break;
-  }
-  return { index, length: 1 };
-}
 
 /**
  * The Spanish pack.
