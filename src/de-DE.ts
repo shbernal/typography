@@ -1,28 +1,19 @@
 // German orthotypography as set in Germany and Austria.
 //
-// The quotation marks are the whole reason this is a separate pack from
+// The quotation marks are the whole reason this is a separate style from
 // `de-CH.ts`. Germany opens with `„` and closes with U+201C, and where
 // guillemets are used instead they point *inward*: `»Wort«`. Switzerland points
 // them outward, `«Wort»`, using the identical characters the other way round.
 //
-// So the one thing a shared German pack could not have done is exactly the thing
+// So the one thing a shared German style could not have done is exactly the thing
 // a reader needs: tell a Swiss quotation from a German mistake.
 
+import { compose } from './compose.ts';
 import { DUDEN, germanCommonRules } from './de-common.ts';
-import { composeNormalize, type Rule, type TypographyPack } from './pack.ts';
+import type { Rule, Style } from './pack.ts';
 import { guillemetDirection } from './rules/guillemet-direction.ts';
 import { innerSpace } from './rules/inner-space.ts';
 import { ANY_SPACE } from './rules/space.ts';
-
-/** Bumps when a rule changes, and never for a release that does not touch one.
- *
- * 0.2.0 put `de.space-before-punctuation` behind `looksMachine`, so it no longer
- * reports a URL or a ternary. That rule is in `germanCommonRules`, which is why
- * `de-CH` moves to 0.2.0 in the same breath: one rule changed and two packs
- * contain it. A corpus checked under `de-DE@0.1.0` was told about its query
- * strings and one under `de-DE@0.2.0` was not, so the two counts are not
- * comparable and the stamp has to say so. */
-const VERSION = '0.2.0';
 
 const rules: readonly Rule[] = [
   ...germanCommonRules,
@@ -48,7 +39,7 @@ const rules: readonly Rule[] = [
   }),
 
   // Germany points the guillemets inward, so this is `de-CH`'s pair with the
-  // marks exchanged and nothing else different. Two packs, one builder, and the
+  // marks exchanged and nothing else different. Two styles, one builder, and the
   // claim that they are mirror images is now true by construction rather than
   // asserted in a comment.
   innerSpace({
@@ -82,13 +73,17 @@ const rules: readonly Rule[] = [
   }),
 ];
 
-/** German as set in Germany and Austria. */
-export const deDE: TypographyPack = {
-  id: `de-DE@${VERSION}`,
+/** German as set in Germany and Austria.
+ *
+ * The shared rules are shared as *rules*, not as a version, which is what a
+ * derived stamp makes visible: putting `punctuation-spacing` behind
+ * `looksMachine` moved this style's stamp and `de-CH`'s together, because both
+ * lists contain that rule, and no one had to remember to bump two files. */
+export const deDE: Style = compose({
+  name: 'de-DE',
   lang: 'de-DE',
   standard: 'Duden',
   rules,
-  normalize: composeNormalize(rules),
-};
+});
 
 export default deDE;

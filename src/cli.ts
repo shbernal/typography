@@ -11,17 +11,17 @@
 // it and writes nothing, so the dry run and the real run compute the same thing
 // and cannot disagree about what is about to happen.
 //
-// Every report carries a stamp - `typocheck 0.1.0 (fr@0.1.0)` - because a
-// findings count is a release artefact here and a count with no version beside
-// it is not comparable to the next one. An input that shapes an output has to
-// name itself in that output.
+// Every report carries a stamp - `typocheck 0.1.0 (fr@a8ada4df7c7c)` - because a
+// findings count is comparable only against the rules that produced it, and the
+// half after the `@` is derived from those rules rather than typed by anybody.
+// An input that shapes an output has to name itself in that output.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { relative } from 'node:path';
 
-import { check, fix, packFor, packs } from './check.ts';
-import type { Finding, TypographyPack } from './pack.ts';
+import { check, fix, styleFor, styles } from './check.ts';
+import type { Finding, Style } from './pack.ts';
 
 const version = (createRequire(import.meta.url)('../package.json') as { version: string }).version;
 
@@ -35,7 +35,7 @@ Arguments
   <file...>            files to read, or - for stdin
 
 Options
-  --lang <tag>         required. One of: ${packs.map((p) => p.lang).join(', ')}
+  --lang <tag>         required. One of: ${tags()}
   --write              fix only. Rewrite the files in place. With -, the
                        repaired text goes to stdout and the report to stderr,
                        so the command is a filter you can redirect.
@@ -104,8 +104,14 @@ function label(path: string): string {
   return rel && !rel.startsWith('..') ? rel : path;
 }
 
-function stamp(pack: TypographyPack): string {
-  return `typocheck ${version} (${pack.id})`;
+/** Every tag the shipped styles answer to. A style need not be about a
+ * language, so this is the styles that are and not simply all of them. */
+function tags(): string {
+  return styles.flatMap((style) => (style.lang === undefined ? [] : [style.lang])).join(', ');
+}
+
+function stamp(style: Style): string {
+  return `typocheck ${version} (${style.id})`;
 }
 
 function report(path: string, findings: readonly Finding[]): string[] {
@@ -122,16 +128,19 @@ function main(argv: readonly string[]): number {
     return 0;
   }
   // Bare, because the version is the first thing anyone types after installing a
-  // CLI and the second thing they quote in a bug report. The pack ids come with
-  // it: a findings count is comparable only against the pack that produced it, so
-  // the two versions are one answer rather than two.
+  // CLI and the second thing they quote in a bug report. The style stamps come
+  // with it: a findings count is comparable only against the rules that produced
+  // it, so the two are one answer rather than two.
   if (verb === '-v' || verb === '--version' || verb === 'version') {
     console.log(`typocheck ${version}`);
-    for (const p of packs) console.log(`  ${p.id}`);
+    for (const style of styles) console.log(`  ${style.id}`);
     return 0;
   }
   if (verb === 'langs') {
-    for (const p of packs) console.log(`${p.lang.padEnd(6)} ${p.id.padEnd(14)} ${p.standard}`);
+    for (const style of styles)
+      console.log(
+        `${(style.lang ?? style.name).padEnd(6)} ${style.id.padEnd(20)} ${style.standard}`,
+      );
     return 0;
   }
   if (verb !== 'check' && verb !== 'fix') {
@@ -153,15 +162,15 @@ function main(argv: readonly string[]): number {
   }
   if (!opts.lang) {
     console.error(
-      `typocheck: --lang is required. One of: ${packs.map((p) => p.lang).join(', ')}\n` +
+      `typocheck: --lang is required. One of: ${tags()}\n` +
         'Nothing here guesses a language, because a French rule applied to Swiss German produces confident nonsense.',
     );
     return 2;
   }
-  const pack = packFor(opts.lang);
-  if (!pack) {
+  const style = styleFor(opts.lang);
+  if (!style) {
     console.error(
-      `typocheck: no pack for '${opts.lang}'. Known: ${packs.map((p) => p.lang).join(', ')}\n` +
+      `typocheck: no style for '${opts.lang}'. Known: ${tags()}\n` +
         "There is no bare 'de': German is two conventions, so say de-DE or de-CH.",
     );
     return 2;
@@ -185,11 +194,11 @@ function main(argv: readonly string[]): number {
       return 2;
     }
 
-    const findings = check(pack, text);
+    const findings = check(style, text);
     let changed = false;
 
     if (verb === 'fix') {
-      const fixed = fix(pack, text);
+      const fixed = fix(style, text);
       changed = fixed !== text;
       if (opts.write) {
         // stdin's destination is stdout, and it is written whether or not
@@ -224,8 +233,8 @@ function main(argv: readonly string[]): number {
       JSON.stringify(
         {
           tool: `typocheck ${version}`,
-          pack: pack.id,
-          standard: pack.standard,
+          style: style.id,
+          standard: style.standard,
           files: all.map((f) => ({
             file: label(f.path),
             changed: f.changed,
@@ -244,7 +253,7 @@ function main(argv: readonly string[]): number {
     const notFixable = findings.filter((f) => !f.fixable).length;
 
     say(
-      `\n${stamp(pack)}: ${findings.length} findings in ${all.length} file(s) ` +
+      `\n${stamp(style)}: ${findings.length} findings in ${all.length} file(s) ` +
         `(${errors} error, ${warnings} warning, ${notFixable} needing a decision)`,
     );
 

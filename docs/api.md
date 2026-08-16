@@ -12,26 +12,29 @@ const cleaned = fr.normalize(text);        // only the safe subset
 ```
 
 Subpath exports are `/fr`, `/es`, `/de-DE`, `/de-CH` and `/nl`, so a consumer
-takes one language and not five. The root export carries the protocol, the runner
-and the registry, and importing it pulls all five packs, which costs a few
-kilobytes of regular expressions and no dependencies.
+takes one language and not five, plus `/rules` for the builders a style is
+composed from. The root export carries the protocol, the composition layer, the
+runner and the registry, and importing it pulls all five styles, which costs a
+few kilobytes of regular expressions and no dependencies.
 
 ### The runner
 
 | Export | What it does |
 |---|---|
-| `check(pack, text)` | Every finding, ordered by position in the text rather than by rule |
-| `fix(pack, text)` | Exactly `pack.normalize`, under a name that says what it does at a call site |
+| `check(style, text)` | Every finding, ordered by position in the text rather than by rule |
+| `fix(style, text)` | Exactly `style.normalize`, under a name that says what it does at a call site |
 | `unfixable(findings)` | The findings `fix` would not resolve. The interesting half of a report |
-| `packs` | Every pack this package ships, in tag order |
-| `packFor(tag)` | The pack for a BCP 47 tag, or `undefined`. Exact and case-insensitive, with no region fallback |
+| `styles` | Every style this package ships, in tag order |
+| `styleFor(tag)` | The shipped style for a BCP 47 tag, or `undefined`. Exact and case-insensitive, with no region fallback |
 
-### A pack is a plain object
+### A style is a plain object
 
 ```ts
-interface TypographyPack {
-  readonly id: string;          // `fr@0.2.0`, the era stamp
-  readonly lang: string;        // a BCP 47 tag
+interface Style {
+  readonly id: string;          // `fr@a8ada4df7c7c`, the era stamp
+  readonly name: string;        // `fr`, `acme-house`
+  readonly stamp: string;       // derived from the rules, not declared
+  readonly lang?: string;       // a BCP 47 tag, where the style is about a language
   readonly standard: string;    // "Imprimerie nationale", for a report header
   readonly rules: readonly Rule[];
   readonly normalize: (value: string) => string;   // the fix set. Idempotent
@@ -41,7 +44,54 @@ interface TypographyPack {
 Nothing registers itself and nothing imports a framework. `{ id, normalize }` is
 all a host needs, which is what lets
 [`translation-harness`](https://github.com/shbernal/translation-harness) bind a
-pack through `job.normalize` with neither package importing the other.
+style through `job.normalize` with neither package importing the other.
+
+### Composing one
+
+A shipped style is a rule list with a name and nothing else, so anything this
+package ships, you can build.
+
+| Export | What it does |
+|---|---|
+| `compose({ name, lang?, standard, rules })` | A style from a rule list. Refuses a duplicate rule id, an empty list, and a name with an `@` in it |
+| `derive(base, { name?, drop?, replace?, add? })` | A style from another style, changed |
+| `stampOf(rules)` | The stamp a rule list would get |
+| `audit(style, samples)` | The three properties, run over your own text |
+
+```ts
+import { compose, derive, audit } from '@shbernal/typography';
+import { fr } from '@shbernal/typography/fr';
+import { apostrophe, straightDoubleQuote } from '@shbernal/typography/rules';
+
+const house = derive(fr, {
+  name: 'acme-fr',
+  standard: 'ACME house style v3',
+  drop: ['missing-punctuation-space'],
+});
+
+house.id; // 'acme-fr@...', and the stamp moves the day a rule in it moves
+```
+
+`drop`, `replace` and `add` each assert something about the base: dropping an id
+the base does not have throws, replacing one it does not have throws, and adding
+one it already has throws. That is the point of three verbs rather than one
+merge, because a config outlives the version of this package it was written
+against and the failure it must not have is the quiet one. A style that needs a
+rule somewhere other than the end re-declares the whole list with `compose`.
+
+**The stamp is derived from the rules**, hashed over each rule's id, sentence,
+citation, severity, pattern and parameters, in order. Two styles with the same
+rules stamp the same however they are named, and any change to a rule moves it
+without anybody deciding to. Carry it beside anything you normalized: a corpus
+half-normalized under one style and half under another is individually correct in
+every row and comparable in none.
+
+`audit` is what a corpus gate used to do, for a rule set nobody reviewed. It
+returns violations of three properties: **idempotence**, `normalize` settles;
+**conformance**, `check` after `fix` reports nothing fixable; and
+**non-interference**, no rule puts back what an earlier rule removed. Give it
+text that reaches the rules, since an empty result over samples that touch
+nothing is not evidence of anything.
 
 ### A finding
 

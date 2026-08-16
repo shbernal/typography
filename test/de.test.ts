@@ -74,12 +74,14 @@ test('a space before punctuation in machine text is not reported', () => {
   assert.ok(idsDE(`${machine} Hallo ; Welt`).includes('punctuation-spacing'));
 });
 
-test('the two packs stamp two different eras', () => {
-  // Both moved to 0.2.0 together: `punctuation-spacing` is a common
-  // rule, so a change to it changes what both packs assert, and a stamp that
-  // moved on only one of them would say a de-CH corpus had been checked by
-  // rules it had not.
-  assert.equal(deDE.id, 'de-DE@0.2.0');
-  assert.equal(deCH.id, 'de-CH@0.2.0');
-  assert.notEqual(deDE.id, deCH.id);
+test('the two styles stamp two different eras', () => {
+  // The two share `germanCommonRules`, so a change to one of those changes what
+  // both styles assert, and a stamp that moved on only one of them would say a
+  // de-CH corpus had been checked by rules it had not. That used to be a version
+  // constant in each file with a comment in each explaining the other; both
+  // stamps are derived from the shared list now, so the coupling is a fact about
+  // the program rather than a pair of comments.
+  assert.match(deDE.id, /^de-DE@[0-9a-f]{12}$/);
+  assert.match(deCH.id, /^de-CH@[0-9a-f]{12}$/);
+  assert.notEqual(deDE.stamp, deCH.stamp);
 });

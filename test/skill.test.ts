@@ -9,7 +9,7 @@ import { dirname, join, resolve } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
-import { packFor, packs } from '../src/check.ts';
+import { styleFor, styles } from '../src/check.ts';
 
 const SKILL_DIR = resolve(
   dirname(fileURLToPath(import.meta.url)),
@@ -45,18 +45,22 @@ test('frontmatter matches the skill format', () => {
 });
 
 /** The primary subtag, which is the grain the skill's prose and its reference
- * files work at: `de-DE` and `de-CH` are two packs and one German. */
+ * files work at: `de-DE` and `de-CH` are two styles and one German. */
 function primary(lang: string): string {
   return lang.split('-')[0]!;
 }
 
 /** The English name of a language, for matching against prose written in
- * English. Derived rather than tabulated, so adding a pack cannot leave a stale
+ * English. Derived rather than tabulated, so adding a style cannot leave a stale
  * entry behind: the failure this whole file exists to prevent. */
 const ENGLISH = new Intl.DisplayNames(['en'], { type: 'language' });
 
-/** Every language the registry ships, once each, as an English name. */
-const LANGUAGES = [...new Set(packs.map((p) => primary(p.lang)))].map((tag) => ({
+/** Every language the registry ships, once each, as an English name. A shipped
+ * style is always about a language, and the type does not promise that, so the
+ * tags are gathered rather than mapped. */
+const TAGS: readonly string[] = styles.flatMap((style) => (style.lang ? [style.lang] : []));
+
+const LANGUAGES = [...new Set(TAGS.map(primary))].map((tag) => ({
   tag,
   name: ENGLISH.of(tag)!,
 }));
@@ -68,7 +72,7 @@ test('the description names every language the tool actually ships', () => {
   // fourth language is what showed it: `nl` shipped and the test stayed green.
   //
   // Nothing here is a literal any more. The language names come from the
-  // registry through `Intl`, so a fifth pack fails this the moment it is
+  // registry through `Intl`, so a fifth language fails this the moment it is
   // registered and before its skill copy is written.
   const fm = frontmatter();
   for (const { tag, name } of LANGUAGES)
@@ -78,13 +82,13 @@ test('the description names every language the tool actually ships', () => {
     );
 });
 
-test('every --lang the skill names is a real pack', () => {
+test('every --lang the skill names is a shipped style', () => {
   const named = [...SKILL.matchAll(/--lang[= ]([^\s`|]+)/g)]
     .map((m) => m[1]!)
     .filter((t) => !t.startsWith('<'));
   assert.ok(named.length >= 2, 'the skill should show more than one language');
   for (const tag of named)
-    assert.ok(packFor(tag), `SKILL.md invokes --lang ${tag}, which has no pack`);
+    assert.ok(styleFor(tag), `SKILL.md invokes --lang ${tag}, which has no style`);
 });
 
 test('every flag and verb the skill names is one the CLI accepts', () => {
@@ -111,46 +115,35 @@ test('the skill teaches the four things that are not in --help', () => {
   );
 });
 
-test('every pack id the skill quotes is the one that pack currently has', () => {
+test('every stamp the skill quotes is one a style currently carries', () => {
   // The failure this catches, which had already happened: the skill's worked
-  // example of a report footer read `(fr@0.1.0)` while the pack shipped
-  // `fr@0.2.0`, and the same file tells the reader that a report stamped
-  // `fr@0.1.0` predates the guillemet narrowing and should be ignored. So the
-  // example taught a model to distrust the tool's own current output.
+  // example of a report footer quoted a stamp the package had moved past, and
+  // the same file told the reader that a report carrying that stamp predated the
+  // guillemet narrowing and should be ignored. So the example taught a model to
+  // distrust the tool's own current output.
   //
-  // A pack version moves whenever a rule changes, which is exactly when nobody is
-  // thinking about the skill, so this cannot be left to review.
-  const current = new Set(packs.map((p) => p.id));
+  // A stamp moves whenever a rule changes, which is exactly when nobody is
+  // thinking about the skill, so this cannot be left to review. It moves more
+  // readily now than it did when a maintainer had to type a version, which makes
+  // this test more load-bearing rather than less.
+  const current = new Set(styles.map((style) => style.id));
   // Built from the registry rather than written out, for the reason above one
   // level up: a hand-kept alternation of tags does not fail when a language is
   // added, it just stops watching that language's stamps.
-  const tags = packs.map((p) => p.lang.replace('-', '\\-')).join('|');
-  const quoted = [...SKILL.matchAll(new RegExp(`\\b((?:${tags})@\\d+\\.\\d+\\.\\d+)\\b`, 'g'))];
+  const tags = TAGS.map((tag) => tag.replace('-', '\\-')).join('|');
+  const quoted = [...SKILL.matchAll(new RegExp(`\\b((?:${tags})@[0-9a-f]{12})\\b`, 'g'))];
 
   assert.ok(quoted.length > 0, 'the skill should show at least one stamp');
-  for (const match of quoted) {
-    const id = match[1]!;
-    if (current.has(id)) continue;
-
-    // A superseded pack may be named, but only where the skill is telling the
-    // reader what changed - "At `fr@0.1.0` the rules used to", "a report stamped
-    // `fr@0.1.0` predates this". The test has to read the words immediately
-    // before *this* occurrence rather than ask whether the file says them
-    // anywhere: SKILL.md carries both of those sentences, so a file-wide search
-    // would have licensed the broken footer that prompted this test and caught
-    // nothing at all.
-    const lead = SKILL.slice(Math.max(0, match.index - 16), match.index);
-    assert.match(
-      lead,
-      /(?:\bAt|\bstamped)\s+`?$/,
-      `SKILL.md quotes ${id}, which no pack ships, in a position that reads as current. ` +
-        `Preceded by ${JSON.stringify(lead)}.`,
+  for (const match of quoted)
+    assert.ok(
+      current.has(match[1]!),
+      `SKILL.md quotes ${match[1]}, which no style carries. A stamp is derived from ` +
+        'the rules, so this moved because a rule moved.',
     );
-  }
 });
 
 test('the references exist and one is read only once the language is known', () => {
-  // One reference per language, not per pack: `de-DE` and `de-CH` share `de.md`
+  // One reference per language, not per style: `de-DE` and `de-CH` share `de.md`
   // because they share a standard and differ only in which guillemet opens.
   for (const { tag } of LANGUAGES) {
     const body = readFileSync(join(SKILL_DIR, 'references', `${tag}.md`), 'utf8');
@@ -172,10 +165,12 @@ test('the references name every rule, and no rule that is gone', () => {
   const heading = /^(.*\((?:warning, )?(?:not )?fixable\).*)$/gm;
   for (const { tag } of LANGUAGES) {
     // By primary tag, because `de.md` covers both German regions and there is
-    // deliberately no bare `de` pack. Under global ids the two regions' rule
+    // deliberately no bare `de` style. Under global ids the two regions' rule
     // sets overlap almost entirely, which is what makes one reference honest.
     const known = new Set(
-      packs.filter((p) => primary(p.lang) === tag).flatMap((p) => p.rules.map((r) => r.id)),
+      styles
+        .filter((style) => style.lang !== undefined && primary(style.lang) === tag)
+        .flatMap((style) => style.rules.map((rule) => rule.id)),
     );
     const body = readFileSync(join(SKILL_DIR, 'references', `${tag}.md`), 'utf8');
     const named = new Set<string>();

@@ -141,7 +141,7 @@ test('the pack has no rule about which quotation marks Dutch uses', () => {
   }
 });
 
-test('the pack stamps an era', () => {
-  assert.equal(nl.id, 'nl@0.1.0');
+test('the style stamps an era', () => {
+  assert.match(nl.id, /^nl@[0-9a-f]{12}$/);
   assert.equal(nl.lang, 'nl');
 });

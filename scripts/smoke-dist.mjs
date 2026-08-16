@@ -25,8 +25,12 @@ assert.equal(guess.status, 2, 'the CLI must refuse to guess a language');
 
 const found = run(['check', '--lang', 'es', '-'], 'Como estas?');
 assert.equal(found.status, 1, 'an error finding must exit non-zero');
-assert.match(found.stdout, /es\.unpaired-question/);
-assert.match(found.stdout, /typocheck \d+\.\d+\.\d+ \(es@\d+\.\d+\.\d+\)/);
+// Global ids, so no language prefix, and a derived stamp, so no version number.
+// Both of these were written against the shapes those two had in 0.1.0 and this
+// script does not run in `pnpm check`, which is how they stayed stale through
+// the rename: it runs in CI against a build, on the oldest supported Node.
+assert.match(found.stdout, /\bunpaired-question\b/);
+assert.match(found.stdout, /typocheck \d+\.\d+\.\d+ \(es@[0-9a-f]{12}\)/);
 
 const clean = run(['check', '--lang', 'fr', '-'], 'Rien a signaler ici.');
 assert.equal(clean.status, 0, clean.stdout + clean.stderr);

@@ -2,7 +2,7 @@
   "gate": "findings",
   "corpus": "fedlex-bv-2024-de-ch",
   "note": "Swiss Federal Constitution, German, consolidated 3 March 2024, from Fedlex. Long formal Swiss German with around 700 real no-break spaces and no quotation marks whatsoever.",
-  "pack": "de-CH@0.2.0",
+  "pack": "de-CH@f4928d1e43d1",
   "standard": "Duden",
   "units": 1,
   "characters": 199319,

@@ -75,6 +75,10 @@
     "./nl": {
       "types": "./dist/nl.d.ts",
       "import": "./dist/nl.js"
+    },
+    "./rules": {
+      "types": "./dist/rules/index.d.ts",
+      "import": "./dist/rules/index.js"
     }
   },
   "scripts": {

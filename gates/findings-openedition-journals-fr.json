@@ -2,7 +2,7 @@
   "gate": "findings",
   "corpus": "openedition-journals-fr",
   "note": "Articles from three OpenEdition journals: Revue francaise des sciences de l'information et de la communication, Questions de communication, and Terrain. Academic French set properly by the platform, which is what qualifies it: guillemets carry a real no-break space and apostrophes are U+2019, so a finding here is a suspected false positive rather than a recall test. Three journals so that one copy editor's habits do not stand in for published French.",
-  "pack": "fr@0.2.0",
+  "pack": "fr@a8ada4df7c7c",
   "standard": "Imprimerie nationale",
   "units": 39,
   "characters": 2007259,

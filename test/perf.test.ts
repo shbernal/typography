@@ -22,16 +22,16 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { check, fix, packs } from '../src/check.ts';
+import { check, fix, styles } from '../src/check.ts';
 import { withWidth } from '../src/fr.ts';
 import { NARROW_NO_BREAK, NO_BREAK, THIN } from '../src/pack.ts';
 
-/** The registry plus the two packs `withWidth` derives. Those carry patterns the
+/** The registry plus the two styles `withWidth` derives. Those carry patterns the
  * registry ones do not - the guillemet runs with the correct-spelling exclusion
  * removed - and a pattern that takes a space run is exactly the shape this file
  * exists to watch. Left out, they would be the fourth instance of the bug in the
  * header, shipping unmeasured. */
-const MEASURED = [...packs, withWidth(NO_BREAK), withWidth(NARROW_NO_BREAK)];
+const MEASURED = [...styles, withWidth(NO_BREAK), withWidth(NARROW_NO_BREAK)];
 
 /** Generous enough to survive a loaded runner, tight enough that any return of
  * super-linear behaviour blows straight through it. */

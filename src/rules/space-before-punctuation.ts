@@ -29,6 +29,7 @@
 import { conformRule, detectRule, type Rule } from '../pack.ts';
 import { looksMachine } from '../prose.ts';
 import { ANY_SPACE } from './space.ts';
+import type { Spelling } from './spelling.ts';
 
 /** One id for the position, named once for the two builders that answer it.
  * Two literals would be the same defect this directory exists to remove, one
@@ -70,7 +71,8 @@ export function spaceBeforePunctuation(spec: {
  * `inner-space.ts`: the spellings this style will not retype. French passes the
  * two no-break spaces, so only a breaking space matches and a correct document is
  * left alone; `withWidth` passes null and takes the position unconditionally,
- * which is the whole difference between the two.
+ * which is the whole difference between the two. `spelling` is the other field
+ * those two share, and it is data for the same reason in both.
  */
 export function requireSpaceBeforePunctuation(spec: {
   summary: string;
@@ -83,8 +85,11 @@ export function requireSpaceBeforePunctuation(spec: {
   /** The marks this rule is about, as a class body. French excludes the colon,
    * which `colon-spacing.ts` rules on separately and without a ballot. */
   marks: string;
-  /** The spelling this text is repaired in. Must be stable under its own fix. */
-  choose: (value: string) => string;
+  /** How the repair is spelled: `impose(...)` or `conform(ballot)`. Data rather
+   * than a function for the reason `rules/spelling.ts` gives, which this rule is
+   * half of: the width never reaches the pattern, so a bare function would let
+   * the two `withWidth` derives stamp the same. */
+  spelling: Spelling;
 }): Rule {
   // One space, not a run: the position is a single character wide, and taking a
   // run here would let this rule and the guillemet rules fight over `» ;`.
@@ -94,6 +99,7 @@ export function requireSpaceBeforePunctuation(spec: {
     summary: spec.summary,
     cite: spec.cite,
     pattern: new RegExp(`${already}${spec.spaces}(?=${spec.marks})`, 'gu'),
-    choose: spec.choose,
+    choose: spec.spelling.of,
+    params: [spec.spelling.signature],
   });
 }

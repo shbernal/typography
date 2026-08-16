@@ -26,12 +26,12 @@ export const ANY_SPACE = `[ ${NO_BREAK}${NARROW_NO_BREAK}]`;
  * The same three plus U+2009, which is the class the French rules match on.
  *
  * The difference is real and nobody decided it. French names the thin space
- * because French is the pack that rules on *which* no-break space, and U+2009 is
+ * because French is the style that rules on *which* no-break space, and U+2009 is
  * the trap in that family: right width, breaks lines, so a proof looks correct
  * and the line comes apart in a browser. 18 of them sit inside guillemets in the
  * French corpora.
  *
- * The other three packs rule that the position takes no space at all, which
+ * The other three styles rule that the position takes no space at all, which
  * makes a thin space there wrong by their own summaries, and they do not match
  * it: `es.normalize` and `deCH.normalize` both leave `«<THINSP>hola<THINSP>»`
  * exactly as they found it. That is an inconsistency this merge made visible

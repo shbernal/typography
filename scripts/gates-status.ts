@@ -27,7 +27,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { packFor } from '../src/check.ts';
+import { styleFor } from '../src/check.ts';
 import { countOccurrences, EXPOSURE, fromText } from './gate-findings.ts';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -97,7 +97,7 @@ function grouped(value: number): string {
 function collect(): Row[] {
   const manifest = JSON.parse(readFileSync(MANIFEST, 'utf8')) as { corpora: CorpusSpec[] };
   return manifest.corpora.map((spec) => {
-    const pack = packFor(spec.lang);
+    const pack = styleFor(spec.lang);
     if (!pack) throw new Error(`${spec.id}: no pack for ${spec.lang}`);
     return {
       spec,

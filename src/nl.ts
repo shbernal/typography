@@ -1,8 +1,8 @@
 // Dutch orthotypography, per the Nederlandse Taalunie.
 //
-// The centre of gravity here is different from the other three packs, and the
+// The centre of gravity here is different from the other three styles, and the
 // difference is the point rather than a gap. French, Spanish and German each
-// have a national standard that rules on quotation marks, so each of those packs
+// have a national standard that rules on quotation marks, so each of those styles
 // leads with them. Dutch does not. The Taalunie's Technische Handleiding is a
 // *spelling* standard: it fixes where an apostrophe goes and says nothing about
 // spacing or about quotation marks, and Taaladvies.net, which does cover both,
@@ -11,7 +11,7 @@
 //     Er zijn geen vaste regels voor het gebruik van enkele of dubbele
 //     aanhalingstekens.
 //
-// So this pack has no rule about which quotation marks Dutch uses, because there
+// So this style has no rule about which quotation marks Dutch uses, because there
 // is nothing to cite. What it has instead is `nl.mixed-quotation-marks`, and the
 // same sentence that removes the first rule licenses that one:
 //
@@ -20,7 +20,7 @@
 // That is the `fr.mixed-no-break-space` stance arrived at from the other
 // direction. French had to infer a consistency claim from a standard that
 // declines to fix a width; Dutch is told to be consistent in as many words. A
-// pack must not assert what its citation does not fix, and a citation that fixes
+// style must not assert what its citation does not fix, and a citation that fixes
 // only consistency yields a rule about consistency and no other.
 //
 // **Why there is no `withStyle` here, and this is the measured part.** `fr`
@@ -29,9 +29,9 @@
 // it cannot be written safely: U+2019 is both the closing single quotation mark
 // and the apostrophe. Across the Technische Handleiding's own 427,000 characters
 // there are 537 of them, and the opening marks pair with exactly 144, so 393 are
-// apostrophes. A pack that harmonised `‘…’` into `“…”` would retype those 393 as
+// apostrophes. A style that harmonised `‘…’` into `“…”` would retype those 393 as
 // closing double quotes. Changing a width is a substitution; changing a
-// quotation system is a parse, which is the reason every pack here already
+// quotation system is a parse, which is the reason every style here already
 // declines to repair a straight double quote.
 //
 // Citations are to the Technische Handleiding (oktober 2016) for spelling and to
@@ -42,7 +42,8 @@
 // authoritative statement that exists on Dutch punctuation, because the treaty
 // body declined to make one.
 
-import { composeNormalize, LEFT_SINGLE_QUOTE, type Rule, type TypographyPack } from './pack.ts';
+import { compose } from './compose.ts';
+import { LEFT_SINGLE_QUOTE, type Rule, type Style } from './pack.ts';
 import { apostrophe } from './rules/apostrophe.ts';
 import { apostropheAfterSymbol } from './rules/apostrophe-after-symbol.ts';
 import { apostropheElision } from './rules/apostrophe-elision.ts';
@@ -54,9 +55,6 @@ import { straightDoubleQuote } from './rules/straight-double-quote.ts';
 
 const HANDLEIDING = 'Nederlandse Taalunie, Technische Handleiding (oktober 2016)';
 const TAALADVIES = 'Taaladvies.net (Nederlandse Taalunie, INT, Onze Taal)';
-
-/** Bumps when a rule changes, and never for a release that does not touch one. */
-const VERSION = '0.1.0';
 
 // U+2018 opens a quotation in Dutch and is never a weglatingsteken, which is
 // what makes the rules below able to convert it: across the Technische
@@ -78,7 +76,7 @@ const OPENERS = {
   double: '“',
   /** U+201E ... U+201D, the low-high pair. Onze Taal calls it "hoe langer hoe
    * meer in onbruik" while noting that some newspapers still set it, and it
-   * occurs nowhere in any Dutch source measured for this pack, including the
+   * occurs nowhere in any Dutch source measured for this style, including the
    * Taalunie's own document. It is here because a corpus that does use it is
    * consistent, not defective, and a ballot that could not see it would report
    * every quotation in such a document as a minority of one. */
@@ -146,7 +144,7 @@ const rules: readonly Rule[] = [
     cite: `${HANDLEIDING}, hoofdstuk 11 "Het weglatingsteken"`,
   }),
 
-  // The rule that has no counterpart in the other three packs, because no other
+  // The rule that has no counterpart in the other three styles, because no other
   // language here elides at the front of a word: `'s morgens`, `'t huis`,
   // `'n keer`, `'s-Gravenhage`. The closed clitic set and what it holds off are
   // in the builder.
@@ -160,19 +158,19 @@ const rules: readonly Rule[] = [
   // -------------------------------------------------------------------------
 
   // The standard sets 18 of these and 7 more after `@ & +`, which is what makes
-  // it worth a rule in a pack this small.
+  // it worth a rule in a style this small.
   apostropheAfterSymbol({
     wrong: WRONG_APOSTROPHE,
     cite: `${HANDLEIDING}, paragraaf 11.5`,
   }),
 
-  // The rule this pack has instead of a ruling on quotation marks, and the
+  // The rule this style has instead of a ruling on quotation marks, and the
   // second instance in this package of a standard declining to choose. Where
   // `fr.mixed-no-break-space` infers its claim from a standard that specifies one
   // width and typesets another, this one is told: Taaladvies says there are no
   // fixed rules and then recommends picking one system and keeping to it.
   //
-  // Unlike French, this pack ballots and reports over the same pattern. Every
+  // Unlike French, this style ballots and reports over the same pattern. Every
   // mark in opening position is both a vote and a candidate for the report,
   // because a mark is either one of the three systems or not a quotation mark.
   minorityReport({
@@ -192,7 +190,7 @@ const rules: readonly Rule[] = [
   // standard that says nothing about spacing. Dutch and French are in daily
   // contact in Belgium, and French spacing carried into Dutch is a defect under
   // the Belgian half of the Taalunie's own authority rather than a Belgian
-  // convention, which is why this is one pack and not `nl-BE` plus `nl-NL`.
+  // convention, which is why this is one style and not `nl-BE` plus `nl-NL`.
   spaceBeforePunctuation({
     language: 'Dutch',
     cite: `${TAALADVIES}, "Wel of geen spaties voor en na leestekens en symbolen"`,
@@ -208,21 +206,20 @@ const rules: readonly Rule[] = [
 ];
 
 /**
- * The Dutch pack.
+ * The Dutch style.
  *
- * One pack and no regions, unlike German. The Taalunie is a treaty body whose
+ * One style and no regions, unlike German. The Taalunie is a treaty body whose
  * spelling binds the Netherlands, Flanders and Suriname alike, so there is no
  * second Dutch convention for a tag to name - which is the same test that gives
- * German two packs and gives this one none.
+ * German two styles and gives this one none.
  *
  * `normalize` carries the two apostrophe rules and none of the five detections.
  */
-export const nl: TypographyPack = {
-  id: `nl@${VERSION}`,
+export const nl: Style = compose({
+  name: 'nl',
   lang: 'nl',
   standard: 'Nederlandse Taalunie',
   rules,
-  normalize: composeNormalize(rules),
-};
+});
 
 export default nl;

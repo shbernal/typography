@@ -1,33 +1,35 @@
-// The runner: a pack plus text gives findings.
+// The runner: a style plus text gives findings.
 //
 // This is where the check/fix asymmetry becomes visible to a caller rather than
 // just true in the types. `check` runs every rule. `fix` runs the fixable subset
-// and is exactly `pack.normalize`, re-exported under a name that says what it
+// and is exactly `style.normalize`, re-exported under a name that says what it
 // does at a call site. There is no third thing that runs some rules.
 //
-// The registry lives here too. It is a lookup from a BCP 47 tag to a pack, and
-// it is deliberately not a plugin system: a pack is a plain object, nothing
-// registers itself, and a consumer who wants one language imports one subpath
-// and never touches this file.
+// The registry lives here too. It is a lookup from a BCP 47 tag to one of the
+// shipped styles, and it is deliberately not a plugin system: a style is a plain
+// object, nothing registers itself, and a consumer who wants one language
+// imports one subpath and never touches this file. A style the user composed is
+// not in here and does not need to be, since `check` takes the style rather than
+// looking one up.
 
 import { deCH } from './de-CH.ts';
 import { deDE } from './de-DE.ts';
 import { es } from './es.ts';
 import { fr } from './fr.ts';
 import { nl } from './nl.ts';
-import { excerptAt, type Finding, type TypographyPack } from './pack.ts';
+import { excerptAt, type Finding, type Style } from './pack.ts';
 
-/** Every pack this package ships, in tag order.
+/** Every style this package ships, in tag order.
  *
  * There is no bare `de`. German is two conventions and a tag that named neither
  * would be a stamp that lies about which one a corpus was set in. `nl` is bare
  * for the same test read the other way: the Taalunie's spelling binds the
  * Netherlands, Flanders and Suriname, so there is one convention for the tag to
  * name. */
-export const packs: readonly TypographyPack[] = [deCH, deDE, es, fr, nl];
+export const styles: readonly Style[] = [deCH, deDE, es, fr, nl];
 
 /**
- * The pack for a BCP 47 tag, or undefined.
+ * The shipped style for a BCP 47 tag, or undefined.
  *
  * Matching is exact and case-insensitive, and there is **no fallback from a
  * region to a bare language**: `de-AT` does not silently resolve to `de-DE`
@@ -36,18 +38,18 @@ export const packs: readonly TypographyPack[] = [deCH, deDE, es, fr, nl];
  * `de-AT` treated as `de-DE` says so in its own dispatch, where the decision is
  * visible.
  */
-export function packFor(lang: string): TypographyPack | undefined {
+export function styleFor(lang: string): Style | undefined {
   const want = lang.toLowerCase();
-  return packs.find((p) => p.lang.toLowerCase() === want);
+  return styles.find((style) => style.lang?.toLowerCase() === want);
 }
 
 /** Every finding in `text`, in the order they appear rather than by rule, since
  * a report is read top to bottom against the text it describes. */
-export function check(pack: TypographyPack, text: string): Finding[] {
+export function check(style: Style, text: string): Finding[] {
   const starts = lineStarts(text);
   const findings: Finding[] = [];
 
-  for (const rule of pack.rules) {
+  for (const rule of style.rules) {
     for (const at of rule.find(text)) {
       const { line, column } = position(starts, at.index);
       findings.push({
@@ -68,14 +70,14 @@ export function check(pack: TypographyPack, text: string): Finding[] {
 }
 
 /**
- * The fixable subset applied, which is `pack.normalize` and nothing more.
+ * The fixable subset applied, which is `style.normalize` and nothing more.
  *
  * Idempotent, so running it over its own output is a no-op and a backfill
- * converges. `test/packs.test.ts` asserts that for every pack over every fixture
+ * converges. `audit` asserts that for every style over every sample it is given,
  * rather than leaving it as a claim in a comment.
  */
-export function fix(pack: TypographyPack, text: string): string {
-  return pack.normalize(text);
+export function fix(style: Style, text: string): string {
+  return style.normalize(text);
 }
 
 /** Findings that `fix` would *not* resolve. The interesting half of a report:

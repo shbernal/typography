@@ -5,7 +5,7 @@
 // which this file used to give as the reason there could be no shared rule
 // engine. That was an argument about two standards bodies disagreeing, and it
 // does not survive the composition pivot: opposite is a parameter value, and
-// `rules/inner-space.ts` is where both rules now live. Every rule this pack
+// `rules/inner-space.ts` is where both rules now live. Every rule this style
 // declares is a call into `rules/`.
 //
 // The sharper point was always the opening marks anyway. `¿` and `¡` are
@@ -20,7 +20,8 @@
 // Citations are section-level, to `Ortografía de la lengua española` (RAE,
 // 2010).
 
-import { composeNormalize, type Rule, type TypographyPack } from './pack.ts';
+import { compose } from './compose.ts';
+import type { Rule, Style } from './pack.ts';
 import { innerSpace } from './rules/inner-space.ts';
 import { openingMarkSpace } from './rules/opening-mark-space.ts';
 import { ANY_SPACE } from './rules/space.ts';
@@ -29,15 +30,6 @@ import { straightDoubleQuote } from './rules/straight-double-quote.ts';
 import { unpairedMark } from './rules/unpaired-mark.ts';
 
 const ORTOGRAFIA = 'RAE, Ortografía de la lengua española (2010)';
-
-/** Bumps when a rule changes, and never for a release that does not touch one.
- *
- * 0.2.0 put the cross-language guard on both guillemet rules. Under `es@0.1.0`
- * a German inward quotation inside Spanish text had both its spaces deleted and
- * its words welded; under `es@0.2.0` it is left alone. No Spanish corpus
- * contains one, so no committed count moves, and the two stamps still have to be
- * told apart: `normalize` returns something different for text that reaches it. */
-const VERSION = '0.2.0';
 
 const rules: readonly Rule[] = [
   // The same builder as `fr.guillemet-open`, on the identical character in the
@@ -111,18 +103,22 @@ const rules: readonly Rule[] = [
 ];
 
 /**
- * The Spanish pack.
+ * The Spanish style.
  *
  * `normalize` carries the three spacing rules and none of the four detections,
  * so a host binding this through `job.normalize` gets exactly the subset that is
  * safe to apply to somebody's text without being asked.
+ *
+ * The stamp is derived, so the cross-language guard the header describes moved
+ * it the moment the pattern changed. It used to be a hand-written `0.2.0` and
+ * the release note explaining why it had moved was the only thing making the
+ * claim true.
  */
-export const es: TypographyPack = {
-  id: `es@${VERSION}`,
+export const es: Style = compose({
+  name: 'es',
   lang: 'es',
   standard: 'Real Academia Española',
   rules,
-  normalize: composeNormalize(rules),
-};
+});
 
 export default es;

@@ -30,15 +30,16 @@
 
 import { conformRule, type Rule } from '../pack.ts';
 import { runStart } from './space.ts';
+import { impose, type Spelling } from './spelling.ts';
 
 /**
  * What the inside of the mark should hold.
  *
  * The empty string closes the mark up, which is what Spanish and both German
  * conventions require. The object form is for a style whose sources admit more
- * than one spelling: `choose` says which one *this text* is repaired in, and
- * `admissible` is the set already correct, which the pattern then declines to
- * match at all.
+ * than one spelling: the `Spelling` says which one *this text* is repaired in,
+ * and `admissible` is the set already correct, which the pattern then declines
+ * to match at all.
  */
 export type InnerSpacing =
   | ''
@@ -50,12 +51,13 @@ export type InnerSpacing =
        * other spelling. `fr.withWidth` is the only caller that does, and the
        * comment there is the one to read before adding a second. */
       readonly admissible: string | null;
-      /** The spelling this text is repaired in. Called once per value.
+      /** How the repair is spelled: `impose(...)` or `conform(ballot)`.
        *
-       * Must be stable under its own fix or `normalize` stops converging: a
-       * `choose` that counts spellings has to break a tie toward a fixed side.
-       * `conformRule` says this at length and `test/packs.test.ts` asserts it. */
-      readonly choose: (value: string) => string;
+       * A `Spelling` and not a function, because the width a repair imposes
+       * never reaches the pattern, so a bare function would leave two styles
+       * that write different text stamping the same. `rules/spelling.ts` has
+       * the argument. */
+      readonly spelling: Spelling;
     };
 
 /** No letter or digit on the mark's outside. See `guard`. */
@@ -126,7 +128,10 @@ export function innerSpace(spec: {
   // Narrowed at each use rather than through `closedUp`, which the checker does
   // not follow back to the union.
   const closedUp = spec.correct === '';
-  const inner = spec.correct === '' ? () => '' : spec.correct.choose;
+  // One object decides both what the repair writes and what the stamp hashes,
+  // which is the whole reason `correct` carries a `Spelling` rather than a
+  // function. Splitting these two lines apart is how the pair drifts.
+  const inner = spec.correct === '' ? impose('') : spec.correct.spelling;
   const admissible = spec.correct === '' ? null : spec.correct.admissible;
 
   // A rule that deletes need only consider runs of at least one space; a match
@@ -146,7 +151,8 @@ export function innerSpace(spec: {
       // that are already correct, and the run then takes the rest with nothing
       // after it to backtrack for. One way to match, so it stays linear.
       pattern: new RegExp(`${spec.guard ? NOT_WORD_BEFORE : ''}${spec.mark}${already}${run}`, 'gu'),
-      choose: (value) => `${spec.mark}${inner(value)}`,
+      choose: (value) => `${spec.mark}${inner.of(value)}`,
+      params: [inner.signature],
     });
   }
 
@@ -162,6 +168,7 @@ export function innerSpace(spec: {
       `${runStart(spec.spaces)}${already}${run}${spec.mark}${spec.guard ? NOT_WORD_AFTER : ''}`,
       'gu',
     ),
-    choose: (value) => `${inner(value)}${spec.mark}`,
+    choose: (value) => `${inner.of(value)}${spec.mark}`,
+    params: [inner.signature],
   });
 }

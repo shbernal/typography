@@ -26,6 +26,18 @@ export type Tally<K extends string> = Readonly<Record<K, number>>;
 export interface Ballot<K extends string> {
   /** The candidates, in precedence order. */
   readonly candidates: readonly K[];
+  /**
+   * What this ballot is, for the signature of any rule built on it.
+   *
+   * The candidates in order and the pattern that collects the votes, which is
+   * everything about a ballot that a style chose. `vote` is a closure and is
+   * not in here: it decodes a match of that pattern into one of those
+   * candidates, so two ballots agreeing on both and disagreeing on `vote` would
+   * have to be reading the same captures two ways. That is the residue this
+   * design leaves, and it is a builder's to avoid rather than a style's, since
+   * no style writes a `vote`.
+   */
+  readonly signature: string;
   /** Count one value. */
   readonly tally: (value: string) => Tally<K>;
   /** Count many. Additive, which is the whole reason a host can fold a corpus
@@ -89,6 +101,7 @@ export function ballot<K extends string>(spec: {
 
   return {
     candidates,
+    signature: JSON.stringify([...candidates, pattern.source, pattern.flags]),
     tally,
     fold: (values) => {
       const total = empty();

@@ -18,7 +18,7 @@
 // The citation does not settle it, which is the substance rather than an excuse.
 // The Lexique typesets its own guillemets with a fine space while its own table
 // at p.149 specifies `espace mots insécable`, which is U+00A0; the fine space is
-// what Swiss practice prescribes. So this pack does not pretend to a width the
+// what Swiss practice prescribes. So this style does not pretend to a width the
 // standard does not fix. It rules on what is wrong under *both* readings - a
 // breaking space, a doubled space, no space - and it repairs in whichever of the
 // two no-break spaces the document already uses. Consistency within a document is
@@ -38,13 +38,8 @@
 // that is the line between a national standard and a house style, and it is the
 // only thing keeping this file from becoming a place where preferences collect.
 
-import {
-  composeNormalize,
-  NARROW_NO_BREAK,
-  NO_BREAK,
-  type Rule,
-  type TypographyPack,
-} from './pack.ts';
+import { compose, derive } from './compose.ts';
+import { NARROW_NO_BREAK, NO_BREAK, type Rule, type Style } from './pack.ts';
 import { apostrophe } from './rules/apostrophe.ts';
 import { ballot } from './rules/ballot.ts';
 import { colonSpacing } from './rules/colon-spacing.ts';
@@ -53,27 +48,17 @@ import { minorityReport } from './rules/minority-report.ts';
 import { missingPunctuationSpace } from './rules/missing-punctuation-space.ts';
 import { ANY_SPACE_OR_THIN } from './rules/space.ts';
 import { requireSpaceBeforePunctuation } from './rules/space-before-punctuation.ts';
+import { conform, impose } from './rules/spelling.ts';
 import { straightDoubleQuote } from './rules/straight-double-quote.ts';
 
 const LEXIQUE = 'Imprimerie nationale, Lexique des règles typographiques (2002)';
-
-/** Bumps when a rule changes, and never for a release that does not touch one.
- * This is the era stamp a corpus gets tagged with, so a version that moved for a
- * README fix would split a corpus into two eras that are in fact identical.
- *
- * 0.2.0 narrowed the two guillemet rules and `fr.space-before-high-punctuation`
- * from a fixed U+202F to whichever no-break space the document uses, and added
- * `fr.mixed-no-break-space`. A corpus normalized under `fr@0.1.0` had the inside
- * of every quotation retyped and one under `fr@0.2.0` did not, so the two are
- * genuinely different eras of this pack. */
-const VERSION = '0.2.0';
 
 // `ANY_SPACE_OR_THIN` is everything that turns up between a guillemet and the
 // word beside it in text that reaches this package. It is spelled out in
 // `rules/space.ts`, along with why French names U+2009 and the other three
 // styles do not.
 
-/** The two admissible spellings of the no-break space this pack has to choose
+/** The two admissible spellings of the no-break space this style has to choose
  * between, and never a third. Passed as `admissible` wherever a rule here has to
  * leave a correct document alone: the two spellings that break a line are then
  * exactly what is left, which is what the standard is about under either
@@ -81,7 +66,7 @@ const VERSION = '0.2.0';
  * survives proofreading and comes apart when the text reflows. */
 const NO_BREAK_SPACE = `[${NO_BREAK}${NARROW_NO_BREAK}]`;
 
-/** The three marks whose space this pack ballots over. The colon is not among
+/** The three marks whose space this style ballots over. The colon is not among
  * them: `colonSpacing` rules on it outright, because it is the one position
  * where nothing is in dispute. */
 const HIGH_PUNCTUATION = `[;!?]`;
@@ -91,7 +76,7 @@ const HIGH_PUNCTUATION = `[;!?]`;
  * no-break space. That one sentence covers all three defects - a breaking space
  * anywhere in the run, more than one space, no space at all - and exactly one
  * U+00A0 and exactly one U+202F are what it leaves out, which is the whole of
- * what the corpora taught this pack.
+ * what the corpora taught this style.
  *
  * **How it is spelled matters as much as what it says.** The direct translation
  * enumerates the three defects as an alternation:
@@ -117,7 +102,7 @@ const HIGH_PUNCTUATION = `[;!?]`;
  * closing a mark up leaves nothing to be already correct about.
  */
 
-/** Every position where this pack has an opinion about *which* no-break space to
+/** Every position where this style has an opinion about *which* no-break space to
  * use. The colon is deliberately not here: the Lexique specifies the word space
  * before it, both corpora agree with the Lexique 2,458 times and contradict it
  * never, and a rule with nothing in dispute does not need a ballot. */
@@ -159,16 +144,18 @@ const width = ballot({
  * cases and it is not the same grain: a registry normalized field by field can
  * still be inconsistent across rows, which is the defect the harness this was
  * extracted from exists to catch one level up. `surveyWidth` and `withWidth`
- * below are that level up; this function still decides per value, which is what
- * keeps `fr` itself exactly as it was.
+ * below are that level up; this one still decides per value, which is what keeps
+ * `fr` itself exactly as it was.
+ *
+ * A `Spelling` rather than a function, so the rules built on it stamp
+ * differently from the rules `withWidth` builds by imposing a width. The two
+ * produce identical patterns, so without this the two eras would share an id.
  */
-function houseWidth(value: string): string {
-  return width.verdict(width.tally(value));
-}
+const houseWidth = conform(width);
 
 const rules: readonly Rule[] = [
   // The shared builder carries the pattern and the narrowing that makes it safe.
-  // What is French about it is the measurement: the corpus this pack was
+  // What is French about it is the measurement: the corpus this style was
   // extracted from split 711/974 between the straight and the curly form across
   // 2,125 rows, with 4 rows carrying both.
   apostrophe({
@@ -194,7 +181,7 @@ const rules: readonly Rule[] = [
     spaces: ANY_SPACE_OR_THIN,
     admissible: NO_BREAK_SPACE,
     marks: HIGH_PUNCTUATION,
-    choose: houseWidth,
+    spelling: houseWidth,
   }),
 
   // The two inserting rules, and the two members of the inner-space family that
@@ -220,7 +207,7 @@ const rules: readonly Rule[] = [
     mark: '\u00AB',
     side: 'open',
     spaces: ANY_SPACE_OR_THIN,
-    correct: { admissible: NO_BREAK_SPACE, choose: houseWidth },
+    correct: { admissible: NO_BREAK_SPACE, spelling: houseWidth },
     guard: false,
   }),
 
@@ -230,7 +217,7 @@ const rules: readonly Rule[] = [
     mark: '\u00BB',
     side: 'close',
     spaces: ANY_SPACE_OR_THIN,
-    correct: { admissible: NO_BREAK_SPACE, choose: houseWidth },
+    correct: { admissible: NO_BREAK_SPACE, spelling: houseWidth },
     guard: false,
   }),
 
@@ -238,7 +225,7 @@ const rules: readonly Rule[] = [
   // Check only. Detectable, and not safely repairable by substitution.
   // -------------------------------------------------------------------------
 
-  // The rule this pack has instead of a ruling on the width. Neither spelling is
+  // The rule this style has instead of a ruling on the width. Neither spelling is
   // a defect and using both in one document is, which is a claim the citation
   // supports precisely because it does not fix a width: the Lexique sets its own
   // pages in the fine space and specifies the word space at p.149, so a document
@@ -278,19 +265,22 @@ const rules: readonly Rule[] = [
 ];
 
 /**
- * The French pack.
+ * The French style.
  *
  * `normalize` is the five fixable rules in the order above and nothing else. It
  * satisfies `translation-harness`'s `job.normalize` structurally, so a host
  * binds it without either package importing the other.
+ *
+ * The stamp is derived from the rule list, so the narrowing this file's header
+ * describes moved it without anybody deciding to, and the two `withWidth`
+ * derives below carry stamps of their own for the same reason.
  */
-export const fr: TypographyPack = {
-  id: `fr@${VERSION}`,
+export const fr: Style = compose({
+  name: 'fr',
   lang: 'fr',
   standard: 'Imprimerie nationale',
   rules,
-  normalize: composeNormalize(rules),
-};
+});
 
 export default fr;
 
@@ -304,12 +294,12 @@ export default fr;
 // U+00A0 and row 2 on U+202F, each correct alone, and the registry splits. That
 // is the defect this module was extracted from a harness to catch, reintroduced
 // one level up, and no consumer can close it from outside because the ballot is
-// private and a host reimplementing it would drift from the pack the first time
+// private and a host reimplementing it would drift from the style the first time
 // a rule changed.
 //
 // The two functions below close it, and they are deliberately two rather than
 // one. `surveyWidth` reports; `withWidth` acts on the report. Keeping them apart
-// is the same stance the pack takes everywhere else: this package can say what a
+// is the same stance the style takes everywhere else: this package can say what a
 // corpus does and it cannot say what a corpus should do, because the citation
 // does not fix a width. `fr.mixed-no-break-space` already reserves that decision
 // for the author, and a host surveying its own registry is the author making it.
@@ -385,7 +375,7 @@ function harmonizingRules(width: string): readonly Rule[] {
       spaces: ANY_SPACE_OR_THIN,
       admissible: null,
       marks: HIGH_PUNCTUATION,
-      choose: () => width,
+      spelling: impose(width),
     }),
     innerSpace({
       summary: `Opening guillemet whose inner space is not the corpus's no-break space`,
@@ -393,7 +383,7 @@ function harmonizingRules(width: string): readonly Rule[] {
       mark: '«',
       side: 'open',
       spaces: ANY_SPACE_OR_THIN,
-      correct: { admissible: null, choose: () => width },
+      correct: { admissible: null, spelling: impose(width) },
       guard: false,
     }),
     innerSpace({
@@ -402,19 +392,19 @@ function harmonizingRules(width: string): readonly Rule[] {
       mark: '»',
       side: 'close',
       spaces: ANY_SPACE_OR_THIN,
-      correct: { admissible: null, choose: () => width },
+      correct: { admissible: null, spelling: impose(width) },
       guard: false,
     }),
   ];
 }
 
 /**
- * A French pack that spells one width at every position where the width was ever
+ * A French style that spells one width at every position where the width was ever
  * in question, for a host that has surveyed its corpus and settled it.
  *
  * Use it with `surveyWidth`: survey the registry once, then normalize every
  * value under the one verdict. Per-value behaviour is unchanged for everyone
- * else, because this returns a new pack and does not touch `fr`.
+ * else, because this returns a new style and does not touch `fr`.
  *
  * **The positions are the three on the ballot** - inside an opening guillemet,
  * inside a closing one, and before `; ! ?` - and they are the three because they
@@ -423,21 +413,30 @@ function harmonizingRules(width: string): readonly Rule[] {
  * colon stays U+00A0 under either width, and is not an exception to tidy away
  * later: it is the one position where nothing is in dispute, the Lexique
  * specifies the word space and the corpora use it 2,458 times against no
- * counter-example. Imposing U+202F there would be this pack asserting what its
+ * counter-example. Imposing U+202F there would be this style asserting what its
  * citation does not fix, in the one function whose whole subject is the
  * difference between those two things.
  *
- * **The id is a different era stamp, and that is the load-bearing part.** A
- * corpus normalized by this pack has had correct text retyped into the imposed
- * width; one normalized by `fr` has not. Those are two typography eras by
- * exactly the argument that separates `fr@0.1.0` from `fr@0.2.0`, and a stamp
- * that read `fr@0.2.0` on both would say the two corpora were set the same way.
- * So the id carries the width: `fr@0.2.0+house-00A0`.
+ * **Three different stamps, and that is the load-bearing part.** A corpus
+ * normalized by one of these has had correct text retyped into the imposed
+ * width; one normalized by `fr` has not; and the two widths retype it in
+ * opposite directions. Those are three typography eras by exactly the argument
+ * that separated the first version of this style from the second, and one stamp
+ * across them would say the corpora were set the same way.
  *
- * `fr.mixed-no-break-space` is **not** in this pack. Its whole content is that
+ * The stamp used to say so by hand, as `fr@0.2.0+house-00A0`. It says so by
+ * construction now: `impose(U+00A0)` and `impose(U+202F)` sign differently, the
+ * dropped rule is one fewer signature in the list, and the hash moves for all of
+ * it without anybody choosing a suffix. That is worth reading twice, because the
+ * two harmonizing rule sets build **character-for-character identical
+ * patterns** - the width is in the `Spelling` and nowhere else - so a stamp
+ * hashed over patterns alone would have quietly said the two eras were one.
+ * `rules/spelling.ts` exists for that sentence.
+ *
+ * `mixed-no-break-space` is **not** in this style. Its whole content is that
  * choosing a width is the author's call, and reaching this function is the
  * author making it. It would also now be a lie in the report: it is check-only,
- * so every finding carries `fixable: false`, while this pack's `normalize`
+ * so every finding carries `fixable: false`, while this style's `normalize`
  * repairs every position it detects. The three rules above cover the same three
  * ballot positions exactly, so nothing is lost by dropping it.
  *
@@ -445,23 +444,20 @@ function harmonizingRules(width: string): readonly Rule[] {
  * reason: it is the right width and it breaks lines, so a host that reached for
  * it would be imposing a defect on every value it owns.
  */
-export function withWidth(width: string): TypographyPack {
+export function withWidth(width: string): Style {
   if (width !== NO_BREAK && width !== NARROW_NO_BREAK)
     throw new Error(
       'withWidth: the width must be NO_BREAK (U+00A0) or NARROW_NO_BREAK (U+202F). ' +
         'Those are the two spellings the Lexique admits, and nothing else is a no-break space.',
     );
 
-  const harmonizing = new Map(harmonizingRules(width).map((rule) => [rule.id, rule]));
-  const derived = rules.flatMap((rule) =>
-    rule.id === 'mixed-no-break-space' ? [] : [harmonizing.get(rule.id) ?? rule],
-  );
-
-  return {
-    id: `fr@${VERSION}+house-${width === NO_BREAK ? '00A0' : '202F'}`,
-    lang: 'fr',
-    standard: 'Imprimerie nationale',
-    rules: derived,
-    normalize: composeNormalize(derived),
-  };
+  // The three override verbs, and this is what they are for: `replace` and
+  // `drop` both throw if `fr` stops having the rule they name, so a rule renamed
+  // upstairs breaks this function rather than silently turning it into a style
+  // that imposes nothing. The hand-rolled `flatMap` this replaces did the same
+  // work and would have carried on doing it with an id that no longer matched.
+  return derive(fr, {
+    replace: harmonizingRules(width),
+    drop: ['mixed-no-break-space'],
+  });
 }

@@ -28,7 +28,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { check, packFor } from '../src/check.ts';
+import { check, styleFor } from '../src/check.ts';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const MANIFEST = join(REPO, 'gates', 'corpora.json');
@@ -166,7 +166,7 @@ function main(): void {
   let missing = 0;
 
   for (const spec of manifest.corpora) {
-    const pack = packFor(spec.lang);
+    const pack = styleFor(spec.lang);
     if (!pack) throw new Error(`${spec.id}: no pack for ${spec.lang}`);
 
     const location = join(REPO, 'gates', 'corpora', spec.id);

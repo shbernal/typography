@@ -7,22 +7,15 @@
 // German German `»Wort«` reversed - which is why this package has one module per
 // convention and no rule engine with a locale table.
 //
-// Everything else about Swiss German typography is Duden's, so this pack is the
+// Everything else about Swiss German typography is Duden's, so this style is the
 // common rules plus its own quotation marks.
 
+import { compose } from './compose.ts';
 import { DUDEN, germanCommonRules } from './de-common.ts';
-import { composeNormalize, type Rule, type TypographyPack } from './pack.ts';
+import type { Rule, Style } from './pack.ts';
 import { guillemetDirection } from './rules/guillemet-direction.ts';
 import { innerSpace } from './rules/inner-space.ts';
 import { ANY_SPACE } from './rules/space.ts';
-
-/** Bumps when a rule changes, and never for a release that does not touch one.
- *
- * 0.2.0 for the change `de-DE.ts` describes: `de.space-before-punctuation` is a
- * common rule, so putting it behind `looksMachine` moved both packs. Nothing
- * Swiss changed, and the stamp still has to move, because what a stamp promises
- * is that two corpora carrying it were checked by the same rules. */
-const VERSION = '0.2.0';
 
 const rules: readonly Rule[] = [
   ...germanCommonRules,
@@ -69,13 +62,18 @@ const rules: readonly Rule[] = [
   }),
 ];
 
-/** German as set in Switzerland. */
-export const deCH: TypographyPack = {
-  id: `de-CH@${VERSION}`,
+/** German as set in Switzerland.
+ *
+ * Nothing Swiss changed when `punctuation-spacing` went behind `looksMachine`
+ * and this style's stamp moved anyway, because what a stamp promises is that two
+ * corpora carrying it were checked by the same rules. That used to be a bump
+ * somebody had to remember in a second file; it is now a consequence of sharing
+ * the rule. */
+export const deCH: Style = compose({
+  name: 'de-CH',
   lang: 'de-CH',
   standard: 'Duden',
   rules,
-  normalize: composeNormalize(rules),
-};
+});
 
 export default deCH;

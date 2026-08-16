@@ -45,8 +45,8 @@ Verbs and flags:
 | `--lang <tag>` | required: `fr`, `es`, `de-DE`, `de-CH`, `nl` |
 | `--json` | machine-readable findings |
 | `--strict` | make warnings fail too |
-| `langs` | list the packs and their standards |
-| `--version` | the tool version and every pack id |
+| `langs` | list the styles and their standards |
+| `--version` | the tool version and every style stamp |
 
 Exit `0` clean, `1` findings, `2` misuse.
 
@@ -93,13 +93,13 @@ Default to `check`. Rewriting somebody's file needs them to have asked for it.
 `fix` without `--write` prints exactly what it would have done, so run that first
 and show it.
 
-**French no longer has the exception it used to have.** At `fr@0.1.0` the
+**French no longer has the exception it used to have.** An early version of the
 guillemet rules fired on every guillemet in 2.4 million characters of published
-French, wanting U+202F where French publishers use U+00A0. Since `fr@0.2.0` they
-accept either no-break space and repair only spacing that is wrong under both
-readings, in whichever width the document already uses. `fix --lang fr` is safe
-on well-set text. If a report you are reading is stamped `fr@0.1.0`, it predates
-this and its guillemet findings should be ignored.
+French, wanting U+202F where French publishers use U+00A0. They now accept either
+no-break space and repair only spacing that is wrong under both readings, in
+whichever width the document already uses. `fix --lang fr` is safe on well-set
+text. If a report you are reading carries a French stamp other than the current
+one, check its guillemet findings before acting on them.
 
 ### 4. State the language; do not sniff it
 
@@ -126,10 +126,12 @@ citation. When a user disputes a finding, the citation is the answer, and the
 answer to "why did it not fix this one" is always that the repair needs
 information a substitution does not have.
 
-A count with no version beside it is not comparable to the next one, which is why
-the footer stamps `typocheck 0.1.0 (fr@0.2.0)`. Keep the stamp when you paste a
-report anywhere it will be read later. `typocheck --version` prints the same two
-numbers without needing a file to check.
+A count with no stamp beside it is not comparable to the next one, which is why
+the footer stamps `typocheck 0.1.0 (fr@a8ada4df7c7c)`. The part after the `@` is
+derived from the rules themselves, so two reports carrying it were checked by the
+same rules and two carrying different ones were not. Keep the stamp when you
+paste a report anywhere it will be read later. `typocheck --version` prints the
+same two without needing a file to check.
 
 ## Per-language detail
 

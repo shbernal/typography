@@ -1,7 +1,7 @@
-// The German rules that do not vary by region. Internal: this is not a pack and
+// The German rules that do not vary by region. Internal: this is not a style and
 // there is no `./de` subpath export, because there is no German convention for a
 // bare `de` to name. Germany and Austria open a quotation with `»`; Switzerland
-// opens it with `«`. A pack id of `de@0.1.0` stamped on a Swiss corpus would be
+// opens it with `«`. A style named `de` stamped on a Swiss corpus would be
 // a stamp that lies, which is the one thing an era stamp may not do.
 //
 // What is left here after the shared families moved into `rules/` is a *rule
@@ -22,7 +22,7 @@ import { straightDoubleQuote } from './rules/straight-double-quote.ts';
 
 export const DUDEN = 'Duden, Die deutsche Rechtschreibung, Richtlinien';
 
-/** Rules common to every German region. Region packs prepend their own. */
+/** Rules common to every German region. Region styles prepend their own. */
 export const germanCommonRules: readonly Rule[] = [
   // German needs the apostrophe rule less often than French (`geht's`,
   // `Ku'damm`) and gets it wrong just as reliably. The letter-on-both-sides

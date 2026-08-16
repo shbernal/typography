@@ -92,6 +92,6 @@ test('the guard does not cost the Spanish rule anything', () => {
   assert.equal(es.normalize('(« hola »)'), '(«hola»)');
 });
 
-test('the pack stamps an era', () => {
-  assert.equal(es.id, 'es@0.2.0');
+test('the style stamps an era', () => {
+  assert.match(es.id, /^es@[0-9a-f]{12}$/);
 });

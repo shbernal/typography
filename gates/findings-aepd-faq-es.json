@@ -2,7 +2,7 @@
   "gate": "findings",
   "corpus": "aepd-faq-es",
   "note": "The Spanish data protection agency's public FAQ. Every entry is a question, which is the only material here that puts unpaired-question in front of correctly opened interrogatives at any volume.",
-  "pack": "es@0.2.0",
+  "pack": "es@8a1408a1e177",
   "standard": "Real Academia Española",
   "units": 116,
   "characters": 220269,

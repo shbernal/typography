@@ -145,12 +145,15 @@ test('a straight double quote is a warning, not an error', () => {
   assert.equal(quote.fixable, false);
 });
 
-test('the pack stamps an era', () => {
-  // 0.2.0 because the guillemet rules changed what they rewrite. A corpus
-  // normalized under 0.1.0 had the inside of every quotation retyped and one
-  // under 0.2.0 did not, so the stamp has to tell them apart.
-  assert.equal(fr.id, 'fr@0.2.0');
+test('the style stamps an era', () => {
+  // The stamp is derived from the rules, so what is asserted here is its shape
+  // and not its value. Writing the current hash down would make every rule
+  // change a two-file edit and would test the hash function rather than the
+  // style; what the era claim actually needs is in the next test and in
+  // `compose.test.ts`, where the stamp is shown to move when the rules move.
+  assert.match(fr.id, /^fr@[0-9a-f]{12}$/);
   assert.equal(fr.lang, 'fr');
+  assert.equal(fr.name, 'fr');
 });
 
 // ---------------------------------------------------------------------------
@@ -240,14 +243,20 @@ test('an imposed width still repairs what the shipped rules repair', () => {
   assert.equal(house.normalize('https://example.com'), 'https://example.com');
 });
 
-test('an imposed width is a different era stamp', () => {
+test('the three French eras stamp three different ways', () => {
   // A corpus normalized under `withWidth` has had correct text retyped into the
-  // imposed width and one normalized under `fr` has not. A stamp that read
-  // `fr@0.2.0` on both would say they were set the same way.
-  assert.equal(withWidth(NBSP).id, 'fr@0.2.0+house-00A0');
-  assert.equal(withWidth(NNBSP).id, 'fr@0.2.0+house-202F');
-  assert.notEqual(withWidth(NBSP).id, fr.id);
-  assert.notEqual(withWidth(NBSP).id, withWidth(NNBSP).id);
+  // imposed width and one normalized under `fr` has not, and the two widths
+  // retype it in opposite directions. One stamp across them would say they were
+  // set the same way.
+  //
+  // **The two derives are the hard case and this is the test for it.** They
+  // build character-for-character identical patterns: the width lives in the
+  // `Spelling` and reaches the text through `choose`, so a stamp hashed over
+  // patterns alone would put both under one id and nothing would ever have said
+  // so. `rules/spelling.ts` is what makes this assertion pass.
+  const ids = [fr.id, withWidth(NBSP).id, withWidth(NNBSP).id];
+  for (const id of ids) assert.match(id, /^fr@[0-9a-f]{12}$/);
+  assert.equal(new Set(ids).size, 3);
 });
 
 test('an imposed width drops the rule that says the width is undecided', () => {

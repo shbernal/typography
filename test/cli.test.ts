@@ -47,7 +47,7 @@ test('check reports and exits non-zero on an error finding', () => {
   const r = run(['check', '--lang', 'es', withFile('Como estas?')]);
   assert.equal(r.status, 1);
   assert.match(r.stdout, /unpaired-question/);
-  assert.match(r.stdout, /typocheck \d+\.\d+\.\d+ \(es@\d+\.\d+\.\d+\)/);
+  assert.match(r.stdout, /typocheck \d+\.\d+\.\d+ \(es@[0-9a-f]{12}\)/);
 });
 
 test('check never touches the file', () => {
@@ -121,15 +121,14 @@ test('--json carries the stamp and the findings', () => {
   const r = run(['check', '--lang', 'es', '--json', '-'], 'Como estas?');
   const parsed = JSON.parse(r.stdout) as {
     tool: string;
-    pack: string;
+    style: string;
     files: { findings: { rule: string; fixable: boolean }[] }[];
   };
   assert.match(parsed.tool, /^typocheck /);
-  // From the pack, not from a literal. What this test is for is that the CLI
-  // reports *a* stamp and reports the pack's own; a literal here turns every
-  // pack version bump into a failure in a file that is not about pack versions,
-  // and `test/es.test.ts` is where the stamp's value is asserted.
-  assert.equal(parsed.pack, es.id);
+  // From the style, not from a literal. What this test is for is that the CLI
+  // reports *a* stamp and reports the style's own; a literal here turns every
+  // rule change into a failure in a file that is not about rules.
+  assert.equal(parsed.style, es.id);
   assert.ok(parsed.files[0]!.findings.some((f) => f.rule === 'unpaired-question' && !f.fixable));
 });
 
@@ -139,22 +138,25 @@ test('--strict is what makes a warning fail', () => {
   assert.equal(run(['check', '--lang', 'fr', '--strict', path]).status, 1);
 });
 
-test('langs lists every pack with its standard', () => {
+test('langs lists every style with its standard', () => {
   const r = run(['langs']);
   assert.equal(r.status, 0);
-  assert.match(r.stdout, /de-CH@0\.2\.0\s+Duden/);
-  assert.match(r.stdout, /fr@0\.2\.0\s+Imprimerie nationale/);
+  assert.match(r.stdout, /de-CH@[0-9a-f]{12}\s+Duden/);
+  assert.match(r.stdout, /fr@[0-9a-f]{12}\s+Imprimerie nationale/);
 });
 
-test('--version answers, in all three spellings, with the pack ids too', () => {
+test('--version answers, in all three spellings, with the style stamps too', () => {
   for (const spelling of ['--version', '-v', 'version']) {
     const r = run([spelling]);
     assert.equal(r.status, 0, `${spelling} should exit 0`);
     assert.match(r.stdout, /^typocheck \d+\.\d+\.\d+$/m);
-    // The pack ids are on it because a findings count is only comparable against
-    // the pack that produced it, so a bug report quoting one needs both.
-    assert.match(r.stdout, /fr@\d+\.\d+\.\d+/);
-    assert.match(r.stdout, /de-CH@\d+\.\d+\.\d+/);
+    // The stamps are on it because a findings count is only comparable against
+    // the rules that produced it, so a bug report quoting one needs both. The
+    // tool's version and a style's stamp are two different things and neither
+    // substitutes for the other: this package can publish without a rule moving,
+    // and a rule can move in a package that has not published yet.
+    assert.match(r.stdout, /fr@[0-9a-f]{12}/);
+    assert.match(r.stdout, /de-CH@[0-9a-f]{12}/);
   }
 });
 

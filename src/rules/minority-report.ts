@@ -50,6 +50,12 @@ export function minorityReport<K extends string>(spec: {
     cite: spec.cite,
     severity: 'warning',
     pattern: spec.pattern,
+    // The one detection whose narrowing comes from the style rather than from
+    // the builder: `survey` reads a ballot this rule was handed. The pattern
+    // here is not always the ballot's own, so the ballot has to be signed
+    // separately or two styles balloting differently over one pattern would
+    // stamp the same.
+    params: [spec.ballot.signature],
     // Once per value, not once per match. A value here is a whole document and
     // counting inside `refine` would be quadratic in its length.
     survey: (value) => spec.ballot.minority(spec.ballot.tally(value)),

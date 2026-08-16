@@ -39,7 +39,7 @@ reasoning behind the first four.
   pattern. If you are writing a matcher and a rewriter separately, plus a test to
   keep them equal, the test is a symptom.
 - **Every fix must be idempotent, and an inserting rule has to match its own
-  output.** `test/packs.test.ts` asserts this per rule and per pack.
+  output.** `test/styles.test.ts` asserts this per rule and per style.
 - **Never paste an invisible character into a test or a doc.** U+0020, U+00A0,
   U+202F and U+2009 are indistinguishable in a source file, and a test using them
   literally passes while asserting the wrong thing. Use the `NO_BREAK`,

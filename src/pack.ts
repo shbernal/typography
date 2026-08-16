@@ -1,6 +1,6 @@
-// The protocol. Types, the two rule constructors, and the helper that makes an
+// The protocol. Types, the three rule constructors, and the helper that makes an
 // invisible finding visible. This module imports nothing, including from itself:
-// a pack is a plain object satisfying a structural type, so a consumer can adopt
+// a style is a plain object satisfying a structural type, so a consumer can adopt
 // one without adopting anything else here.
 //
 // The shape below is driven by one finding: `check` is a superset of `fix`.
@@ -9,7 +9,7 @@
 // high-value defect and it is *not* safely fixable, because inserting the `¿`
 // means finding where the sentence began, which is a parse rather than a
 // substitution. So a rule set has two subsets and the fixable one is smaller.
-// `TypographyPack.normalize` is the fix set and only the fix set.
+// `Style.normalize` is the fix set and only the fix set.
 //
 // The other thing this file is careful about: a rule that could both find and
 // fix must not be written twice. Two implementations of one rule drift silently,
@@ -55,7 +55,7 @@ export interface Rule {
    *
    * The consequence to keep in view is that the same id means opposite repairs in
    * two styles, deliberately, and that ids collide across styles by design. They
-   * still have to be unique *within* a style, which `test/packs.test.ts` holds.
+   * still have to be unique *within* a style, which `compose` refuses to build.
    *
    * Rule builders in `rules/` own their ids rather than taking one, so a style
    * cannot introduce a near-duplicate by naming a rule slightly differently. The
@@ -66,12 +66,35 @@ export interface Rule {
   /** One line, in English, saying what is wrong rather than what to do. */
   readonly summary: string;
   /** The clause this comes from. A rule with no citation does not belong in a
-   * pack; that is the line between a standard and a house style. */
+   * style; that is the line between a standard and a house style. */
   readonly cite: string;
   readonly severity: Severity;
   readonly find: (value: string) => Match[];
   /** Present if and only if the rewrite is safe unattended. */
   readonly fix?: (value: string) => string;
+  /**
+   * Everything that decides what this rule does and what it says, as one
+   * string. The constructors build it; nothing else may.
+   *
+   * This is what `compose` hashes into a style's stamp, and the stamp is the
+   * only record of what was applied to a body of text. So the property it needs
+   * is one-directional and worth stating precisely: **two rules that behave or
+   * report differently must have different signatures.** The converse is not
+   * promised and does not matter, since a stamp that moves for nothing costs a
+   * reader one comparison and a stamp that fails to move loses the evidence.
+   *
+   * A pattern and a literal replacement are data and go in whole. A `choose`, a
+   * `survey` and a `refine` are closures and cannot, which is the one place this
+   * could quietly lie: two rules with one pattern and two different `choose`
+   * functions would sign the same. `withWidth` is exactly that case, twice over,
+   * so the constructors take `params` for whatever a caller decided that the
+   * pattern does not already carry, and the builders in `rules/` derive `params`
+   * and the closure from the same declaration rather than from two. That is why
+   * `InnerSpacing` and `requireSpaceBeforePunctuation` take a `Spelling` and not
+   * a function: a parameter a builder cannot sign is a parameter a builder must
+   * not accept.
+   */
+  readonly signature: string;
 }
 
 /** A rule match, resolved against the text it was found in. */
@@ -80,7 +103,7 @@ export interface Finding extends Match {
   readonly summary: string;
   readonly cite: string;
   readonly severity: Severity;
-  /** True when the pack's `normalize` would repair this without being asked.
+  /** True when the style's `normalize` would repair this without being asked.
    * The false ones are the point of the `check` verb. */
   readonly fixable: boolean;
   /** 1-based, so a report line is `file:line:column` and an editor can jump to
@@ -94,31 +117,49 @@ export interface Finding extends Match {
 }
 
 /**
- * A language's rules.
+ * A named bundle of rules.
  *
- * `id` is the era stamp. It is `<lang>@<version>` where the version is the
- * *pack's* and moves only when a rule changes, never when the package publishes
- * a README fix. A corpus normalized under `fr@0.1.0` and one normalized under
- * `fr@0.2.0` are two typography eras, and a stamp that cannot tell them apart
- * is worse than no stamp: every row is individually correct and nothing compares
- * two rows.
+ * Not a language and not a standard. A style is a rule list with the parameters
+ * its rules were built from, and the shipped ones are that and nothing more:
+ * `fr` is a name for a set of defaults, not a claim to speak for the Imprimerie
+ * nationale. A user composes their own with `compose`, or takes a shipped one
+ * and changes it with `derive`, and what comes out is the same kind of thing.
  *
- * `lang` is a BCP 47 tag and is as specific as the convention requires. There is
- * no bare `de`, because there is no German convention to attach it to: `de-DE`
- * and `de-AT` point their quotation marks one way and `de-CH` points them the
- * other. `fr` and `es` are bare because at this level of detail those languages
+ * `id` is the era stamp, `<name>@<stamp>`, and **the stamp is derived from the
+ * rules rather than declared**. That is the one property a hand-bumped version
+ * could not have once a user can compose: a version only moves when somebody
+ * remembers to move it, and nobody is holding the release for a bundle defined
+ * in somebody's config file. Two corpora carrying one stamp were checked by the
+ * same rules, provably, and two carrying different stamps were not. Every
+ * consumer of this package should carry the stamp beside anything it normalized:
+ * a corpus half-normalized under one era and half under another is individually
+ * correct in every row and comparable in none, and the stamp is what tells the
+ * two apart afterwards.
+ *
+ * `lang` is a BCP 47 tag, and optional because a style need not be about a
+ * language. Where it is present it is as specific as the convention requires:
+ * there is no bare `de`, because there is no German convention to attach it to,
+ * while `fr` and `es` are bare because at this level of detail those languages
  * really are one convention.
  *
  * This type is a superset of what `translation-harness` binds through
  * `job.normalize`, which needs `{ id, normalize }` and nothing else. That is
  * deliberate and is why `normalize` is a property rather than a method on a
- * class: a pack satisfies the harness's protocol structurally, with no import
+ * class: a style satisfies the harness's protocol structurally, with no import
  * and no registration call in either direction.
  */
-export interface TypographyPack {
+export interface Style {
+  /** `<name>@<stamp>`. Derived; see `compose`. */
   readonly id: string;
-  readonly lang: string;
-  /** Human-readable, for a report header: "Imprimerie nationale". */
+  /** What this bundle is called. `fr`, `de-CH`, `acme-house`. */
+  readonly name: string;
+  /** The derived half of `id`, on its own for a host that wants to compare two
+   * styles without parsing the stamp back out of the id. */
+  readonly stamp: string;
+  /** The BCP 47 tag this style is for, where it is for one. */
+  readonly lang?: string;
+  /** Where the defaults came from, for a report header: "Imprimerie
+   * nationale", "ACME house style v3". Provenance, not authority. */
   readonly standard: string;
   readonly rules: readonly Rule[];
   /** Every fixable rule applied in `rules` order. Idempotent. */
@@ -162,11 +203,14 @@ export function replaceRule(spec: {
   assertGlobal(pattern, id);
   if (replacement.includes('$'))
     throw new Error(`rule ${id}: replacement must be a literal, with no $ substitution`);
+  const severity = spec.severity ?? 'error';
   return {
     id,
     summary,
     cite,
-    severity: spec.severity ?? 'error',
+    severity,
+    // Nothing here is a closure, so the declaration is the signature.
+    signature: signatureOf('replace', id, summary, cite, severity, pattern, [replacement]),
     find: (value) =>
       matches(pattern, value).filter(
         (m) => value.slice(m.index, m.index + m.length) !== replacement,
@@ -194,8 +238,8 @@ export function replaceRule(spec: {
  * **`choose` must be stable under its own fix**, or `normalize` is not
  * idempotent. A `choose` that counts spellings has to break a tie toward a fixed
  * side, so that applying the fix moves the count further toward the side already
- * chosen rather than away from it. `test/packs.test.ts` asserts idempotence per
- * rule and per pack, and does not care why it holds.
+ * chosen rather than away from it. `test/styles.test.ts` asserts idempotence per
+ * rule and per style, and does not care why it holds.
  */
 export function conformRule(spec: {
   id: string;
@@ -205,14 +249,33 @@ export function conformRule(spec: {
   pattern: RegExp;
   /** The spelling this text should be repaired in. Called once per value. */
   choose: (value: string) => string;
+  /**
+   * What decided `choose`, as strings the stamp can hash.
+   *
+   * Required, and it is the only required field of its kind in this file,
+   * because `choose` is always a closure and the pattern never carries what is
+   * inside it. `withWidth` is the case that forces it: imposing U+00A0 and
+   * imposing U+202F build character-for-character identical patterns and two
+   * different `choose` functions, so without this the two would stamp the same
+   * and a corpus normalized under either would be indistinguishable from one
+   * normalized under the other.
+   *
+   * Pass `Spelling.signature` rather than a hand-written string. A builder that
+   * writes this out separately from the thing it passed to `choose` has made two
+   * copies that must agree, which is the defect this package is about one level
+   * down.
+   */
+  params: readonly string[];
 }): Rule {
   const { id, summary, cite, pattern, choose } = spec;
   assertGlobal(pattern, id);
+  const severity = spec.severity ?? 'error';
   return {
     id,
     summary,
     cite,
-    severity: spec.severity ?? 'error',
+    severity,
+    signature: signatureOf('conform', id, summary, cite, severity, pattern, spec.params),
     find: (value) => {
       const replacement = choose(value);
       return matches(pattern, value).filter(
@@ -248,14 +311,23 @@ export function detectRule<S = undefined>(spec: {
    * quadratic in its length, and a value here is a whole document. */
   survey?: (value: string) => S;
   refine?: (match: RegExpExecArray, value: string, survey: S) => Match | null;
+  /** What a *caller* decided that `survey` and `refine` close over. Optional
+   * here and not in `conformRule`, because most detections narrow with a
+   * predicate the builder owns outright: `looksMachine` is the same function for
+   * every style that reaches for it, and a builder's own fixed `refine` is
+   * carried by the id and the summary. `minorityReport` is the one that has to
+   * pass something, since its ballot comes from the style. */
+  params?: readonly string[];
 }): Rule {
   const { id, summary, cite, pattern, survey, refine } = spec;
   assertGlobal(pattern, id);
+  const severity = spec.severity ?? 'error';
   return {
     id,
     summary,
     cite,
-    severity: spec.severity ?? 'error',
+    severity,
+    signature: signatureOf('detect', id, summary, cite, severity, pattern, spec.params ?? []),
     find: (value) => {
       const surveyed = (survey ? survey(value) : undefined) as S;
       const out: Match[] = [];
@@ -268,8 +340,37 @@ export function detectRule<S = undefined>(spec: {
   };
 }
 
-/** Compose a pack's fixable rules into one `normalize`, in declaration order.
- * Order is load-bearing and is the pack's to choose: the French rules convert a
+/** U+0000, which no field of a rule can contain once it has been JSON-encoded,
+ * since `JSON.stringify` escapes it. Written as an escape and never as itself:
+ * the character is invisible in a source file and turns the file into something
+ * `grep` calls binary. */
+const SEPARATOR = String.fromCharCode(0);
+
+/**
+ * Every part of a rule that a stamp has to see, in a form nothing can collide
+ * in by accident.
+ *
+ * Each part is JSON-encoded before it is joined, so no field can end in the
+ * separator and impersonate the next one. That is not a hypothetical worry
+ * about hostile input; it is the ordinary way two stamps come to agree about
+ * two different rule lists, and an agreeing stamp is silent.
+ */
+function signatureOf(
+  kind: string,
+  id: string,
+  summary: string,
+  cite: string,
+  severity: Severity,
+  pattern: RegExp,
+  params: readonly string[],
+): string {
+  return [kind, id, summary, cite, severity, pattern.source, pattern.flags, ...params]
+    .map((part) => JSON.stringify(part))
+    .join(SEPARATOR);
+}
+
+/** Compose a style's fixable rules into one `normalize`, in declaration order.
+ * Order is load-bearing and is the style's to choose: the French rules convert a
  * plain space before a colon and then, separately, before `; ! ?`, and the two
  * would fight over `?:` if they were reordered carelessly. */
 export function composeNormalize(rules: readonly Rule[]): (value: string) => string {

@@ -58,7 +58,7 @@ Two properties every fix must have:
   moves the count further toward the side already chosen rather than away from
   it.
 
-`test/packs.test.ts` asserts both per rule and per pack.
+`test/styles.test.ts` asserts both per rule and per style.
 
 ## One module per convention
 
