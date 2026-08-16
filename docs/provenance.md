@@ -67,6 +67,13 @@ corpus.
 | The spacing rules around `; : ! ?` run behind `looksMachine` ([`prose.ts`](../src/prose.ts)) | They fire on `a ? b : c` and on query strings. Under this project's input, generated text, that filter is more load-bearing than it was, not less. |
 | Guillemet inner spacing matches only what is wrong under both readings of the Lexique ([`rules/inner-space.ts`](../src/rules/inner-space.ts)) | 6,817 false positives against 103 real defects, over 2.4M characters of correctly set French. `admissible` is the one field that holds this, and `withWidth` widens it deliberately, for a caller who has stated a width. |
 | The space before a colon stays U+00A0 under every width ([`rules/colon-spacing.ts`](../src/rules/colon-spacing.ts)) | Nothing about that position is in dispute: the Lexique specifies the word space and the corpora used it 2,458 times against no counter-example. Imposing U+202F there would be a style asserting what its citation does not fix, in the one place the citation is explicit. |
+| Every guillemet rule declines a mark with a letter or a digit on its outside ([`rules/inner-space.ts`](../src/rules/inner-space.ts)) | `«` opens a quotation in French, Spanish and Swiss German and closes one in Germany. Without the guard, `es.normalize('Er sagte »Wort« und ging.')` deleted both spaces and welded two pairs of words; `fr` re-spaced the same sentence as though it were French. What it costs is `mot«cite»mot`, the one string the two readings share. |
+
+The last row is the one constraint here that no corpus produced, and it could not
+have: each corpus was one publisher writing one language correctly, so a rule
+that misreads *another* language's marks has nothing in any of them to fire on.
+Both instances were found by reading the rules side by side, and the shape they
+have in common is [`test/fixtures.ts`](../test/fixtures.ts)'s `MIXED` group now.
 
 And one ceiling rather than a narrowing. **U+2019 is the closing single quote and
 the apostrophe at once**: the Technische Handleiding contains 537 of them and the

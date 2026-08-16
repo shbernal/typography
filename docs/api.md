@@ -31,7 +31,7 @@ few kilobytes of regular expressions and no dependencies.
 
 ```ts
 interface Style {
-  readonly id: string;          // `fr@a8ada4df7c7c`, the era stamp
+  readonly id: string;          // `fr@4ed7f1b2db8f`, the era stamp
   readonly name: string;        // `fr`, `acme-house`
   readonly stamp: string;       // derived from the rules, not declared
   readonly lang?: string;       // a BCP 47 tag, where the style is about a language

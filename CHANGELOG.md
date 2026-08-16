@@ -19,14 +19,39 @@ first question was answered at high cost by nine corpora and is now recorded
 rather than re-asked; the second is answered by `audit`, offline, over text the
 caller supplies.
 
-**No shipped style's behaviour moved.** For every one of the 8,799 generated
-inputs in the battery and every written fixture, `normalize` returns the string
-it returned at `0.2.1` and every rule's `find` reports the same offsets. Text
-normalized under `0.2.1` does not need re-normalizing. What moved is the labels:
-the ids of the rules and the stamps of the styles. A summary is documentation and
-is not covered by that promise.
+**One shipped style's behaviour moved, and it is French.** For `es`, `de-DE`,
+`de-CH` and `nl`, over every one of the 8,799 generated inputs in the battery and
+every written fixture, `normalize` returns the string it returned at `0.2.1` and
+every rule's `find` reports the same offsets: text normalized under `0.2.1` does
+not need re-normalizing, and what moved is the labels. `fr` gained the
+cross-language guard the other four already carried, which is the one deliberate
+behaviour change in this release and is described below. A summary is
+documentation and is not covered by either promise.
 
 ### The breaking changes
+
+- **`fr` gains the cross-language guard, and this is the only change here that
+  moves text.** `fr.normalize('Il a lu »Die Zeit« hier soir.')` used to return
+  the sentence with the two ordinary word spaces *outside* the quotation
+  converted to U+202F: it read the German closing `«` as an opening guillemet.
+  It now leaves that sentence alone, which is what `es`, `de-DE`, `de-CH` and
+  `nl` have always done. `es` was the same defect in a worse form and was fixed
+  in `0.2.1`; `fr` was held back then because it would have split 2.4M characters
+  of French corpus into a new era, and the corpora are gone.
+
+  What the guard costs is one shape: a guillemet with a letter or a digit on its
+  outside as well as its inside, `mot«cite»mot`, is no longer spaced, because
+  that is the string a German closing mark and a French opening one share.
+  Correct French does not contain it, and elision is unaffected, since U+2019 is
+  not a letter. Over the battery it is 713 distinct inputs and every one of them
+  meets that condition; no other style's output moved by one byte. It applies to
+  `withWidth`'s derived pair too, where the patterns are wider.
+
+  It does **not** fix the case where the ambiguity is in the context rather than
+  in the character: `X « Y` is a German closer with a stray space in front of it
+  and a French opener with a legitimate one after it, and those are the same
+  string. That needs pairing, which is a parse, which is where `check` stops
+  being a superset of `fix` on purpose.
 
 - **`TypographyPack` is `Style`**, `packs` is `styles`, `packFor` is `styleFor`.
   A style need not be about a language, so `lang` is optional and the registry
@@ -41,11 +66,12 @@ is not covered by that promise.
   rule list and now stamp together because the list moved.
 
   These name the same rules as the versions they replace, and this table is the
-  only place that mapping exists:
+  only place that mapping exists. `fr` is the one row that is not a pure relabel:
+  its rules changed too, per the guard entry below.
 
   | Was | Is |
   |---|---|
-  | `fr@0.2.0` | `fr@a8ada4df7c7c` |
+  | `fr@0.2.0` | `fr@4ed7f1b2db8f` |
   | `es@0.2.0` | `es@8a1408a1e177` |
   | `de-DE@0.2.0` | `de-DE@69f15e8b27a9` |
   | `de-CH@0.2.0` | `de-CH@f4928d1e43d1` |

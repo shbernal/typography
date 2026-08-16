@@ -193,15 +193,19 @@ const rules: readonly Rule[] = [
   // header: that behaviour produced 3,231 findings on one corpus and 0 real
   // defects among them.
   //
-  // **`guard: false` is a known defect, deliberately left.** `fr` has the hazard
-  // `es@0.1.0` had, in the milder form: it reads the `\u00AB` of a German
-  // `\u00BBWort\u00AB und` as an opening mark and rewrites the word spaces
-  // outside the quotation into a no-break space rather than deleting them, so
-  // nothing is welded. Turning the guard on moves `fr@0.2.0` to `fr@0.3.0` and
-  // splits 2.4M characters of French corpus into a new era for a hazard no
-  // French corpus contains. `FOLLOW-UPS.md` 1b holds the decision. It is a
-  // visible `false` here and it was an absent lookaround before, which is a
-  // large part of what this extraction is worth.
+  // **The guard is what stops these reading another convention's marks.** `fr`
+  // had the hazard `es@0.1.0` had, in the milder form: it read the `\u00AB` of a
+  // German `\u00BBWort\u00AB und` as an opening mark and rewrote the word spaces
+  // *outside* the quotation into a no-break space rather than deleting them, so
+  // nothing was welded and it looked like a French repair on German text. It was
+  // the last style in the set still doing that.
+  //
+  // What the guard costs is one input: a guillemet with a letter or a digit on
+  // its outside as well as its inside, `mot\u00ABcite\u00BBmot`, is now left
+  // alone rather than spaced. That is the string a German closer and a French
+  // opener share, so declining it is the whole mechanism, and correct French
+  // does not contain it. Elision is unaffected, because U+2019 is not a letter:
+  // `L\u2019\u00ABaffaire\u00BB` still repairs.
   innerSpace({
     summary: 'Opening guillemet whose inner space is breaking, doubled or missing',
     cite: `${LEXIQUE}, "Guillemets"`,
@@ -209,7 +213,7 @@ const rules: readonly Rule[] = [
     side: 'open',
     spaces: ANY_SPACE_OR_THIN,
     correct: { admissible: NO_BREAK_SPACE, spelling: houseWidth },
-    guard: false,
+    guard: true,
   }),
 
   innerSpace({
@@ -219,7 +223,7 @@ const rules: readonly Rule[] = [
     side: 'close',
     spaces: ANY_SPACE_OR_THIN,
     correct: { admissible: NO_BREAK_SPACE, spelling: houseWidth },
-    guard: false,
+    guard: true,
   }),
 
   // -------------------------------------------------------------------------
@@ -367,6 +371,11 @@ export function surveyWidth(values: Iterable<string>): WidthSurvey {
  * run anchor make each run a candidate once, and there is still one way to match
  * it. `admissible: null` is the only thing separating these from the shipped
  * pair, which is the clearest statement of what the narrowing actually was.
+ *
+ * The cross-language guard is on here too, and it carries more here than it does
+ * on the shipped pair: taking the run unconditionally means an unguarded version
+ * would re-space a German quotation whatever spaces it already had, rather than
+ * only where they were not already this style's spelling.
  */
 function harmonizingRules(width: string): readonly Rule[] {
   return [
@@ -385,7 +394,7 @@ function harmonizingRules(width: string): readonly Rule[] {
       side: 'open',
       spaces: ANY_SPACE_OR_THIN,
       correct: { admissible: null, spelling: impose(width) },
-      guard: false,
+      guard: true,
     }),
     innerSpace({
       summary: `Closing guillemet whose inner space is not the corpus's no-break space`,
@@ -394,7 +403,7 @@ function harmonizingRules(width: string): readonly Rule[] {
       side: 'close',
       spaces: ANY_SPACE_OR_THIN,
       correct: { admissible: null, spelling: impose(width) },
-      guard: false,
+      guard: true,
     }),
   ];
 }

@@ -128,7 +128,7 @@ answer to "why did it not fix this one" is always that the repair needs
 information a substitution does not have.
 
 A count with no stamp beside it is not comparable to the next one, which is why
-the footer stamps `typocheck 0.1.0 (fr@a8ada4df7c7c)`. The part after the `@` is
+the footer stamps `typocheck 0.1.0 (fr@4ed7f1b2db8f)`. The part after the `@` is
 derived from the rules themselves, so two reports carrying it were checked by the
 same rules and two carrying different ones were not. Keep the stamp when you
 paste a report anywhere it will be read later. `typocheck --version` prints the

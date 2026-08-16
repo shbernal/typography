@@ -64,7 +64,7 @@ readable and a reviewer can see the character.
 **Normalizing generated or translated text.** `style.normalize` is the safe
 subset and nothing else, and `{ id, normalize }` is the whole contract, so a host
 binds a style without either package importing the other. The `id` is an era
-stamp, `fr@a8ada4df7c7c`, **derived from the rules themselves**: two bodies of
+stamp, `fr@4ed7f1b2db8f`, **derived from the rules themselves**: two bodies of
 text carrying it were checked by the same rules, and the day a rule moves
 the stamp moves without anybody remembering to bump it. Carry it beside anything
 you normalized. If you normalize field by field and the fields must agree with

@@ -18,7 +18,7 @@ So the unit is a rule, and a style is a rule list with a name:
 
 ```ts
 interface Style {
-  readonly id: string;      // `fr@a8ada4df7c7c`
+  readonly id: string;      // `fr@4ed7f1b2db8f`
   readonly name: string;
   readonly stamp: string;
   readonly lang?: string;   // where the style is about a language, which is not required

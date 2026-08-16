@@ -49,9 +49,16 @@ prescribes. Over 2.4M characters of published French both publishers use U+00A0
 exclusively. A rule asserting either width would retype correctly set French, so
 this style asserts consistency instead, which is what the citation supports.
 
-Inserting is licensed only because guillemets are unambiguous: there is no other
-construction to mistake them for, and a guillemet with no space inside it is
-wrong however it got there.
+Inserting is licensed because a guillemet with no space inside it is wrong
+however it got there. What a guillemet is *not* is unambiguous across languages:
+`«` opens a quotation in French, Spanish and Swiss German and closes one in
+Germany and Austria. Both rules therefore carry a guard, and decline a mark with
+a letter or a digit immediately on its outside, so `Il a lu »Die Zeit« hier` is
+left alone rather than re-spaced as though it were French. The cost is that
+`mot«cite»mot` is also left alone, since that is the one string the two readings
+share. What no guard can resolve is `X « Y`, where the ambiguity is in the
+context rather than the character; a style is for text in its own language, and
+this is the edge where that stops being a slogan.
 
 ### `mixed-no-break-space` (warning, not fixable)
 

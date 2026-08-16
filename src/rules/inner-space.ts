@@ -25,8 +25,8 @@
 // **The family is not only guillemets**, which is why this module is not called
 // `guillemet-inner-space` as the plan had it. `low-quote-open-space` is about
 // U+201E and belongs here on every axis that matters: same position, same
-// pattern, same repair. It is also the one member with `guard: false` for a good
-// reason rather than an unresolved one.
+// pattern, same repair. It is also the one member with `guard: false`, and the
+// only one left: every guillemet rule in the package carries the guard now.
 
 import { conformRule, type Rule } from '../pack.ts';
 import { runStart } from './space.ts';
@@ -107,13 +107,20 @@ export function innerSpace(spec: {
    * letter or a digit immediately on its outside is closing something, whatever
    * the style believes.
    *
-   * Set it false only for a reason you can state. `low-quote-open-space` does,
-   * because U+201E has exactly one job in every language that uses it. `fr` does
-   * not: it has the same hazard in a milder form and turning the guard on there
-   * would move `fr@0.2.0` to `fr@0.3.0` for a defect no French corpus contains.
-   * `FOLLOW-UPS.md` 1b holds it. Making it a flag at the call site is most of
-   * what this builder is worth: the defect used to be a lookaround that was not
-   * there, which nothing can see.
+   * Set it false only for a reason you can state, and `low-quote-open-space` is
+   * the only rule in the package that does: U+201E has exactly one job in every
+   * language that uses it. `fr` was the other one and no longer is, since the
+   * reason it gave was about splitting a French corpus into two eras and the
+   * corpora are gone. Making it a flag at the call site is most of what this
+   * builder is worth: the defect used to be a lookaround that was not there,
+   * which nothing can see.
+   *
+   * What it cannot do is resolve a mark that is ambiguous in context rather than
+   * in isolation. `X « Y` is a German closer with a stray space in front of it
+   * and a French opener with a legitimate one after it, and those are the same
+   * string; `FOLLOW-UPS.md` 1d is that case and it needs pairing, which is a
+   * parse. The guard reads the character immediately outside the mark and
+   * nothing else.
    */
   guard: boolean;
 }): Rule {

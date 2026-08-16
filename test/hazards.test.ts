@@ -276,14 +276,34 @@ test('what each style does to a French quotation inside its own prose', () => {
 });
 
 test('what French does to a German quotation inside its own prose', () => {
-  // `FOLLOW-UPS.md` 1b, the milder half of the same hazard, and the reason
-  // `fr`'s two inner-space rules carry `guard: false` with a paragraph beside
-  // them. French reads the German closing `«` as an opening guillemet and
-  // rewrites the word spaces on the *outside* of the quotation. Nothing is
-  // welded, which is why it is milder and why the test above passes.
+  // The other half of the same hazard, and the one the guard can reach. French
+  // used to read the German closing `«` as an opening guillemet and rewrite the
+  // word spaces on the *outside* of the quotation into U+202F. Nothing was
+  // welded, which is why it was milder than `es@0.1.0` and why the test above
+  // passed throughout. `fr` was the last style in the set without the guard;
+  // it now leaves this alone, like the other four.
   const french = fixture('german-title-in-french');
+  assert.equal(fr.normalize(french), french);
+
+  // Through `withWidth` as well, where the patterns are wider: `admissible` is
+  // null there, so an unguarded version re-spaces the run whatever it holds.
+  for (const width of [NO_BREAK, NARROW_NO_BREAK])
+    assert.equal(withWidth(width).normalize(french), french);
+});
+
+test('the French guard declines exactly one thing, and it is the ambiguous one', () => {
+  // What it costs, so the cost is a written-down number rather than a surprise.
+  // A guillemet with a letter or a digit on its outside as well as its inside is
+  // the string a German closer and a French opener share, so `fr` no longer
+  // spaces it. Everything a reader would call French still repairs, elision
+  // included, because U+2019 is not a letter.
+  assert.equal(fr.normalize('mot«cite»mot'), 'mot«cite»mot');
   assert.equal(
-    fr.normalize(french),
-    `Il a lu${NARROW_NO_BREAK}»Die Zeit«${NARROW_NO_BREAK}hier soir.`,
+    fr.normalize('Il a dit «bonjour» hier.'),
+    `Il a dit «${NARROW_NO_BREAK}bonjour${NARROW_NO_BREAK}» hier.`,
+  );
+  assert.equal(
+    fr.normalize(`L${RSQ}«affaire» est close.`),
+    `L${RSQ}«${NARROW_NO_BREAK}affaire${NARROW_NO_BREAK}» est close.`,
   );
 });

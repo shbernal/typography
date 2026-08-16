@@ -43,10 +43,15 @@ correctly. So it is reported, and a human decides.
 
 Spanish sets `«texto»` **closed up**. `« hola »` becomes `«hola»`.
 
-This is the exact mirror of the French rule, using the identical characters, and
-it is why there is no shared rule with a locale option. Safe to fix for the same
-reason French's insertion is safe: guillemets are unambiguous, so there is no
-other construction to damage.
+This is the French rule with the opposite answer, built from the same
+`innerSpace` builder: what differs is the spacing the style requires, which is a
+parameter and not a separate rule. It is safe to fix for the same reason
+French's insertion is safe, and with the same guard, since guillemets are
+unambiguous within a convention and not across them. `«` closes a quotation in
+Germany, so both rules decline a mark with a letter or a digit immediately on its
+outside and leave `Er sagte »Wort« und ging` alone. Without that guard the rule
+deleted both spaces and welded two pairs of words together, which is what shipped
+in `es@0.1.0`.
 
 The quotation-mark order in Spanish is `«…»` first, then `"…"`, then `'…'` for a
 quote inside a quote inside a quote.

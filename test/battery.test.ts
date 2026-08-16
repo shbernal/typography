@@ -50,10 +50,14 @@ const DIGESTS: Record<string, string> = {
   'de-DE': '62c2c138ebc4',
   en: '328d500db6b4',
   es: 'c490cf732002',
-  fr: '77b868df38ad',
+  // The three French rows moved when the cross-language guard went on `fr`'s two
+  // inner-space rules, and no other row did. The diff was 713 distinct inputs
+  // and every one of them has a letter or a digit immediately outside a
+  // guillemet, which is the guard's condition and nothing wider.
+  fr: 'f0369d6a78d0',
   nl: '2507ee04f1f0',
-  'fr+00A0': 'ec2e2510f41f',
-  'fr+202F': '252fd267c366',
+  'fr+00A0': 'c4eebc40f8e2',
+  'fr+202F': '804a0b17d89b',
 };
 
 test('the battery generates what it claims to', () => {
