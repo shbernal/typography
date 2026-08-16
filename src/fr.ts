@@ -50,7 +50,8 @@ import {
   type TypographyPack,
 } from './pack.ts';
 import { apostrophe } from './rules/apostrophe.ts';
-import { ANY_SPACE_OR_THIN, runStart } from './rules/space.ts';
+import { innerSpace } from './rules/inner-space.ts';
+import { ANY_SPACE_OR_THIN } from './rules/space.ts';
 import { straightDoubleQuote } from './rules/straight-double-quote.ts';
 
 const LEXIQUE = 'Imprimerie nationale, Lexique des règles typographiques (2002)';
@@ -100,20 +101,16 @@ const NO_BREAK_SPACE = `[${NO_BREAK}${NARROW_NO_BREAK}]`;
  * indented block or a wrapped table will do - and this package's own security
  * policy calls a pattern that behaves this way a vulnerability in it.
  *
- * So the rules below take the run *once*, greedily, with no second way to match
- * it, and carry the exception as a lookahead at the position where the run
- * begins. Nothing to backtrack means linear, and `test/perf.test.ts` holds it
- * there rather than trusting this comment.
+ * So the rules take the run *once*, greedily, with no second way to match it,
+ * and carry the exception as a lookahead at the position where the run begins.
+ * Nothing to backtrack means linear, and `test/perf.test.ts` holds it there
+ * rather than trusting this comment.
+ *
+ * That spelling now lives in `rules/inner-space.ts`, where every style in this
+ * package gets it, and `NO_BREAK_SPACE` is what French passes as the set of
+ * spellings already correct. The other four styles pass no set at all, because
+ * closing a mark up leaves nothing to be already correct about.
  */
-const CORRECT_AFTER_OPEN = `(?!${NO_BREAK_SPACE}(?!${ANY_SPACE_OR_THIN}))`;
-const CORRECT_BEFORE_CLOSE = `(?!${NO_BREAK_SPACE}»)`;
-
-/** The start of a space run, so a run is a candidate once rather than once per
- * character in it. Without this the close rule is quadratic even with an
- * unambiguous body, because every position inside a run starts a fresh scan.
- * Derived from the French class, thin space included: a `RUN_START` built from
- * the narrower one would let a thin space begin a second match. */
-const RUN_START = runStart(ANY_SPACE_OR_THIN);
 
 /** Every position where this pack has an opinion about *which* no-break space to
  * use. The colon is deliberately not here: the Lexique specifies the word space
@@ -227,34 +224,43 @@ const rules: readonly Rule[] = [
     choose: houseWidth,
   }),
 
-  conformRule({
+  // The two inserting rules, and the two members of the inner-space family that
+  // require the space the other four styles delete. What licenses inserting at
+  // all is that a guillemet with no space inside it is wrong however it got
+  // there; what the rules no longer do is rewrite a correct guillemet into the
+  // other correct spelling, which is what `admissible` holds off. See the
+  // header: that behaviour produced 3,231 findings on one corpus and 0 real
+  // defects among them.
+  //
+  // **`guard: false` is a known defect, deliberately left.** `fr` has the hazard
+  // `es@0.1.0` had, in the milder form: it reads the `\u00AB` of a German
+  // `\u00BBWort\u00AB und` as an opening mark and rewrites the word spaces
+  // outside the quotation into a no-break space rather than deleting them, so
+  // nothing is welded. Turning the guard on moves `fr@0.2.0` to `fr@0.3.0` and
+  // splits 2.4M characters of French corpus into a new era for a hazard no
+  // French corpus contains. `FOLLOW-UPS.md` 1b holds the decision. It is a
+  // visible `false` here and it was an absent lookaround before, which is a
+  // large part of what this extraction is worth.
+  innerSpace({
     id: 'fr.guillemet-open',
     summary: 'Opening guillemet whose inner space is breaking, doubled or missing',
     cite: `${LEXIQUE}, "Guillemets"`,
-    // The one inserting rule, licensed only because guillemets are unambiguous:
-    // there is no other construction to mistake them for, and a guillemet with
-    // no space inside it is wrong however it got there.
-    //
-    // What it no longer does is rewrite a correct guillemet to the other correct
-    // spelling. See the header: that behaviour produced 3,231 findings on one
-    // corpus and 0 real defects among them.
-    //
-    // `\u00AB` fixes where the run starts, the lookahead rejects the one correct
-    // spelling, and the space class then takes the rest with nothing after it to
-    // backtrack for.
-    pattern: new RegExp(`\u00AB${CORRECT_AFTER_OPEN}${ANY_SPACE_OR_THIN}*`, 'g'),
-    choose: (value) => `\u00AB${houseWidth(value)}`,
+    mark: '\u00AB',
+    side: 'open',
+    spaces: ANY_SPACE_OR_THIN,
+    correct: { admissible: NO_BREAK_SPACE, choose: houseWidth },
+    guard: false,
   }),
 
-  conformRule({
+  innerSpace({
     id: 'fr.guillemet-close',
     summary: 'Closing guillemet whose inner space is breaking, doubled or missing',
     cite: `${LEXIQUE}, "Guillemets"`,
-    // The mirror, with the run anchored on its left instead of by `\u00AB`. The
-    // no-space case is the position of `\u00BB` itself, where the run is empty and
-    // the lookbehind reads the character before it.
-    pattern: new RegExp(`${RUN_START}${CORRECT_BEFORE_CLOSE}${ANY_SPACE_OR_THIN}*\u00BB`, 'g'),
-    choose: (value) => `${houseWidth(value)}\u00BB`,
+    mark: '\u00BB',
+    side: 'close',
+    spaces: ANY_SPACE_OR_THIN,
+    correct: { admissible: NO_BREAK_SPACE, choose: houseWidth },
+    guard: false,
   }),
 
   // -------------------------------------------------------------------------
@@ -415,18 +421,19 @@ export function surveyWidth(values: Iterable<string>): WidthSurvey {
  * admissible width.
  *
  * **This is the part that is not just a pinned `choose`, and the reason matters.**
- * `CORRECT_AFTER_OPEN` and `CORRECT_BEFORE_CLOSE` exist to exclude *both*
- * correct spellings, which is the narrowing that took `fr` from 6,817 false
- * positives to 103. So pinning `choose` to a fixed width changes nothing at all:
- * the rows that split a corpus are correct-in-the-other-width, the shipped
- * patterns do not match them, and `choose` is never consulted. A width imposed
- * that way is a silent no-op, which is worse than not offering one.
+ * The shipped rules pass an `admissible` set to exclude *both* correct
+ * spellings, which is the narrowing that took `fr` from 6,817 false positives to
+ * 103. So pinning `choose` to a fixed width changes nothing at all: the rows
+ * that split a corpus are correct-in-the-other-width, the shipped patterns do
+ * not match them, and `choose` is never consulted. A width imposed that way is a
+ * silent no-op, which is worse than not offering one.
  *
- * These patterns drop the exclusion and take the run unconditionally. That is
+ * So these pass `admissible: null` and take the run unconditionally. That is
  * `fr@0.1.0` behaviour, re-admitted on purpose and reachable only through
- * `withWidth`, where a host has stated the width. Still linear: `«` and
- * `RUN_START` anchor each run so it is a candidate once, and there is still one
- * way to match it.
+ * `withWidth`, where a host has stated the width. Still linear: the mark and the
+ * run anchor make each run a candidate once, and there is still one way to match
+ * it. `admissible: null` is the only thing separating these from the shipped
+ * pair, which is the clearest statement of what the narrowing actually was.
  */
 function harmonizingRules(width: string): readonly Rule[] {
   return [
@@ -437,19 +444,25 @@ function harmonizingRules(width: string): readonly Rule[] {
       pattern: new RegExp(`${ANY_SPACE_OR_THIN}(?=[;!?])`, 'g'),
       choose: () => width,
     }),
-    conformRule({
+    innerSpace({
       id: 'fr.guillemet-open',
       summary: `Opening guillemet whose inner space is not the corpus's no-break space`,
       cite: `${LEXIQUE}, "Guillemets"`,
-      pattern: new RegExp(`«${ANY_SPACE_OR_THIN}*`, 'g'),
-      choose: () => `«${width}`,
+      mark: '«',
+      side: 'open',
+      spaces: ANY_SPACE_OR_THIN,
+      correct: { admissible: null, choose: () => width },
+      guard: false,
     }),
-    conformRule({
+    innerSpace({
       id: 'fr.guillemet-close',
       summary: `Closing guillemet whose inner space is not the corpus's no-break space`,
       cite: `${LEXIQUE}, "Guillemets"`,
-      pattern: new RegExp(`${RUN_START}${ANY_SPACE_OR_THIN}*»`, 'g'),
-      choose: () => `${width}»`,
+      mark: '»',
+      side: 'close',
+      spaces: ANY_SPACE_OR_THIN,
+      correct: { admissible: null, choose: () => width },
+      guard: false,
     }),
   ];
 }

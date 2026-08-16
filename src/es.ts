@@ -29,7 +29,8 @@ import {
   type TypographyPack,
 } from './pack.ts';
 import { looksMachine } from './prose.ts';
-import { ANY_SPACE, runStart } from './rules/space.ts';
+import { innerSpace } from './rules/inner-space.ts';
+import { ANY_SPACE } from './rules/space.ts';
 import { spaceBeforePunctuation } from './rules/space-before-punctuation.ts';
 import { straightDoubleQuote } from './rules/straight-double-quote.ts';
 
@@ -44,52 +45,39 @@ const ORTOGRAFIA = 'RAE, Ortografía de la lengua española (2010)';
  * told apart: `normalize` returns something different for text that reaches it. */
 const VERSION = '0.2.0';
 
-/** The start of a space run. `rules/space.ts` explains what it is protecting
- * against at length; the short version is that `ANY_SPACE+»` without it rescans
- * a run of spaces once per character in the run. */
-const RUN_START = runStart(ANY_SPACE);
-
 /** Ends a sentence for the purpose of the paired-mark scan below. */
 const SENTENCE_END = /[.!?\n…]/;
 
 const rules: readonly Rule[] = [
-  replaceRule({
+  // The same builder as `fr.guillemet-open`, on the identical character in the
+  // identical position, set to the opposite spacing. That used to be the reason
+  // there could be no shared rule engine and is now one parameter; the header
+  // and `rules/inner-space.ts` argue it.
+  //
+  // The guard is what shipped missing here until `es@0.2.0`, when the rule was
+  // welding the words either side of a German inward quotation. It is a flag at
+  // this call site now, which is a thing a reader can see and a missing
+  // lookaround is not.
+  innerSpace({
     id: 'es.guillemet-open-space',
     summary: 'Space after an opening guillemet; Spanish sets `«texto»` closed up',
     cite: `${ORTOGRAFIA}, "Las comillas"`,
-    // The mirror image of the French rule, and the reason a locale parameter
-    // would have been a switch statement wearing a table's clothes: same
-    // character, same position, opposite requirement.
-    //
-    // Safe to fix because guillemets are unambiguous *within a language*, which
-    // is a weaker licence than it sounds and is what the lookbehind is for.
-    // Guillemets are not unambiguous across languages: `«` opens a quotation in
-    // Spanish, in French and in Switzerland, and *closes* one in Germany and
-    // Austria. Without the guard this rule reads the `«` of a German `»Wort«
-    // und` as an opening mark and deletes the space after it, welding two words
-    // together. A `«` with a letter or a digit immediately before it is closing
-    // something, whatever this pack believes.
-    //
-    // Both German packs have carried this guard since they were written and this
-    // rule shipped without it, while `de-CH.ts` described its own rule as "the
-    // same pattern and replacement as the Spanish rule". It was not: it was this
-    // rule plus the guard. That is the second time a comment claiming parity
-    // with another pack outlived the parity, after `de.space-before-punctuation`
-    // cited `es.ts` for a `looksMachine` filter it did not have.
-    pattern: new RegExp(`(?<![\\p{L}\\p{N}])«${ANY_SPACE}+`, 'gu'),
-    replacement: '«',
+    mark: '«',
+    side: 'open',
+    spaces: ANY_SPACE,
+    correct: '',
+    guard: true,
   }),
 
-  replaceRule({
+  innerSpace({
     id: 'es.guillemet-close-space',
     summary: 'Space before a closing guillemet; Spanish sets `«texto»` closed up',
     cite: `${ORTOGRAFIA}, "Las comillas"`,
-    // The mirror guard, and the mirror hazard: `»` closes a quotation here and
-    // *opens* one in Germany, so a `»` with a letter or a digit immediately
-    // after it is opening something and the space before it is a word boundary
-    // rather than padding inside a quotation.
-    pattern: new RegExp(`${RUN_START}${ANY_SPACE}+»(?![\\p{L}\\p{N}])`, 'gu'),
-    replacement: '»',
+    mark: '»',
+    side: 'close',
+    spaces: ANY_SPACE,
+    correct: '',
+    guard: true,
   }),
 
   replaceRule({

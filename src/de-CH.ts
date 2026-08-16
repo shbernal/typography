@@ -11,17 +11,9 @@
 // common rules plus its own quotation marks.
 
 import { DUDEN, germanCommonRules } from './de-common.ts';
-import {
-  composeNormalize,
-  detectRule,
-  type Rule,
-  replaceRule,
-  type TypographyPack,
-} from './pack.ts';
-import { ANY_SPACE, runStart } from './rules/space.ts';
-
-/** The start of a space run; `rules/space.ts` says what it is protecting. */
-const RUN_START = runStart(ANY_SPACE);
+import { composeNormalize, detectRule, type Rule, type TypographyPack } from './pack.ts';
+import { innerSpace } from './rules/inner-space.ts';
+import { ANY_SPACE } from './rules/space.ts';
 
 /** Bumps when a rule changes, and never for a release that does not touch one.
  *
@@ -34,37 +26,38 @@ const VERSION = '0.2.0';
 const rules: readonly Rule[] = [
   ...germanCommonRules,
 
-  replaceRule({
+  // This rule used to say of itself that it was "the same pattern and
+  // replacement as the Spanish rule, arrived at from a different standard", and
+  // that they were not shared and should not be, because the day RAE and Duden
+  // disagreed a shared constant would have to be split by whoever was holding
+  // the release. The sentence was false for two pack versions and the scar is
+  // worth leaving on: this rule had the guard and the Spanish one did not, so
+  // the two were the same rule only in the comment, and `es.normalize` welded
+  // the words either side of a German inward quotation until `es@0.2.0`.
+  //
+  // A comment asserting parity with another pack is an assertion nothing tests.
+  // Now they are the same call with a different citation, and the parity is a
+  // fact about the program.
+  innerSpace({
     id: 'de-CH.guillemet-open-space',
     summary: 'Space after the opening guillemet `«`; Swiss German sets `«Wort»` closed up',
     cite: `${DUDEN}, "Anführungszeichen"`,
-    // The same pattern and replacement as the Spanish rule, arrived at from a
-    // different standard. They are not shared, and should not be: the day RAE
-    // and Duden disagree, a shared constant would have to be split under time
-    // pressure by whoever is holding the release.
-    //
-    // That sentence was false for two pack versions and is worth leaving the
-    // scar on. This rule had the lookbehind below and the Spanish one did not,
-    // so the two were the same rule only in the comment, and `es.normalize`
-    // welded the words either side of a German inward quotation until
-    // `es@0.2.0`. A comment asserting parity with another pack is an assertion
-    // nothing tests, which is the same shape as `de.space-before-punctuation`
-    // citing `es.ts` for a filter it did not have.
-    //
-    // The lookbehind guards the same hazard `de-DE.ts` documents, pointed the
-    // other way: `«` closes a quotation in Germany, so a `«` with a letter
-    // immediately before it is closing something and the space before it is a
-    // word boundary rather than padding.
-    pattern: new RegExp(`(?<![\\p{L}\\p{N}])«${ANY_SPACE}+`, 'gu'),
-    replacement: '«',
+    mark: '«',
+    side: 'open',
+    spaces: ANY_SPACE,
+    correct: '',
+    guard: true,
   }),
 
-  replaceRule({
+  innerSpace({
     id: 'de-CH.guillemet-close-space',
     summary: 'Space before the closing guillemet `»`; Swiss German sets `«Wort»` closed up',
     cite: `${DUDEN}, "Anführungszeichen"`,
-    pattern: new RegExp(`${RUN_START}${ANY_SPACE}+»(?![\\p{L}\\p{N}])`, 'gu'),
-    replacement: '»',
+    mark: '»',
+    side: 'close',
+    spaces: ANY_SPACE,
+    correct: '',
+    guard: true,
   }),
 
   detectRule({

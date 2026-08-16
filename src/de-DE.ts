@@ -9,17 +9,9 @@
 // a reader needs: tell a Swiss quotation from a German mistake.
 
 import { DUDEN, germanCommonRules } from './de-common.ts';
-import {
-  composeNormalize,
-  detectRule,
-  type Rule,
-  replaceRule,
-  type TypographyPack,
-} from './pack.ts';
-import { ANY_SPACE, runStart } from './rules/space.ts';
-
-/** The start of a space run; `rules/space.ts` says what it is protecting. */
-const RUN_START = runStart(ANY_SPACE);
+import { composeNormalize, detectRule, type Rule, type TypographyPack } from './pack.ts';
+import { innerSpace } from './rules/inner-space.ts';
+import { ANY_SPACE } from './rules/space.ts';
 
 /** Bumps when a rule changes, and never for a release that does not touch one.
  *
@@ -34,46 +26,51 @@ const VERSION = '0.2.0';
 const rules: readonly Rule[] = [
   ...germanCommonRules,
 
-  replaceRule({
+  // The one member of this family that turns the guard off for a reason it can
+  // state: U+201E has exactly one job in every language that uses it, so there
+  // is no other reading to protect against and no word a repair could weld.
+  //
+  // There is deliberately no matching rule for the closing U+201C. That
+  // character is an *opening* mark in English, and German technical prose quotes
+  // English constantly, so deleting a space before it would close up `he said
+  // "hello"` into nonsense. The asymmetry is the rule, not a gap, and it is the
+  // same hazard the guard exists for, met with a whole missing rule because the
+  // guard would not have been enough.
+  innerSpace({
     id: 'de-DE.low-quote-space',
     summary: 'Space after the opening low quotation mark; German sets it closed up',
     cite: `${DUDEN}, "Anführungszeichen"`,
-    // U+201E has exactly one job in any language that uses it, so removing the
-    // space after it damages nothing.
-    //
-    // There is deliberately no matching rule for the closing U+201C. That
-    // character is an *opening* mark in English, and German technical prose
-    // quotes English constantly, so deleting a space before it would close up
-    // `he said "hello"` into nonsense. The asymmetry is the rule, not a gap.
-    pattern: new RegExp(`„${ANY_SPACE}+`, 'g'),
-    replacement: '„',
+    mark: '„',
+    side: 'open',
+    spaces: ANY_SPACE,
+    correct: '',
+    guard: false,
   }),
 
-  replaceRule({
+  // Germany points the guillemets inward, so this is `de-CH`'s pair with the
+  // marks exchanged and nothing else different. Two packs, one builder, and the
+  // claim that they are mirror images is now true by construction rather than
+  // asserted in a comment.
+  innerSpace({
     id: 'de-DE.guillemet-open-space',
     summary: 'Space after the opening guillemet `»`; German sets `»Wort«` closed up',
     cite: `${DUDEN}, "Anführungszeichen"`,
-    // The lookbehind is load-bearing and its absence would have been a defect
-    // this package could not detect in itself.
-    //
-    // `»` opens a quotation here and closes one in Switzerland. Without the
-    // guard, this rule reads the `»` of a Swiss `«Wort» und` as an opening mark
-    // and deletes the space after it, welding two words together. A `»` with a
-    // letter or a digit immediately before it is closing something, whatever
-    // this pack believes, so it is left alone.
-    pattern: new RegExp(`(?<![\\p{L}\\p{N}])»${ANY_SPACE}+`, 'gu'),
-    replacement: '»',
+    mark: '»',
+    side: 'open',
+    spaces: ANY_SPACE,
+    correct: '',
+    guard: true,
   }),
 
-  replaceRule({
+  innerSpace({
     id: 'de-DE.guillemet-close-space',
     summary: 'Space before the closing guillemet `«`; German sets `»Wort«` closed up',
     cite: `${DUDEN}, "Anführungszeichen"`,
-    // The mirror guard: a `«` with a letter or digit immediately after it is
-    // opening a Swiss or French quotation, so the space before it is a real word
-    // boundary rather than padding inside a quotation.
-    pattern: new RegExp(`${RUN_START}${ANY_SPACE}+«(?![\\p{L}\\p{N}])`, 'gu'),
-    replacement: '«',
+    mark: '«',
+    side: 'close',
+    spaces: ANY_SPACE,
+    correct: '',
+    guard: true,
   }),
 
   detectRule({
