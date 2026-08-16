@@ -2,12 +2,17 @@
 //
 // Spanish is the language that shaped this package's central type. French and
 // Spanish use the identical pair of quotation marks with opposite spacing rules,
-// which is why there is no shared rule engine here - but the sharper point is
-// the opening marks. `¿` and `¡` are obligatory and paired, so a sentence ending
-// in `?` with no `¿` is a real, unambiguous, high-value defect. Detecting it is
-// a regex and a backward scan. *Fixing* it means deciding where the sentence
-// began, which is a parse, and a parse that is wrong silently moves a mark into
-// the middle of someone's prose.
+// which this file used to give as the reason there could be no shared rule
+// engine. That was an argument about two standards bodies disagreeing, and it
+// does not survive the composition pivot: opposite is a parameter value, and the
+// `guillemet-inner-space` builder is where those two rules are going. What is
+// shared already is in `rules/`.
+//
+// The sharper point was always the opening marks anyway. `¿` and `¡` are
+// obligatory and paired, so a sentence ending in `?` with no `¿` is a real,
+// unambiguous, high-value defect. Detecting it is a regex and a backward scan.
+// *Fixing* it means deciding where the sentence began, which is a parse, and a
+// parse that is wrong silently moves a mark into the middle of someone's prose.
 //
 // So Spanish ships four check-only rules and three fixable ones, and the
 // asymmetry is the information rather than an omission.
@@ -19,13 +24,14 @@ import {
   composeNormalize,
   detectRule,
   type Match,
-  NARROW_NO_BREAK,
-  NO_BREAK,
   type Rule,
   replaceRule,
   type TypographyPack,
 } from './pack.ts';
 import { looksMachine } from './prose.ts';
+import { ANY_SPACE, runStart } from './rules/space.ts';
+import { spaceBeforePunctuation } from './rules/space-before-punctuation.ts';
+import { straightDoubleQuote } from './rules/straight-double-quote.ts';
 
 const ORTOGRAFIA = 'RAE, Ortografía de la lengua española (2010)';
 
@@ -38,16 +44,10 @@ const ORTOGRAFIA = 'RAE, Ortografía de la lengua española (2010)';
  * told apart: `normalize` returns something different for text that reaches it. */
 const VERSION = '0.2.0';
 
-/** Space, U+00A0 and U+202F. Spanish permits none of the three where these
- * rules look, so all three are the defect. */
-const ANY_SPACE = `[ ${NO_BREAK}${NARROW_NO_BREAK}]`;
-
-/** The start of a space run. `de-common.ts` explains what it is protecting
+/** The start of a space run. `rules/space.ts` explains what it is protecting
  * against at length; the short version is that `ANY_SPACE+»` without it rescans
- * a run of spaces once per character in the run. Not imported from there, for
- * the reason the guillemet rules below are not either: the day RAE and Duden
- * disagree, a shared constant has to be split by whoever is holding the release. */
-const RUN_START = `(?<!${ANY_SPACE})`;
+ * a run of spaces once per character in the run. */
+const RUN_START = runStart(ANY_SPACE);
 
 /** Ends a sentence for the purpose of the paired-mark scan below. */
 const SENTENCE_END = /[.!?\n…]/;
@@ -134,31 +134,24 @@ const rules: readonly Rule[] = [
     refine: (match, value) => unpaired(value, match.index, '¡'),
   }),
 
-  detectRule({
+  // The builder carries the pattern, the `looksMachine` filter and the argument
+  // for why none of the three styles that have this rule repairs it. What is
+  // Spanish about it is that the defect is almost always a Frenchism a
+  // translator carried over.
+  spaceBeforePunctuation({
     id: 'es.space-before-punctuation',
-    summary: 'Space before `; : ! ?`, which Spanish does not take',
+    language: 'Spanish',
     cite: `${ORTOGRAFIA}, "Los signos de puntuación"`,
-    // Check-only, and this is the case where the boundary is worth stating,
-    // because deleting a space looks like the safest edit imaginable.
-    //
-    // It is not, on the corpora this package exists for. `a ? b : c` is a
-    // ternary, `1 : 2` is a ratio, and a fenced code block inside technical
-    // Spanish carries both. Deleting those spaces silently corrupts code that
-    // rendered correctly. The defect is real, it is almost always a Frenchism
-    // carried over by a translator, and it is still a human's call.
-    pattern: new RegExp(`\\p{L}${ANY_SPACE}+[;:!?]`, 'gu'),
-    refine: (match, value) =>
-      looksMachine(value, match.index)
-        ? null
-        : { index: match.index + 1, length: match[0].length - 2 },
   }),
 
-  detectRule({
+  // Spanish is the one style here that ranks two pairs rather than admitting
+  // them equally: RAE sets the guillemets first and the curly doubles as the
+  // inner level. Neither of them is a straight quote, which is all this rule
+  // needs, and choosing between them is still the parse the builder describes.
+  straightDoubleQuote({
     id: 'es.straight-double-quote',
-    summary: 'Straight double quote; Spanish quotation marks are `«»` then `""`',
+    instead: 'Spanish quotation marks are `«»` then `""`',
     cite: `${ORTOGRAFIA}, "Las comillas"`,
-    severity: 'warning',
-    pattern: /"/g,
   }),
 ];
 

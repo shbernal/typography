@@ -45,14 +45,16 @@
 import {
   composeNormalize,
   detectRule,
-  NARROW_NO_BREAK,
-  NO_BREAK,
+  LEFT_SINGLE_QUOTE,
   RIGHT_SINGLE_QUOTE,
   type Rule,
   replaceRule,
   type TypographyPack,
 } from './pack.ts';
 import { looksMachine } from './prose.ts';
+import { apostrophe } from './rules/apostrophe.ts';
+import { spaceBeforePunctuation } from './rules/space-before-punctuation.ts';
+import { straightDoubleQuote } from './rules/straight-double-quote.ts';
 
 const HANDLEIDING = 'Nederlandse Taalunie, Technische Handleiding (oktober 2016)';
 const TAALADVIES = 'Taaladvies.net (Nederlandse Taalunie, INT, Onze Taal)';
@@ -60,20 +62,11 @@ const TAALADVIES = 'Taaladvies.net (Nederlandse Taalunie, INT, Onze Taal)';
 /** Bumps when a rule changes, and never for a release that does not touch one. */
 const VERSION = '0.1.0';
 
-/** Space, U+00A0 and U+202F. Dutch takes none of the three before the
- * punctuation this pack looks at, so all three are the defect. Spelled out here
- * rather than imported for the reason `es.ts` gives: the day one of these
- * standards disagrees with another, a shared constant has to be split by
- * whoever is holding the release. */
-const ANY_SPACE = `[ ${NO_BREAK}${NARROW_NO_BREAK}]`;
-
-/** U+2018, the left single quotation mark. It opens a quotation in Dutch and is
- * never a weglatingsteken, which is what makes the rules below able to convert
- * it: across the Technische Handleiding all 144 of them open a quotation and
- * none stands in for an elided letter. Software that "smartens" a leading
- * straight quote produces it in apostrophe position anyway, and that is the
- * defect those rules are for. */
-const LEFT_SINGLE_QUOTE = '‘';
+// U+2018 opens a quotation in Dutch and is never a weglatingsteken, which is
+// what makes the rules below able to convert it: across the Technische
+// Handleiding all 144 of them open a quotation and none stands in for an elided
+// letter. Software that "smartens" a leading straight quote produces it in
+// apostrophe position anyway, and that is the defect those rules are for.
 
 /** Everything that turns up where a Dutch apostrophe belongs and is not one. */
 const WRONG_APOSTROPHE = `['${LEFT_SINGLE_QUOTE}]`;
@@ -185,25 +178,22 @@ function minorityOpeners(value: string): string | null {
 }
 
 const rules: readonly Rule[] = [
-  replaceRule({
+  // Dutch reaches for the apostrophe far more often than French or German,
+  // because the plural of a vowel-final noun takes one: `auto's`, `baby's`,
+  // `taxi's` are 129 of the 287 letter-to-letter apostrophes in the standard's
+  // own text.
+  //
+  // The wide class is what makes this the one caller that passes anything but
+  // `[']`, and it is the only style here that may. In French and German a stray
+  // U+2018 is a mis-paired quotation mark and the repair is to pair it; in
+  // Dutch, between two letters, it can only be a weglatingsteken that a
+  // smart-quote pass turned the wrong way, since the standard uses U+2018 to
+  // open a quotation 144 times and as an apostrophe never.
+  apostrophe({
     id: 'nl.apostrophe',
-    summary: 'Straight quote or U+2018 between letters; Dutch uses U+2019',
+    language: 'Dutch',
+    wrong: WRONG_APOSTROPHE,
     cite: `${HANDLEIDING}, hoofdstuk 11 "Het weglatingsteken"`,
-    // A letter on both sides, which is the narrowing `fr` and `de` already make
-    // and it protects the same things: a quote character used as a quote, an
-    // apostrophe inside a preserved code token, anything beside a digit or a
-    // bracket. Dutch reaches for it far more often than either, because the
-    // plural of a vowel-final noun takes one: `auto's`, `baby's`, `taxi's` are
-    // 129 of the 287 letter-to-letter apostrophes in the standard's own text.
-    //
-    // U+2018 is in the class and this is the only pack that converts it. In
-    // French and German a stray U+2018 is a mis-paired quotation mark and the
-    // repair is to pair it; in Dutch, between two letters, it can only be a
-    // weglatingsteken that a smart-quote pass turned the wrong way, since the
-    // standard uses U+2018 to open a quotation 144 times and as an apostrophe
-    // never.
-    pattern: new RegExp(`(?<=\\p{L})${WRONG_APOSTROPHE}(?=\\p{L})`, 'gu'),
-    replacement: RIGHT_SINGLE_QUOTE,
   }),
 
   replaceRule({
@@ -292,38 +282,24 @@ const rules: readonly Rule[] = [
     pattern: /(?<![\p{L}\p{N}])Ij(?=\p{Ll})/gu,
   }),
 
-  detectRule({
+  // Worth having in a Dutch style specifically, which is not obvious from a
+  // standard that says nothing about spacing. Dutch and French are in daily
+  // contact in Belgium, and French spacing carried into Dutch is a defect under
+  // the Belgian half of the Taalunie's own authority rather than a Belgian
+  // convention, which is why this is one pack and not `nl-BE` plus `nl-NL`.
+  spaceBeforePunctuation({
     id: 'nl.space-before-punctuation',
-    summary: 'Space before `; : ! ?`, which Dutch does not take',
+    language: 'Dutch',
     cite: `${TAALADVIES}, "Wel of geen spaties voor en na leestekens en symbolen"`,
-    // Character for character the Spanish and German rule, with a third
-    // citation, and check-only for the third time for the same reason: `a ? b :
-    // c` is a ternary and `1 : 2` is a ratio, and deleting the space corrupts
-    // code that rendered correctly.
-    //
-    // Worth having in a Dutch pack specifically. Dutch and French are in daily
-    // contact in Belgium, and French spacing carried into Dutch is a defect
-    // under the Belgian half of the Taalunie's own authority rather than a
-    // Belgian convention, which is why this pack is `nl` and not `nl-BE` plus
-    // `nl-NL`.
-    pattern: new RegExp(`\\p{L}${ANY_SPACE}+[;:!?]`, 'gu'),
-    refine: (match, value) =>
-      looksMachine(value, match.index)
-        ? null
-        : { index: match.index + 1, length: match[0].length - 2 },
   }),
 
-  detectRule({
+  // Dutch has three admissible pairs to choose between rather than two, with
+  // nothing in any citation that would settle which, so the parse the builder
+  // declines to attempt is one branch wider here than anywhere else.
+  straightDoubleQuote({
     id: 'nl.straight-double-quote',
-    summary: 'Straight double quote; Dutch quotation marks are a matched curly pair',
+    instead: 'Dutch quotation marks are a matched curly pair',
     cite: `${TAALADVIES}, "Dubbele of enkele aanhalingstekens bij een citaat"`,
-    severity: 'warning',
-    // Not fixable, for the reason the other three packs give plus one. The two
-    // ends are the same character, so choosing an opening or a closing mark
-    // means pairing across the whole value; and Dutch has three admissible
-    // pairs to choose between rather than two, with nothing in any citation
-    // that would settle which.
-    pattern: /"/g,
   }),
 ];
 

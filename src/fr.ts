@@ -44,12 +44,14 @@ import {
   detectRule,
   NARROW_NO_BREAK,
   NO_BREAK,
-  RIGHT_SINGLE_QUOTE,
   type Rule,
   replaceRule,
   THIN,
   type TypographyPack,
 } from './pack.ts';
+import { apostrophe } from './rules/apostrophe.ts';
+import { ANY_SPACE_OR_THIN, runStart } from './rules/space.ts';
+import { straightDoubleQuote } from './rules/straight-double-quote.ts';
 
 const LEXIQUE = 'Imprimerie nationale, Lexique des règles typographiques (2002)';
 
@@ -64,9 +66,10 @@ const LEXIQUE = 'Imprimerie nationale, Lexique des règles typographiques (2002)
  * genuinely different eras of this pack. */
 const VERSION = '0.2.0';
 
-/** Space, U+00A0, U+202F and U+2009: everything that turns up between a
- * guillemet and the word beside it in text that reaches this package. */
-const ANY_SPACE = `[ ${NO_BREAK}${NARROW_NO_BREAK}${THIN}]`;
+// `ANY_SPACE_OR_THIN` is everything that turns up between a guillemet and the
+// word beside it in text that reaches this package. It is spelled out in
+// `rules/space.ts`, along with why French names U+2009 and the other three
+// styles do not.
 
 /** The two that break a line, and so are wrong in these positions under every
  * reading of the standard. U+2009 is the interesting one: right width, wrong
@@ -87,9 +90,9 @@ const NO_BREAK_SPACE = `[${NO_BREAK}${NARROW_NO_BREAK}]`;
  * **How it is spelled matters as much as what it says.** The direct translation
  * enumerates the three defects as an alternation:
  *
- *     (?:ANY_SPACE*BREAKABLE ANY_SPACE*|ANY_SPACE{2,}|absent)
+ *     (?:SPACE*BREAKABLE SPACE*|SPACE{2,}|absent)
  *
- * `BREAKABLE` is a subset of `ANY_SPACE`, so the first branch can split a run of
+ * `BREAKABLE` is a subset of that class, so the first branch can split a run of
  * spaces at every position in it and the second can re-match what the first gave
  * up. Against a run with no guillemet after it the engine walks that ambiguity:
  * 800 ordinary spaces took 242 ms, 1,600 took 1.5 s, and a single padded
@@ -102,13 +105,15 @@ const NO_BREAK_SPACE = `[${NO_BREAK}${NARROW_NO_BREAK}]`;
  * begins. Nothing to backtrack means linear, and `test/perf.test.ts` holds it
  * there rather than trusting this comment.
  */
-const CORRECT_AFTER_OPEN = `(?!${NO_BREAK_SPACE}(?!${ANY_SPACE}))`;
+const CORRECT_AFTER_OPEN = `(?!${NO_BREAK_SPACE}(?!${ANY_SPACE_OR_THIN}))`;
 const CORRECT_BEFORE_CLOSE = `(?!${NO_BREAK_SPACE}»)`;
 
 /** The start of a space run, so a run is a candidate once rather than once per
  * character in it. Without this the close rule is quadratic even with an
- * unambiguous body, because every position inside a run starts a fresh scan. */
-const RUN_START = `(?<!${ANY_SPACE})`;
+ * unambiguous body, because every position inside a run starts a fresh scan.
+ * Derived from the French class, thin space included: a `RUN_START` built from
+ * the narrower one would let a thin space begin a second match. */
+const RUN_START = runStart(ANY_SPACE_OR_THIN);
 
 /** Every position where this pack has an opinion about *which* no-break space to
  * use. The colon is deliberately not here: the Lexique specifies the word space
@@ -178,17 +183,15 @@ function minorityWidth(value: string): string | null {
 }
 
 const rules: readonly Rule[] = [
-  replaceRule({
+  // The shared builder carries the pattern and the narrowing that makes it safe.
+  // What is French about it is the measurement: the corpus this pack was
+  // extracted from split 711/974 between the straight and the curly form across
+  // 2,125 rows, with 4 rows carrying both.
+  apostrophe({
     id: 'fr.apostrophe',
-    summary: `Straight apostrophe between letters; French uses U+2019`,
+    language: 'French',
+    wrong: `[']`,
     cite: `${LEXIQUE}, "Apostrophe"`,
-    // Requiring a letter on *both* sides is the whole rule. It keeps the
-    // substitution off a quote character used as a quote, an apostrophe inside a
-    // preserved code token, and anything adjacent to a digit or a bracket. The
-    // corpus this came from split 711/974 between the straight and curly forms
-    // across 2,125 rows, with 4 rows carrying both.
-    pattern: /(?<=\p{L})'(?=\p{L})/gu,
-    replacement: RIGHT_SINGLE_QUOTE,
   }),
 
   replaceRule({
@@ -237,9 +240,9 @@ const rules: readonly Rule[] = [
     // corpus and 0 real defects among them.
     //
     // `\u00AB` fixes where the run starts, the lookahead rejects the one correct
-    // spelling, and `ANY_SPACE*` then takes the rest with nothing after it to
+    // spelling, and the space class then takes the rest with nothing after it to
     // backtrack for.
-    pattern: new RegExp(`\u00AB${CORRECT_AFTER_OPEN}${ANY_SPACE}*`, 'g'),
+    pattern: new RegExp(`\u00AB${CORRECT_AFTER_OPEN}${ANY_SPACE_OR_THIN}*`, 'g'),
     choose: (value) => `\u00AB${houseWidth(value)}`,
   }),
 
@@ -250,7 +253,7 @@ const rules: readonly Rule[] = [
     // The mirror, with the run anchored on its left instead of by `\u00AB`. The
     // no-space case is the position of `\u00BB` itself, where the run is empty and
     // the lookbehind reads the character before it.
-    pattern: new RegExp(`${RUN_START}${CORRECT_BEFORE_CLOSE}${ANY_SPACE}*\u00BB`, 'g'),
+    pattern: new RegExp(`${RUN_START}${CORRECT_BEFORE_CLOSE}${ANY_SPACE_OR_THIN}*\u00BB`, 'g'),
     choose: (value) => `${houseWidth(value)}\u00BB`,
   }),
 
@@ -308,18 +311,14 @@ const rules: readonly Rule[] = [
     refine: (match) => ({ index: match.index + 1, length: 1 }),
   }),
 
-  detectRule({
+  // Check-only in every style that has it, for the reason the builder states:
+  // the two ends are the same character, so choosing between an opening and a
+  // closing guillemet is a parse. French is the one style here with a single
+  // admissible pair, and it still cannot say which end it is looking at.
+  straightDoubleQuote({
     id: 'fr.straight-double-quote',
-    summary: 'Straight double quote; French quotation marks are the guillemets',
+    instead: 'French quotation marks are the guillemets',
     cite: `${LEXIQUE}, "Guillemets"`,
-    severity: 'warning',
-    // Not fixable, for a reason worth stating: the two ends are the same
-    // character, so choosing between an opening and a closing guillemet means
-    // tracking pairing across the whole value, and a value may legitimately
-    // carry one half of a pair quoted from elsewhere. A `"` inside a code token
-    // must also survive, and nothing in a regex can tell one from the other.
-    // Warning rather than error for that reason.
-    pattern: /"/g,
   }),
 ];
 
@@ -435,21 +434,21 @@ function harmonizingRules(width: string): readonly Rule[] {
       id: 'fr.space-before-high-punctuation',
       summary: `Space before \`; ! ?\` that is not the corpus's no-break space`,
       cite: `${LEXIQUE}, "Ponctuation"`,
-      pattern: new RegExp(`${ANY_SPACE}(?=[;!?])`, 'g'),
+      pattern: new RegExp(`${ANY_SPACE_OR_THIN}(?=[;!?])`, 'g'),
       choose: () => width,
     }),
     conformRule({
       id: 'fr.guillemet-open',
       summary: `Opening guillemet whose inner space is not the corpus's no-break space`,
       cite: `${LEXIQUE}, "Guillemets"`,
-      pattern: new RegExp(`«${ANY_SPACE}*`, 'g'),
+      pattern: new RegExp(`«${ANY_SPACE_OR_THIN}*`, 'g'),
       choose: () => `«${width}`,
     }),
     conformRule({
       id: 'fr.guillemet-close',
       summary: `Closing guillemet whose inner space is not the corpus's no-break space`,
       cite: `${LEXIQUE}, "Guillemets"`,
-      pattern: new RegExp(`${RUN_START}${ANY_SPACE}*»`, 'g'),
+      pattern: new RegExp(`${RUN_START}${ANY_SPACE_OR_THIN}*»`, 'g'),
       choose: () => `${width}»`,
     }),
   ];

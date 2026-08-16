@@ -10,7 +10,7 @@
 // Everything else about Swiss German typography is Duden's, so this pack is the
 // common rules plus its own quotation marks.
 
-import { ANY_SPACE, DUDEN, germanCommonRules, RUN_START } from './de-common.ts';
+import { DUDEN, germanCommonRules } from './de-common.ts';
 import {
   composeNormalize,
   detectRule,
@@ -18,6 +18,10 @@ import {
   replaceRule,
   type TypographyPack,
 } from './pack.ts';
+import { ANY_SPACE, runStart } from './rules/space.ts';
+
+/** The start of a space run; `rules/space.ts` says what it is protecting. */
+const RUN_START = runStart(ANY_SPACE);
 
 /** Bumps when a rule changes, and never for a release that does not touch one.
  *

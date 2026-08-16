@@ -35,6 +35,7 @@ export {
   detectRule,
   excerptAt,
   type Finding,
+  LEFT_SINGLE_QUOTE,
   type Match,
   NARROW_NO_BREAK,
   NO_BREAK,

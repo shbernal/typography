@@ -275,6 +275,12 @@ export const NARROW_NO_BREAK = ' ';
 export const THIN = String.fromCharCode(0x2009);
 /** U+2019, the right single quotation mark, used as the French apostrophe. */
 export const RIGHT_SINGLE_QUOTE = '’';
+/** U+2018, the left single quotation mark. Named because it is the mark an
+ * apostrophe rule has to be able to say it converts: a smart-quote pass that
+ * meets a leading straight quote produces U+2018 in apostrophe position, and
+ * U+2018 and U+2019 differ by which way the mark curls, which at a report's font
+ * size is nothing. */
+export const LEFT_SINGLE_QUOTE = '‘';
 
 /**
  * Name the invisible characters in a string.
@@ -300,7 +306,7 @@ export function reveal(text: string): string {
       // printed the closing mark as `<RSQUO>` and the opening one raw, so the
       // one rule whose entire subject is telling two marks apart showed a
       // reader only one of them.
-      .replaceAll('‘', '<LSQUO>')
+      .replaceAll(LEFT_SINGLE_QUOTE, '<LSQUO>')
       .replaceAll('“', '<LDQUO>')
       .replaceAll('”', '<RDQUO>')
       .replaceAll('„', '<BDQUO>')

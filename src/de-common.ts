@@ -4,95 +4,54 @@
 // opens it with `«`. A pack id of `de@0.1.0` stamped on a Swiss corpus would be
 // a stamp that lies, which is the one thing an era stamp may not do.
 //
-// What is shared here is a *rule list*, not a parameterized rule. `de-DE.ts` and
-// `de-CH.ts` each spell out their own quotation marks and prepend these. The
-// alternative was writing the apostrophe rule twice and hoping the two copies
-// stayed equal, which is the shape this repo is supposed to be able to detect.
+// What is left here after the shared families moved into `rules/` is a *rule
+// list*: three calls that name their citations and their language, prepended by
+// `de-DE.ts` and `de-CH.ts` to their own quotation marks. This file used to
+// argue that a rule list was the sharable unit and a parameterized rule was not,
+// on the grounds that a shared constant would have to be split by whoever was
+// holding the release the day RAE and Duden disagreed. `rules/space.ts` records
+// why that argument does not survive the pivot.
 //
 // Citations are section-level, to Duden, `Die deutsche Rechtschreibung`,
 // Richtlinien zur Rechtschreibung und Zeichensetzung.
 
-import {
-  detectRule,
-  NARROW_NO_BREAK,
-  NO_BREAK,
-  RIGHT_SINGLE_QUOTE,
-  type Rule,
-  replaceRule,
-} from './pack.ts';
-import { looksMachine } from './prose.ts';
+import type { Rule } from './pack.ts';
+import { apostrophe } from './rules/apostrophe.ts';
+import { spaceBeforePunctuation } from './rules/space-before-punctuation.ts';
+import { straightDoubleQuote } from './rules/straight-double-quote.ts';
 
 export const DUDEN = 'Duden, Die deutsche Rechtschreibung, Richtlinien';
 
-/** Space, U+00A0 and U+202F. German takes none of the three inside a quotation. */
-export const ANY_SPACE = `[ ${NO_BREAK}${NARROW_NO_BREAK}]`;
-
-/**
- * The start of a space run.
- *
- * Every rule that opens with `ANY_SPACE+` needs this, and the reason is not
- * obvious enough to leave to whoever writes the next one. A pattern like
- * `ANY_SPACE+«` re-enters at every character of a run of spaces, and at each one
- * it consumes to the end of the run and backtracks the whole way looking for the
- * `«` that is not there. That is quadratic in the length of the run, and a run of
- * spaces is something an indented block or a padded table produces without
- * anybody meaning to. Anchoring the start makes a run a candidate once.
- *
- * It changes nothing about what matches: a match could only ever begin at the
- * start of a run, because the engine scans left to right and takes the first one.
- * `test/perf.test.ts` is what found this, in these rules, after the same defect
- * had been fixed in `fr.ts` and thought to be French-only.
- */
-export const RUN_START = `(?<!${ANY_SPACE})`;
-
 /** Rules common to every German region. Region packs prepend their own. */
 export const germanCommonRules: readonly Rule[] = [
-  replaceRule({
+  // German needs the apostrophe rule less often than French (`geht's`,
+  // `Ku'damm`) and gets it wrong just as reliably. The letter-on-both-sides
+  // narrowing the builder describes was measured here: it reports `Z'graggen`
+  // and leaves `100'000` alone, and 22 Swiss thousands separators in the Swiss
+  // corpora would otherwise have been repaired into apostrophes.
+  apostrophe({
     id: 'de.apostrophe',
-    summary: 'Straight apostrophe between letters; German uses U+2019',
+    language: 'German',
+    wrong: `[']`,
     cite: `${DUDEN}, "Apostroph"`,
-    // Same shape and same narrowing as the French rule, and for the same
-    // reasons: a letter on both sides keeps it off a quote used as a quote, an
-    // apostrophe inside a code token, and anything next to a digit or a bracket.
-    // German needs it less often than French (`geht's`, `Ku'damm`) and gets it
-    // wrong just as reliably.
-    pattern: /(?<=\p{L})'(?=\p{L})/gu,
-    replacement: RIGHT_SINGLE_QUOTE,
   }),
 
-  detectRule({
+  // In German corpora this fires almost exclusively on text a French-speaking
+  // translator touched, which makes it useful and still not automatic. It also
+  // shipped here without the `looksMachine` filter while its own comment cited
+  // the Spanish file that had it; the builder is where that cannot happen again.
+  spaceBeforePunctuation({
     id: 'de.space-before-punctuation',
-    summary: 'Space before `; : ! ?`, which German does not take',
+    language: 'German',
     cite: `${DUDEN}, "Zeichensetzung"`,
-    // Check-only, for the reason set out at length in `es.ts`: deleting the
-    // space looks trivially safe and corrupts `a ? b : c` in a fenced code
-    // block. In German corpora this fires almost exclusively on text a
-    // French-speaking translator touched, which makes it useful and still not
-    // automatic.
-    //
-    // `looksMachine` is the other half of that, and this rule shipped without
-    // it while the paragraph above cited the file that has it. The pattern is
-    // character for character the Spanish one, so the two rules disagreed about
-    // a URL and about nothing else: on `Ver https://ejemplo.es/a ?b=1 y ruta/x
-    // : y aqui.` Spanish reported nothing and German reported twice. Neither
-    // reading was defensible as a *German* decision, since no clause of the
-    // Duden says a query string is punctuated prose.
-    pattern: new RegExp(`\\p{L}${ANY_SPACE}+[;:!?]`, 'gu'),
-    refine: (match, value) =>
-      looksMachine(value, match.index)
-        ? null
-        : { index: match.index + 1, length: match[0].length - 2 },
   }),
 
-  detectRule({
+  // German has two admissible pairs, `„…“` and `»…«`, so even a reader who knew
+  // which end of a straight quote they were looking at would still have to
+  // choose. That is one more reason on top of the builder's.
+  straightDoubleQuote({
     id: 'de.straight-double-quote',
-    summary: 'Straight double quote; German quotation marks are a matched pair',
+    instead: 'German quotation marks are a matched pair',
     cite: `${DUDEN}, "Anführungszeichen"`,
-    severity: 'warning',
-    // Not fixable: the two ends are the same character, so choosing between an
-    // opening and a closing mark means pairing across the whole value, and
-    // German has two accepted pairs to choose between even once you know which
-    // end it is.
-    pattern: /"/g,
   }),
 ];
