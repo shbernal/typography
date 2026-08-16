@@ -65,7 +65,34 @@ const LANGUAGES = [...new Set(TAGS.map(primary))].map((tag) => ({
   name: ENGLISH.of(tag)!,
 }));
 
-test('the description names every language the tool actually ships', () => {
+/**
+ * Whether a description names a language as one the tool handles.
+ *
+ * A substring search is not enough, and the reason is specific to this package:
+ * its own pitch is "non-English typography", and English is the language most
+ * likely to be added next. A description that said the tool was *for* non-English
+ * text would contain the word English and satisfy a naive test, so the assertion
+ * below would go green for a language the skill had never been told about. The
+ * negated forms are therefore not a match.
+ */
+function namesLanguage(description: string, language: string): boolean {
+  return new RegExp(`(?<!\\bnon-)(?<!\\bnot )\\b${language}\\b`, 'i').test(description);
+}
+
+test('naming a language means naming it, not declining it', () => {
+  // The plan for shipping English predicted this test would start passing
+  // vacuously, so it is checked against fabricated descriptions before it is
+  // pointed at the real one. A test that has never failed is a test nobody has
+  // checked, and this one guards a claim a model reads to decide whether to
+  // invoke the tool at all.
+  assert.ok(namesLanguage('Check French orthotypography', 'French'));
+  assert.ok(!namesLanguage('For non-English typography', 'English'));
+  assert.ok(!namesLanguage('Not English. Use it on Dutch.', 'English'));
+  assert.ok(namesLanguage('Not English. Use it on Dutch.', 'Dutch'));
+  assert.ok(!namesLanguage('Frenchify nothing', 'French'));
+});
+
+test('the description names every language the tool ships, and no other', () => {
   // This assertion used to carry `|| /french|spanish|german/i.test(...)`, which
   // meant it passed for every pack as long as the description mentioned any one
   // of those three. It therefore never checked coverage at all, and adding a
@@ -77,9 +104,20 @@ test('the description names every language the tool actually ships', () => {
   const fm = frontmatter();
   for (const { tag, name } of LANGUAGES)
     assert.ok(
-      new RegExp(`\\b${name}\\b`, 'i').test(fm.description!),
+      namesLanguage(fm.description!, name),
       `the skill description does not name ${name} (${tag}), which the tool ships`,
     );
+  // And the direction that was never checked. A description listing a language
+  // no style answers for is not a smaller mistake than one omitting a language:
+  // the model reads it, invokes the tool, and gets `--lang` refused.
+  for (const tag of ['en', 'it', 'pt', 'ja', 'pl']) {
+    if (LANGUAGES.some((language) => language.tag === tag)) continue;
+    const name = ENGLISH.of(tag)!;
+    assert.ok(
+      !namesLanguage(fm.description!, name),
+      `the skill description names ${name}, which no style answers for`,
+    );
+  }
 });
 
 test('every --lang the skill names is a shipped style', () => {

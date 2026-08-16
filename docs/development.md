@@ -15,6 +15,7 @@ into `dist/`. The **published** package targets Node 22, and
 pnpm install
 pnpm check          # typecheck + lint + test. The done gate
 pnpm build
+pnpm battery        # every style over every fixture, as a diffable dump
 ```
 
 `pnpm check` is the whole gate and needs no network. The corpus gates that used
@@ -22,6 +23,31 @@ to sit beside it are gone; what replaced them is `audit`, which holds a style to
 idempotence, conformance and non-interference over samples the caller supplies.
 [provenance.md](provenance.md) records what the corpora established before they
 left.
+
+## The fixtures
+
+`test/fixtures.ts` is what the corpora were replaced with, and it is weighted
+differently on purpose. The corpora were prose somebody published; this is
+**machine text**, because the input this package is now for is a model's output,
+where a fenced block, a JSON payload and a Windows path arrive in the same value
+as the sentence. Every rule here is about a character that carries punctuation in
+a sentence and syntax in a token, so that is where the fixtures sit.
+
+Three files use them and each asks something different:
+
+| File | Asks |
+|---|---|
+| `test/styles.test.ts` | the invariants the comments in `src/` claim |
+| `test/hazards.test.ts` | can a rule tell a sentence from a token |
+| `test/battery.test.ts` | did anything move |
+
+Two things in `hazards.test.ts` are worth knowing before changing a rule. It
+asserts that **every rule in every style fires on at least one fixture**, because
+a property over samples that reach nothing passes for any set of rules; if you
+add a rule, add the fixture that reaches it or the suite goes quiet about it. And
+it holds **the rules that rewrite machine text** to a written-down list, which is
+a ratchet rather than an approval: every row is a defect with a `FOLLOW-UPS.md`
+entry, and a rule that joins them fails the test by name.
 
 ## The invariants
 
@@ -88,11 +114,12 @@ than a benchmark.
 1. `src/<tag>.ts`, one module, no shared engine. Read `src/fr.ts` first for the
    comment density expected: every narrowing says what it is protecting.
 2. A tag is as specific as the convention requires, and no more.
-3. Register it in `src/check.ts`'s `packs` and add a subpath export in
+3. Register it in `src/check.ts`'s `styles` and add a subpath export in
    `package.json`. Re-export it from `src/index.ts` too.
-4. Samples that reach every rule, run through `audit` **before** the release.
-   A rule set nobody has audited is a rule set whose fixes have never been shown
-   to converge, whatever the unit tests say.
+4. Fixtures in `test/fixtures.ts` that reach every one of its rules. This is not
+   optional politeness: `test/hazards.test.ts` fails until they exist, because a
+   rule no sample reaches is a rule every property in the suite is silent about.
+   The three properties then run over them through `audit`.
 5. A `skills/typography-check/references/<primary-subtag>.md`, linked from
    `SKILL.md`, and the language named in the skill's frontmatter description.
    `test/skill.test.ts` derives all three from the registry and will fail until
@@ -110,7 +137,15 @@ Adding `nl` exposed a skill test whose assertion passed for every pack as long a
 the description mentioned any one of three hardcoded languages. Anything in the
 suite that names `fr`, `es`, `de-DE` and `de-CH` in a literal is a candidate: it
 does not fail when a language is added, it just stops covering it. Derive from
-`packs` instead.
+`styles` instead.
+
+Deriving is not enough on its own, and English is the case that shows it. The
+skill test asks whether the frontmatter description names each shipped language,
+and this package's own pitch is "non-English typography", so the day `en` ships
+that assertion would go green on a description that *declined* the language.
+`test/skill.test.ts` checks its own matcher against fabricated descriptions
+before pointing it at the real one, which is the general form: when a test is
+about to start passing for a new reason, show it failing first.
 
 ## Changing a rule
 
@@ -119,9 +154,28 @@ the narrowings that look like needless complication in the code and were each
 paid for with a corpus. The French guillemet rules are settled, and how they were
 settled is the precedent to follow.
 
-Bumping a pack version is a CHANGELOG entry. The version lives in the pack
-module and moves when a rule changes, never for a README fix; see the era stamp
-section of [design.md](design.md).
+A style's stamp moves by itself when a rule moves, so there is no version to
+bump; what a rule change still owes is a CHANGELOG entry, since the stamp is what
+a consumer's stored corpus carries. See the era stamp section of
+[design.md](design.md).
+
+**A change that claims to change nothing has to be shown to.** The type checker
+and the unit tests both pass for a rule that quietly matches one character less,
+and the derived stamp cannot help: it hashes what each rule *declares*, so a
+change to `src/prose.ts` or to a helper every builder calls moves behaviour and
+moves no stamp. `test/battery.test.ts` carries a digest per style for that, and
+when it fails it tells you only that something moved. The dump is how you find
+out what:
+
+```bash
+git stash && pnpm battery > /tmp/before.txt && git stash pop
+pnpm battery > /tmp/after.txt && diff /tmp/before.txt /tmp/after.txt
+```
+
+If the diff is the change you meant, re-cut the digest table from the tail of
+`pnpm battery` and say in the commit message what moved and by how many lines.
+That is what the committed gate baselines used to buy, at seven lines and no
+network.
 
 ## Cutting a release
 

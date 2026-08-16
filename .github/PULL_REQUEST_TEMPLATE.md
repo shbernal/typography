@@ -13,6 +13,10 @@
 
 - [ ] `audit` run over samples that reach the changed rules, with idempotence,
       conformance and non-interference all clean.
+- [ ] A fixture in `test/fixtures.ts` that reaches anything new, and the machine
+      text list in `test/hazards.test.ts` unchanged, or changed on purpose.
+- [ ] For a change that was meant to be a refactor: `pnpm battery` on both trees,
+      diffed, and the digest table in `test/battery.test.ts` untouched.
 - [ ] Anything measured, or any narrowing a reader would otherwise undo, written
       into the comment above the rule and into `docs/provenance.md` if a reader
       of the style needs it too.

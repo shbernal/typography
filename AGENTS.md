@@ -22,12 +22,21 @@ package targets Node 22.
 ```powershell
 pnpm check          # typecheck + lint + test. The done gate
 pnpm build
+pnpm battery        # every style over every fixture, as a diffable dump
 ```
 
 `pnpm check` is the whole gate and needs no network. The nine corpora and the two
 gate scripts that used to sit beside it are gone; `audit` replaced them, holding a
 style to idempotence, conformance and non-interference. What the corpora
 established before they left is in `docs/provenance.md`.
+
+`test/fixtures.ts` is what they were replaced with, weighted at **machine text**
+rather than prose because the input is a model's output. Two things follow.
+A rule with no fixture that reaches it fails `test/hazards.test.ts`, since a
+property over samples that touch nothing passes for anything. And **a change that
+claims to change nothing has to be shown to**: `pnpm battery` on both trees and
+diff, because the derived stamp hashes what a rule *declares* and cannot see a
+change to `src/prose.ts` or to a shared helper.
 
 ## The rules that must not be broken
 
@@ -77,6 +86,7 @@ how a corpus splits invisibly. Bumping a pack version is a CHANGELOG entry.
 | Touching a pattern | [`docs/development.md`](docs/development.md), the linear-time section |
 | Changing the protocol | [`docs/design.md`](docs/design.md) |
 | Touching the French width logic | [`docs/api.md`](docs/api.md), then `withWidth` in `src/fr.ts` |
+| Adding or changing a fixture | [`docs/development.md`](docs/development.md), the fixtures section |
 | Cutting a release | [`docs/development.md`](docs/development.md) |
 
 **The French guillemet rules are settled, and the way they were settled is the
@@ -98,6 +108,9 @@ French:
 the text was set correctly or because it contained nothing the rule could match,
 and only the first is evidence. This outlived the corpora that produced it: give
 `audit` samples that actually reach the rules, or its empty result says nothing.
+It is asserted rather than remembered now, in the first test of
+`test/hazards.test.ts`, and the same discipline applies to a property you add:
+compose a style that fails it before believing the one that passes.
 
 ## Conventions
 

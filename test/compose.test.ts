@@ -20,6 +20,7 @@ import { es } from '../src/es.ts';
 import { fr, withWidth } from '../src/fr.ts';
 import { conformRule, NARROW_NO_BREAK, NO_BREAK, type Rule, replaceRule } from '../src/pack.ts';
 import { straightDoubleQuote } from '../src/rules/straight-double-quote.ts';
+import { texts } from './fixtures.ts';
 
 const CITE = 'ACME house style v3, section 2';
 
@@ -239,25 +240,17 @@ test('audit catches a repair that does not settle', () => {
   assert.ok(found.some((v) => v.property === 'conformance' && v.rule === 'doubling'));
 });
 
-test('every shipped style holds all three properties', () => {
-  // The corpus gates answered "does this rule misfire on text a professional
-  // already set correctly". This answers the question that survives the pivot:
-  // does the style settle, and is `check` after `fix` quiet. The hostile inputs
-  // are the ones `styles.test.ts` uses, plus what a composed style is most
-  // likely to meet.
-  const hostile = [
-    '',
-    "L'apostrophe : voici « une citation » ; puis un point !",
-    'Voir https://example.com/a?b=1 et C:\\Windows pour la suite.',
-    'const x = a ? b : c; // a ternary inside prose',
-    '¿Como estas? ¡Claro! Pero: como estas?',
-    'Er sagte »Wort« und sie sagte „Wort“.',
-    'Sie sagte «Wort» und ging.',
-    `Mixed ${NO_BREAK} no-break ${NARROW_NO_BREAK} narrow \u2019 curly ' straight.`,
-    '«»„“‚‘¿¡;:!?',
-    "auto's en 's morgens en IJs en Ijs",
-    '"straight double quotes" everywhere',
-  ];
-  for (const style of [fr, es, deCH, withWidth(NO_BREAK), withWidth(NARROW_NO_BREAK)])
-    assert.deepEqual(audit(style, hostile), [], `${style.id} fails a property`);
+test('a derived style inherits the properties, over the whole fixture set', () => {
+  // The shipped styles are held to all three in `hazards.test.ts`, over these
+  // fixtures and the generated battery. What is worth asserting *here* is the
+  // half this file is about: `derive` produces a style nobody declared, and it
+  // has to come out of that holding what its base held. `withWidth` is the one
+  // the package ships, and it drops a rule and replaces three, which is every
+  // verb `derive` has.
+  for (const width of [NO_BREAK, NARROW_NO_BREAK])
+    assert.deepEqual(
+      audit(withWidth(width), texts()),
+      [],
+      'a derived French style fails a property',
+    );
 });

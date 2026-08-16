@@ -91,7 +91,8 @@
     "lint:text": "node scripts/check-no-emdash.ts",
     "lint:fix": "biome check --write src test scripts",
     "format": "biome format --write src test scripts",
-    "test": "node --test \"test/**/*.test.ts\""
+    "test": "node --test \"test/**/*.test.ts\"",
+    "battery": "node scripts/battery.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.8",

@@ -55,10 +55,16 @@ coding agents but is the accurate list either way.
    matcher and the rewriter separately: they will disagree, and the test you add
    to keep them equal is a symptom rather than a fix.
 2. Add the citation.
-3. `pnpm check`. `test/packs.test.ts` will hold you to idempotence, to a fixable
+3. Add the fixture that reaches it, in `test/fixtures.ts`. A rule no sample
+   reaches is a rule every property below is silent about, and
+   `test/hazards.test.ts` fails until one does.
+4. `pnpm check`. `test/styles.test.ts` will hold you to idempotence, to a fixable
    rule changing the text exactly when it reports a finding, and to a rule
    matching its own output.
-4. Run `audit`. **This is the part that is easy to skip and is the point.**
+5. Run `audit`. **This is the part that is easy to skip and is the point.**
+6. `pnpm battery` before and after, and diff, if you believed the change was a
+   refactor. The digest in `test/battery.test.ts` will tell you that something
+   moved; only the diff tells you what.
 
 ## `audit`, and why a green test suite is not enough
 

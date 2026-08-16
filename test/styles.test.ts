@@ -11,30 +11,17 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { check, fix, styleFor, styles } from '../src/check.ts';
-import type { Style } from '../src/pack.ts';
+import { reveal, type Style } from '../src/pack.ts';
+import { FIXTURES } from './fixtures.ts';
 
-/** Text designed to be hostile to every style at once: code, URLs, both
- * guillemet conventions, both apostrophes, all three spaces, and prose in each
- * language. Every invariant below runs over all of it. */
-const HOSTILE: readonly string[] = [
-  '',
-  ' ',
-  'Plain ASCII with nothing interesting in it.',
-  "L'apostrophe et l'accent : voici « une citation » ; puis un point !",
-  'Voir https://example.com/a?b=1 et C:\\Windows\\System32 pour la suite.',
-  'const x = a ? b : c; // a ternary inside prose',
-  '¿Como estas? ¡Claro! Pero: como estas?',
-  'Dijo « hola » y despues « adios ».',
-  'Er sagte »Wort« und sie sagte „Wort“.',
-  'Er sagte « Wort » wie in der Schweiz.',
-  'Sie sagte «Wort» und ging.',
-  'Il a dit «Bonjour» sans espaces.',
-  'Mixed \u00a0 no-break \u202f narrow \u2019 curly \u0027 straight.',
-  '«»„“‚‘¿¡;:!?',
-  'A line\nwith a break\r\nand a CRLF one.',
-  '"straight double quotes" everywhere',
-  'Zahlen 12:30 und 1 : 2 und Port 8080:80',
-];
+/** Every invariant below runs over the whole fixture set.
+ *
+ * It used to run over a list declared here, and `compose.test.ts` had a second
+ * one that overlapped it by two thirds. That is this repo's oldest defect shape,
+ * two copies required to agree with nothing keeping them that way, in the files
+ * whose job is to catch it. `fixtures.ts` is the one copy, and it is also the
+ * one place that says why each sample is there. */
+const HOSTILE = FIXTURES;
 
 function everyStyle(fn: (style: Style) => void): void {
   for (const style of styles) fn(style);
@@ -102,12 +89,12 @@ test('normalize is idempotent', () => {
   // pass looks like progress. This is the one property whose absence is
   // invisible in a single run.
   everyStyle((style) => {
-    for (const text of HOSTILE) {
+    for (const { name, text } of HOSTILE) {
       const once = style.normalize(text);
       assert.equal(
         style.normalize(once),
         once,
-        `${style.id} is not idempotent on ${JSON.stringify(text)}`,
+        `${style.id} is not idempotent on ${name}: ${reveal(text)}`,
       );
     }
   });
@@ -119,12 +106,12 @@ test('every individual fix is idempotent', () => {
   everyStyle((style) => {
     for (const rule of style.rules) {
       if (!rule.fix) continue;
-      for (const text of HOSTILE) {
+      for (const { name, text } of HOSTILE) {
         const once = rule.fix(text);
         assert.equal(
           rule.fix(once),
           once,
-          `${rule.id} is not idempotent on ${JSON.stringify(text)}`,
+          `${rule.id} is not idempotent on ${name}: ${reveal(text)}`,
         );
       }
     }
@@ -139,13 +126,13 @@ test('a fixable rule changes the text exactly when it reports a finding', () => 
     for (const rule of style.rules) {
       const apply = rule.fix;
       if (!apply) continue;
-      for (const text of HOSTILE) {
+      for (const { name, text } of HOSTILE) {
         const reported = rule.find(text).length > 0;
         const rewrote: boolean = apply(text) !== text;
         assert.equal(
           reported,
           rewrote,
-          `${rule.id} disagrees with itself on ${JSON.stringify(text)}`,
+          `${rule.id} disagrees with itself on ${name}: ${reveal(text)}`,
         );
       }
     }
@@ -157,22 +144,27 @@ test('check reports nothing fixable once normalize has run', () => {
   // findings left. Anything still reported is check-only by construction, which
   // is the asymmetry stated as a test.
   everyStyle((style) => {
-    for (const text of HOSTILE) {
+    for (const { name, text } of HOSTILE) {
       const clean = style.normalize(text);
       const left = check(style, clean).filter((f) => f.fixable);
-      assert.deepEqual(left, [], `${style.id} still reports fixable findings after normalize`);
+      assert.deepEqual(
+        left,
+        [],
+        `${style.id} still reports fixable findings after normalize on ${name}`,
+      );
     }
   });
 });
 
 test('findings are ordered by position in the text', () => {
   everyStyle((style) => {
-    for (const text of HOSTILE) {
+    for (const { name, text } of HOSTILE) {
       const found = check(style, text);
       const offsets = found.map((f) => f.index);
       assert.deepEqual(
         offsets,
         [...offsets].sort((a, b) => a - b),
+        `${style.id} reports ${name} out of order`,
       );
     }
   });
@@ -182,10 +174,10 @@ test('a finding never quotes raw invisible characters', () => {
   // A report that printed the raw slice would show a reader two
   // identical-looking strings, and it would look completely fine.
   everyStyle((style) => {
-    for (const text of HOSTILE) {
+    for (const { name, text } of HOSTILE) {
       for (const f of check(style, text)) {
-        assert.ok(!f.excerpt.includes('\u00a0'), `${f.rule} leaked a raw NBSP`);
-        assert.ok(!f.excerpt.includes('\u202f'), `${f.rule} leaked a raw NNBSP`);
+        assert.ok(!f.excerpt.includes('\u00a0'), `${f.rule} leaked a raw NBSP in ${name}`);
+        assert.ok(!f.excerpt.includes('\u202f'), `${f.rule} leaked a raw NNBSP in ${name}`);
       }
     }
   });
@@ -248,6 +240,7 @@ test('styleFor is case-insensitive on the tag', () => {
 
 test('fix is exactly normalize', () => {
   everyStyle((style) => {
-    for (const text of HOSTILE) assert.equal(fix(style, text), style.normalize(text));
+    for (const { name, text } of HOSTILE)
+      assert.equal(fix(style, text), style.normalize(text), `${style.id} differs on ${name}`);
   });
 });

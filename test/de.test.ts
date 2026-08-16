@@ -17,6 +17,14 @@ test('the apostrophe rule is shared and needs a letter on both sides', () => {
   assert.equal(deDE.normalize("geht's"), `geht${RSQUO}s`);
   assert.equal(deCH.normalize("geht's"), `geht${RSQUO}s`);
   assert.equal(deDE.normalize("x['key']"), "x['key']");
+  // Both sides, and this is what buys it. Switzerland writes its thousands
+  // separator as a straight apostrophe between two digits, and 22 of the 24
+  // straight apostrophes in the Swiss corpus were that rather than an elision.
+  // A rule asking for a letter on one side only would have retyped every one.
+  // `docs/provenance.md` has the count; the Swiss name is here because it is the
+  // case on the other side of the line, and it is repaired.
+  assert.equal(deCH.normalize("100'000 Franken"), "100'000 Franken");
+  assert.equal(deCH.normalize("Herr Z'graggen"), `Herr Z${RSQUO}graggen`);
 });
 
 test('German quotation marks are set closed up', () => {
