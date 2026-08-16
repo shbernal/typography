@@ -14,28 +14,45 @@
 // Every report carries a stamp - `typocheck 0.1.0 (fr@a8ada4df7c7c)` - because a
 // findings count is comparable only against the rules that produced it, and the
 // half after the `@` is derived from those rules rather than typed by anybody.
-// An input that shapes an output has to name itself in that output.
+// An input that shapes an output has to name itself in that output. When the
+// style came out of a config the header names the file too: a stamp says which
+// rules ran, and the path says whose.
+//
+// `--style` rather than `--lang`, because a style need not be about a language.
+// The shipped ones are, and are named for their tags, so `--style fr` is what
+// `--lang fr` was.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { relative } from 'node:path';
 
-import { check, fix, styleFor, styles } from './check.ts';
+import { check, fix, styles } from './check.ts';
+import { available, type Config, findConfig, loadConfig, resolveStyle } from './config.ts';
 import type { Finding, Style } from './pack.ts';
 
 const version = (createRequire(import.meta.url)('../package.json') as { version: string }).version;
 
-const USAGE = `typocheck ${version} - orthotypography for French, Spanish, German and Dutch
+/** Options and verbs that were renamed. Named rather than left to fall in with
+ * the typos, because a user typing one of these is not guessing: they read a
+ * document that was true, and the useful answer is the new spelling. */
+const RENAMED_OPTIONS: Record<string, string> = { '--lang': '--style' };
+const RENAMED_VERBS: Record<string, string> = { langs: 'styles' };
 
-  typocheck check --lang <tag> [options] <file...>
-  typocheck fix   --lang <tag> [--write] [options] <file...>
-  typocheck langs
+function usage(): string {
+  return `typocheck ${version} - orthotypography for French, Spanish, German and Dutch
+
+  typocheck check --style <name> [options] <file...>
+  typocheck fix   --style <name> [--write] [options] <file...>
+  typocheck styles
 
 Arguments
   <file...>            files to read, or - for stdin
 
 Options
-  --lang <tag>         required. One of: ${tags()}
+  --style <name>       required. Built in: ${shipped()}. A config
+                       can define more; 'typocheck styles' lists them all.
+  --config <path>      load this config module instead of searching for one
+  --no-config          ignore any config file
   --write              fix only. Rewrite the files in place. With -, the
                        repaired text goes to stdout and the report to stderr,
                        so the command is a filter you can redirect.
@@ -44,13 +61,21 @@ Options
   -h, --help
   -v, --version
 
+A config is a module named typography.config.mjs, in this directory or an
+ancestor, default-exporting a style built with compose or derive, or an array
+of them. A config style may take a shipped style's name and stand in for it;
+the report header carries the stamp and the config's path, so it says which.
+
 There is no language detection and there will not be. A French rule applied to
 Swiss German produces confident nonsense, and guessing wrong is worse than
-asking. State the language.
+asking. State the style.
 `;
+}
 
 interface Options {
-  readonly lang: string | undefined;
+  readonly style: string | undefined;
+  readonly config: string | undefined;
+  readonly noConfig: boolean;
   readonly write: boolean;
   readonly json: boolean;
   readonly strict: boolean;
@@ -62,7 +87,9 @@ interface Options {
 }
 
 function parse(argv: readonly string[]): Options {
-  let lang: string | undefined;
+  let style: string | undefined;
+  let config: string | undefined;
+  let noConfig = false;
   let write = false;
   let json = false;
   let strict = false;
@@ -72,8 +99,11 @@ function parse(argv: readonly string[]): Options {
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]!;
-    if (arg === '--lang') lang = argv[++i];
-    else if (arg.startsWith('--lang=')) lang = arg.slice('--lang='.length);
+    if (arg === '--style') style = argv[++i];
+    else if (arg.startsWith('--style=')) style = arg.slice('--style='.length);
+    else if (arg === '--config') config = argv[++i];
+    else if (arg.startsWith('--config=')) config = arg.slice('--config='.length);
+    else if (arg === '--no-config') noConfig = true;
     else if (arg === '--write') write = true;
     else if (arg === '--json') json = true;
     else if (arg === '--strict') strict = true;
@@ -82,12 +112,13 @@ function parse(argv: readonly string[]): Options {
     // flag this build does not have, and the alternative to saying so is worse
     // than it looks: `--wrote` would fall through to `paths` and be reported as
     // a file that does not exist, so a typo in `--write` reads as a missing file
-    // and the fix silently does not happen.
-    else if (arg !== '-' && arg.startsWith('-')) unknown.push(arg);
+    // and the fix silently does not happen. The `=` is cut off so that
+    // `--lang=fr` is reported as `--lang`, which is the part that is wrong.
+    else if (arg !== '-' && arg.startsWith('-')) unknown.push(arg.split('=')[0]!);
     else paths.push(arg);
   }
 
-  return { lang, write, json, strict, help, paths, unknown };
+  return { style, config, noConfig, write, json, strict, help, paths, unknown };
 }
 
 /** Read a path, or stdin for `-`. stdin is here because the inputs this meets
@@ -104,14 +135,52 @@ function label(path: string): string {
   return rel && !rel.startsWith('..') ? rel : path;
 }
 
-/** Every tag the shipped styles answer to. A style need not be about a
- * language, so this is the styles that are and not simply all of them. */
-function tags(): string {
-  return styles.flatMap((style) => (style.lang === undefined ? [] : [style.lang])).join(', ');
+/** A config path for a report. Relative whenever that is shorter, because a
+ * config is usually in an ancestor of the working directory and
+ * `../typography.config.mjs` says where it is more plainly than a full path
+ * does. `label` cannot be reused: for a *file* being checked, a path outside the
+ * working directory is printed in full on purpose. */
+function configLabel(config: Config): string {
+  const rel = relative(process.cwd(), config.path);
+  return rel && rel.length < config.path.length ? rel : config.path;
 }
 
-function stamp(style: Style): string {
-  return `typocheck ${version} (${style.id})`;
+/** The names of the shipped styles, for a usage line that must not depend on
+ * loading anybody's config. */
+function shipped(): string {
+  return styles.map((style) => style.name).join(', ');
+}
+
+/** Every name `--style` would answer to right now, for the error that says it
+ * did not answer to the one given. */
+function known(config: Config | undefined): string {
+  return available(config)
+    .filter((listed) => !listed.shadowed)
+    .map((listed) => listed.style.name)
+    .join(', ');
+}
+
+/**
+ * The config, or undefined, from the flags.
+ *
+ * `--config` beats discovery and `--no-config` beats both, and a run that names
+ * both is refused rather than resolved: the two flags are two answers to one
+ * question, and picking one silently is how a CI job ends up checking against
+ * rules nobody chose.
+ */
+async function configure(opts: Options): Promise<Config | undefined> {
+  if (opts.noConfig) {
+    if (opts.config !== undefined)
+      throw new Error('--config and --no-config are two answers. Pass one.');
+    return undefined;
+  }
+  const path = opts.config ?? findConfig(process.cwd());
+  return path === undefined ? undefined : await loadConfig(path);
+}
+
+function stamp(style: Style, config: Config | undefined): string {
+  const from = config?.styles.includes(style) ? ` via ${configLabel(config)}` : '';
+  return `typocheck ${version} (${style.id}${from})`;
 }
 
 function report(path: string, findings: readonly Finding[]): string[] {
@@ -121,56 +190,87 @@ function report(path: string, findings: readonly Finding[]): string[] {
   });
 }
 
-function main(argv: readonly string[]): number {
+async function main(argv: readonly string[]): Promise<number> {
   const verb = argv[0];
   if (!verb || verb === '-h' || verb === '--help' || verb === 'help') {
-    console.log(USAGE);
+    console.log(usage());
     return 0;
   }
   // Bare, because the version is the first thing anyone types after installing a
-  // CLI and the second thing they quote in a bug report. The style stamps come
+  // CLI and the second thing they quote in a bug report. The shipped stamps come
   // with it: a findings count is comparable only against the rules that produced
   // it, so the two are one answer rather than two.
+  //
+  // **No config here, on purpose.** This is the answer to "what is installed",
+  // and a broken config in the working tree must not be able to take it away
+  // from somebody who is trying to file a bug. `typocheck styles` is the
+  // question about styles, and it loads the config and fails loudly.
   if (verb === '-v' || verb === '--version' || verb === 'version') {
     console.log(`typocheck ${version}`);
     for (const style of styles) console.log(`  ${style.id}`);
     return 0;
   }
-  if (verb === 'langs') {
-    for (const style of styles)
-      console.log(
-        `${(style.lang ?? style.name).padEnd(6)} ${style.id.padEnd(20)} ${style.standard}`,
-      );
-    return 0;
-  }
-  if (verb !== 'check' && verb !== 'fix') {
-    console.error(`typocheck: unknown verb '${verb}'. Try 'typocheck --help'.`);
+  if (verb !== 'check' && verb !== 'fix' && verb !== 'styles') {
+    const renamed = RENAMED_VERBS[verb];
+    console.error(
+      renamed
+        ? `typocheck: '${verb}' is '${renamed}' now, since a style need not be a language.`
+        : `typocheck: unknown verb '${verb}'. Try 'typocheck --help'.`,
+    );
     return 2;
   }
 
   const opts = parse(argv.slice(1));
   if (opts.help) {
-    console.log(USAGE);
+    console.log(usage());
     return 0;
   }
   if (opts.unknown.length) {
+    const renamed = opts.unknown.filter((flag) => RENAMED_OPTIONS[flag]);
     console.error(
-      `typocheck: unknown option ${opts.unknown.map((u) => `'${u}'`).join(', ')}. ` +
-        "Try 'typocheck --help'.\nA bare - is stdin; everything else starting with a dash is a flag.",
+      renamed.length
+        ? renamed
+            .map(
+              (flag) =>
+                `typocheck: ${flag} is ${RENAMED_OPTIONS[flag]} now. A style need not be a ` +
+                `language: ${RENAMED_OPTIONS[flag]} fr is what ${flag} fr was, and a config can define others.`,
+            )
+            .join('\n')
+        : `typocheck: unknown option ${opts.unknown.map((u) => `'${u}'`).join(', ')}. ` +
+            "Try 'typocheck --help'.\nA bare - is stdin; everything else starting with a dash is a flag.",
     );
     return 2;
   }
-  if (!opts.lang) {
+
+  let config: Config | undefined;
+  try {
+    config = await configure(opts);
+  } catch (error) {
+    console.error(`typocheck: ${(error as Error).message}`);
+    return 2;
+  }
+
+  if (verb === 'styles') {
+    for (const { style, from, shadowed } of available(config))
+      console.log(
+        `${style.name.padEnd(12)} ${style.id.padEnd(24)} ${style.standard.padEnd(24)} ` +
+          `${from === 'config' ? configLabel(config!) : 'built-in'}` +
+          `${shadowed ? ` (shadowed by ${configLabel(config!)})` : ''}`,
+      );
+    return 0;
+  }
+
+  if (!opts.style) {
     console.error(
-      `typocheck: --lang is required. One of: ${tags()}\n` +
+      `typocheck: --style is required. One of: ${known(config)}\n` +
         'Nothing here guesses a language, because a French rule applied to Swiss German produces confident nonsense.',
     );
     return 2;
   }
-  const style = styleFor(opts.lang);
+  const style = resolveStyle(opts.style, config);
   if (!style) {
     console.error(
-      `typocheck: no style for '${opts.lang}'. Known: ${tags()}\n` +
+      `typocheck: no style called '${opts.style}'. Known: ${known(config)}\n` +
         "There is no bare 'de': German is two conventions, so say de-DE or de-CH.",
     );
     return 2;
@@ -202,7 +302,7 @@ function main(argv: readonly string[]): number {
       changed = fixed !== text;
       if (opts.write) {
         // stdin's destination is stdout, and it is written whether or not
-        // anything moved. `typocheck fix --lang fr --write - < in > out` is a
+        // anything moved. `typocheck fix --style fr --write - < in > out` is a
         // filter, and a filter that emits nothing for the text it had nothing to
         // say about does not pass it through, it deletes it. A file is written
         // only when it changed, because there the unchanged case already has a
@@ -235,6 +335,10 @@ function main(argv: readonly string[]): number {
           tool: `typocheck ${version}`,
           style: style.id,
           standard: style.standard,
+          // Always present, and null rather than absent when no config was
+          // loaded, so a consumer can tell "this run used the shipped rules"
+          // apart from "this output came from a tool that predates configs".
+          config: config?.styles.includes(style) ? configLabel(config) : null,
           files: all.map((f) => ({
             file: label(f.path),
             changed: f.changed,
@@ -253,7 +357,7 @@ function main(argv: readonly string[]): number {
     const notFixable = findings.filter((f) => !f.fixable).length;
 
     say(
-      `\n${stamp(style)}: ${findings.length} findings in ${all.length} file(s) ` +
+      `\n${stamp(style, config)}: ${findings.length} findings in ${all.length} file(s) ` +
         `(${errors} error, ${warnings} warning, ${notFixable} needing a decision)`,
     );
 
@@ -276,4 +380,4 @@ function main(argv: readonly string[]): number {
   return failing ? 1 : 0;
 }
 
-process.exitCode = main(process.argv.slice(2));
+process.exitCode = await main(process.argv.slice(2));

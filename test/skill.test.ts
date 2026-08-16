@@ -109,7 +109,7 @@ test('the description names every language the tool ships, and no other', () => 
     );
   // And the direction that was never checked. A description listing a language
   // no style answers for is not a smaller mistake than one omitting a language:
-  // the model reads it, invokes the tool, and gets `--lang` refused.
+  // the model reads it, invokes the tool, and gets `--style` refused.
   for (const tag of ['en', 'it', 'pt', 'ja', 'pl']) {
     if (LANGUAGES.some((language) => language.tag === tag)) continue;
     const name = ENGLISH.of(tag)!;
@@ -120,23 +120,30 @@ test('the description names every language the tool ships, and no other', () => 
   }
 });
 
-test('every --lang the skill names is a shipped style', () => {
-  const named = [...SKILL.matchAll(/--lang[= ]([^\s`|]+)/g)]
+test('every --style the skill names is a shipped style', () => {
+  // By tag rather than by name, which are the same thing for every shipped
+  // style and are not the same question: the skill may only name styles that
+  // are in the tarball it ships in, and a config style is in somebody's working
+  // tree. `styleFor` is the tag lookup and cannot see one.
+  const named = [...SKILL.matchAll(/--style[= ]([^\s`|]+)/g)]
     .map((m) => m[1]!)
     .filter((t) => !t.startsWith('<'));
   assert.ok(named.length >= 2, 'the skill should show more than one language');
   for (const tag of named)
-    assert.ok(styleFor(tag), `SKILL.md invokes --lang ${tag}, which has no style`);
+    assert.ok(styleFor(tag), `SKILL.md invokes --style ${tag}, which has no style`);
 });
 
 test('every flag and verb the skill names is one the CLI accepts', () => {
   const usage = readFileSync(resolve(SKILL_DIR, '..', '..', 'src', 'cli.ts'), 'utf8');
-  for (const flag of new Set([...SKILL.matchAll(/`(--[a-z]+)`/g)].map((m) => m[1]!)))
+  // The dash inside the name is in the class on purpose: `--no-config` was not
+  // matched by `--[a-z]+`, so the first flag this package shipped with a hyphen
+  // in it was documented and unchecked.
+  for (const flag of new Set([...SKILL.matchAll(/`(--[a-z][a-z-]*)`/g)].map((m) => m[1]!)))
     assert.ok(
       usage.includes(`'${flag}'`),
       `SKILL.md documents ${flag}, which the CLI does not parse`,
     );
-  for (const verb of ['check', 'fix', 'langs'])
+  for (const verb of ['check', 'fix', 'styles'])
     assert.ok(SKILL.includes(verb) && usage.includes(`'${verb}'`));
 });
 

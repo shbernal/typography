@@ -34,17 +34,17 @@ test('help exits zero and names the languages', () => {
 test('it refuses to guess a language', () => {
   const r = run(['check', withFile('Bonjour!')]);
   assert.equal(r.status, 2);
-  assert.match(r.stderr, /--lang is required/);
+  assert.match(r.stderr, /--style is required/);
 });
 
 test("there is no bare 'de'", () => {
-  const r = run(['check', '--lang', 'de', withFile('Hallo')]);
+  const r = run(['check', '--style', 'de', withFile('Hallo')]);
   assert.equal(r.status, 2);
   assert.match(r.stderr, /German is two conventions/);
 });
 
 test('check reports and exits non-zero on an error finding', () => {
-  const r = run(['check', '--lang', 'es', withFile('Como estas?')]);
+  const r = run(['check', '--style', 'es', withFile('Como estas?')]);
   assert.equal(r.status, 1);
   assert.match(r.stdout, /unpaired-question/);
   assert.match(r.stdout, /typocheck \d+\.\d+\.\d+ \(es@[0-9a-f]{12}\)/);
@@ -52,13 +52,13 @@ test('check reports and exits non-zero on an error finding', () => {
 
 test('check never touches the file', () => {
   const path = withFile('« mot »');
-  const r = run(['check', '--lang', 'fr', path]);
+  const r = run(['check', '--style', 'fr', path]);
   assert.notEqual(r.status, 2);
   assert.equal(readFileSync(path, 'utf8'), '« mot »');
 });
 
 test('check refuses --write outright', () => {
-  const r = run(['check', '--lang', 'fr', '--write', withFile('a')]);
+  const r = run(['check', '--style', 'fr', '--write', withFile('a')]);
   assert.equal(r.status, 2);
   assert.match(r.stderr, /never touches a file/);
 });
@@ -66,15 +66,15 @@ test('check refuses --write outright', () => {
 test('fix without --write is a dry run that says what it would do', () => {
   const path = withFile('« mot »');
   const before = readFileSync(path, 'utf8');
-  const r = run(['fix', '--lang', 'fr', path]);
+  const r = run(['fix', '--style', 'fr', path]);
   assert.match(r.stdout, /would rewrite/);
   assert.equal(readFileSync(path, 'utf8'), before);
 });
 
 test('fix --write rewrites, and the two runs agree on what moved', () => {
   const path = withFile('« mot »');
-  const dry = run(['fix', '--lang', 'fr', path]);
-  const wet = run(['fix', '--lang', 'fr', '--write', path]);
+  const dry = run(['fix', '--style', 'fr', path]);
+  const wet = run(['fix', '--style', 'fr', '--write', path]);
   assert.match(dry.stdout, /would rewrite/);
   assert.match(wet.stdout, /^fix: rewrote/m);
   assert.equal(readFileSync(path, 'utf8'), '« mot »');
@@ -82,13 +82,13 @@ test('fix --write rewrites, and the two runs agree on what moved', () => {
 
 test('fix leaves the unfixable findings alone and says so', () => {
   const path = withFile('Como estas?');
-  const r = run(['fix', '--lang', 'es', '--write', path]);
+  const r = run(['fix', '--style', 'es', '--write', path]);
   assert.equal(readFileSync(path, 'utf8'), 'Como estas?');
   assert.match(r.stdout, /not fixable by substitution/);
 });
 
 test('stdin is a first-class input', () => {
-  const r = run(['check', '--lang', 'fr', '-'], 'Bonjour!');
+  const r = run(['check', '--style', 'fr', '-'], 'Bonjour!');
   assert.match(r.stdout, /<stdin>:1:8/);
 });
 
@@ -98,12 +98,12 @@ test('stdin is a first-class input', () => {
 // and both report formats were appended to the text they had just written.
 test('fix --write - passes clean text through rather than swallowing it', () => {
   const clean = 'Rien a signaler ici.';
-  const r = run(['fix', '--lang', 'fr', '--write', '-'], clean);
+  const r = run(['fix', '--style', 'fr', '--write', '-'], clean);
   assert.equal(r.stdout, clean);
 });
 
 test('fix --write - puts the repaired text on stdout and the report on stderr', () => {
-  const r = run(['fix', '--lang', 'fr', '--write', '-'], 'Il a dit : oui');
+  const r = run(['fix', '--style', 'fr', '--write', '-'], 'Il a dit : oui');
   // The whole of stdout is the document, byte for byte, with nothing appended.
   assert.equal(r.stdout, `Il a dit${NO_BREAK}: oui`);
   assert.match(r.stderr, /colon-spacing/);
@@ -111,14 +111,14 @@ test('fix --write - puts the repaired text on stdout and the report on stderr', 
 });
 
 test('fix --write - --json emits JSON a caller can parse', () => {
-  const r = run(['fix', '--lang', 'fr', '--write', '--json', '-'], 'Il a dit : oui');
+  const r = run(['fix', '--style', 'fr', '--write', '--json', '-'], 'Il a dit : oui');
   assert.equal(r.stdout, `Il a dit${NO_BREAK}: oui`);
   const parsed = JSON.parse(r.stderr) as { files: { changed: boolean }[] };
   assert.equal(parsed.files[0]!.changed, true);
 });
 
 test('--json carries the stamp and the findings', () => {
-  const r = run(['check', '--lang', 'es', '--json', '-'], 'Como estas?');
+  const r = run(['check', '--style', 'es', '--json', '-'], 'Como estas?');
   const parsed = JSON.parse(r.stdout) as {
     tool: string;
     style: string;
@@ -134,15 +134,47 @@ test('--json carries the stamp and the findings', () => {
 
 test('--strict is what makes a warning fail', () => {
   const path = withFile('il a dit "bonjour"');
-  assert.equal(run(['check', '--lang', 'fr', path]).status, 0);
-  assert.equal(run(['check', '--lang', 'fr', '--strict', path]).status, 1);
+  assert.equal(run(['check', '--style', 'fr', path]).status, 0);
+  assert.equal(run(['check', '--style', 'fr', '--strict', path]).status, 1);
 });
 
-test('langs lists every style with its standard', () => {
-  const r = run(['langs']);
+test('styles lists every style with its standard', () => {
+  const r = run(['styles']);
   assert.equal(r.status, 0);
   assert.match(r.stdout, /de-CH@[0-9a-f]{12}\s+Duden/);
   assert.match(r.stdout, /fr@[0-9a-f]{12}\s+Imprimerie nationale/);
+});
+
+test('the two things that were renamed say what they are now', () => {
+  // `--lang` and `langs` were the spelling through `0.2.1`, and a user typing
+  // one of them read a document that was true when it was written. Letting them
+  // fall in with the typos would answer "unknown option", which is accurate and
+  // useless. A style need not be about a language, which is why they moved.
+  const flag = run(['check', '--lang', 'fr', '-'], 'Bonjour!');
+  assert.equal(flag.status, 2);
+  assert.match(flag.stderr, /--lang is --style now/);
+  assert.doesNotMatch(flag.stderr, /unknown option/);
+
+  const verb = run(['langs']);
+  assert.equal(verb.status, 2);
+  assert.match(verb.stderr, /'langs' is 'styles' now/);
+
+  // Including in the `=` spelling, where the part that is wrong is the half in
+  // front of the `=` and is what the message has to name.
+  const joined = run(['check', '--lang=fr', '-'], 'Bonjour!');
+  assert.match(joined.stderr, /--lang is --style now/);
+});
+
+test('--style takes both spellings', () => {
+  const r = run(['check', '--style=es', '--json', '-'], 'Como estas?');
+  assert.equal(r.status, 1);
+  assert.match(r.stdout, /"style": "es@/);
+});
+
+test('a style name resolves case-insensitively, as the tag used to', () => {
+  const r = run(['check', '--style', 'DE-ch', '-'], 'Sie sagte »Wort« und ging.');
+  assert.notEqual(r.status, 2);
+  assert.match(r.stdout, /guillemet-direction/);
 });
 
 test('--version answers, in all three spellings, with the style stamps too', () => {
@@ -164,21 +196,21 @@ test('a mistyped flag is a misuse, not a missing file', () => {
   // The failure this prevents: `--wrote` used to fall through to the file list
   // and come back as "cannot read --wrote", so a typo in `--write` looked like a
   // path problem and the rewrite silently did not happen.
-  const r = run(['fix', '--lang', 'fr', '--wrote', withFile('« mot »')]);
+  const r = run(['fix', '--style', 'fr', '--wrote', withFile('« mot »')]);
   assert.equal(r.status, 2);
   assert.match(r.stderr, /unknown option '--wrote'/);
   assert.doesNotMatch(r.stderr, /cannot read/);
 });
 
 test('every unknown flag is named, not just the first', () => {
-  const r = run(['check', '--lang', 'fr', '--nope', '--also-nope', '-']);
+  const r = run(['check', '--style', 'fr', '--nope', '--also-nope', '-']);
   assert.equal(r.status, 2);
   assert.match(r.stderr, /'--nope'/);
   assert.match(r.stderr, /'--also-nope'/);
 });
 
 test('a bare - is still stdin and not a flag', () => {
-  const r = run(['check', '--lang', 'fr', '-'], 'Bonjour!');
+  const r = run(['check', '--style', 'fr', '-'], 'Bonjour!');
   assert.notEqual(r.status, 2);
   assert.match(r.stdout, /<stdin>/);
 });

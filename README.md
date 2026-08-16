@@ -8,7 +8,7 @@ Orthotypography for French, Spanish, German and Dutch, as data rather than as ad
 
 ```bash
 pnpm add @shbernal/typography
-pnpm dlx @shbernal/typography check --lang fr README.fr.md
+pnpm dlx @shbernal/typography check --style fr README.fr.md
 ```
 
 ## Why this exists
@@ -47,7 +47,7 @@ declines too, and reports only the documents that use both.
 
 ## What it is good for
 
-**Checking documentation and content in CI.** `typocheck check --lang fr --strict`
+**Checking documentation and content in CI.** `typocheck check --style fr --strict`
 over your French or Spanish Markdown, exiting non-zero on findings. Every finding
 carries a line, a column, the citation and an escaped excerpt, so a report is
 readable and a reviewer can see the character.

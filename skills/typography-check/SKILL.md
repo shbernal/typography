@@ -14,26 +14,26 @@ edge cases are the whole difficulty, and the tool already exists in this package
 Installed as a dependency, the binary is next door:
 
 ```bash
-npx typocheck check --lang fr path/to/file.md
+npx typocheck check --style fr path/to/file.md
 ```
 
 Installed as a plugin, the binary came out of the same tarball as this file:
 
 ```bash
-node "${CLAUDE_PLUGIN_ROOT}/dist/cli.js" check --lang fr path/to/file.md
+node "${CLAUDE_PLUGIN_ROOT}/dist/cli.js" check --style fr path/to/file.md
 ```
 
 With no project to install into and no plugin:
 
 ```bash
-npx @shbernal/typography check --lang fr path/to/file.md
+npx @shbernal/typography check --style fr path/to/file.md
 ```
 
 Piping works, and is usually what you want for a paragraph out of a conversation
 or a column of translated strings:
 
 ```bash
-printf '%s' "$TEXT" | npx typocheck check --lang es -
+printf '%s' "$TEXT" | npx typocheck check --style es -
 ```
 
 Verbs and flags:
@@ -42,10 +42,11 @@ Verbs and flags:
 |---|---|
 | `check` | report only. Never touches a file. The default thing to do. |
 | `fix --write` | apply the safe subset in place |
-| `--lang <tag>` | required: `fr`, `es`, `de-DE`, `de-CH`, `nl` |
+| `--style <name>` | required: `fr`, `es`, `de-DE`, `de-CH`, `nl`, or a style the project's config defines |
 | `--json` | machine-readable findings |
 | `--strict` | make warnings fail too |
-| `langs` | list the styles and their standards |
+| `styles` | list the styles, their standards and where each came from |
+| `--no-config` | ignore the project's config and use the shipped styles |
 | `--version` | the tool version and every style stamp |
 
 Exit `0` clean, `1` findings, `2` misuse.
@@ -97,7 +98,7 @@ and show it.
 guillemet rules fired on every guillemet in 2.4 million characters of published
 French, wanting U+202F where French publishers use U+00A0. They now accept either
 no-break space and repair only spacing that is wrong under both readings, in
-whichever width the document already uses. `fix --lang fr` is safe on well-set
+whichever width the document already uses. `fix --style fr` is safe on well-set
 text. If a report you are reading carries a French stamp other than the current
 one, check its guillemet findings before acting on them.
 
@@ -132,6 +133,16 @@ derived from the rules themselves, so two reports carrying it were checked by th
 same rules and two carrying different ones were not. Keep the stamp when you
 paste a report anywhere it will be read later. `typocheck --version` prints the
 same two without needing a file to check.
+
+**The style may not be the shipped one.** A project can define its own in a
+`typography.config.mjs`, and one may take a shipped style's name, so `--style fr`
+in a repo that has a config is that repo's French. The footer says so when it
+happens - `(fr@<a stamp that is not the shipped one> via typography.config.mjs)` -
+and `typocheck styles`
+lists what the project actually offers. Do not treat a house style as a
+misconfiguration to correct: it is the project's decision, and its rules carry
+their own citations. `--no-config` gets the shipped rules if you need to compare
+against them.
 
 ## Per-language detail
 

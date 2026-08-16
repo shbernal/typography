@@ -169,14 +169,19 @@ correct text retyped into an imposed width is not the same era as one without.
 ## CLI
 
 ```
-typocheck check --lang <tag> [--json] [--strict] <file...>
-typocheck fix   --lang <tag> [--write]           <file...>
-typocheck langs
+typocheck check --style <name> [--json] [--strict] <file...>
+typocheck fix   --style <name> [--write]           <file...>
+typocheck styles
 ```
 
-`-` reads stdin. `--lang` is required and there is no detection: a French rule
+`-` reads stdin. `--style` is required and there is no detection: a French rule
 applied to Swiss German produces confident nonsense, and guessing wrong is worse
 than asking.
+
+`--style` takes a name rather than a language tag, because a style need not be
+about a language. Every shipped style is named for its tag, so `--style fr` is
+what `--lang fr` was through `0.2.1`; `--lang` and the `langs` verb are gone and
+say what replaced them rather than reporting an unknown option.
 
 `check` never writes. `fix` without `--write` prints exactly the report it would
 have printed with it, so the dry run and the real run compute the same thing and
@@ -190,7 +195,7 @@ report sharing stdout with the document would be appended to the document, which
 under `--json` also means the JSON does not parse.
 
 ```bash
-typocheck fix --lang fr --write - < draft.md > fixed.md
+typocheck fix --style fr --write - < draft.md > fixed.md
 ```
 
 Exit codes: `0` clean, `1` findings (`--strict` counts warnings too), `2` misuse.
@@ -198,9 +203,56 @@ An argument starting with a dash that is not a flag it knows is a misuse, so a
 mistyped `--write` fails rather than falling through to the file list.
 
 ```bash
-pnpm dlx @shbernal/typography check --lang fr docs/guide.fr.md
-pnpm dlx @shbernal/typography fix --lang es --write content/**/*.es.md
+pnpm dlx @shbernal/typography check --style fr docs/guide.fr.md
+pnpm dlx @shbernal/typography fix --style es --write content/**/*.es.md
 ```
+
+### Config
+
+A config is a module named `typography.config.mjs` (or `.js`, or `.ts` on Node
+22.18 and newer), in the working directory or an ancestor, default-exporting a
+style or an array of them.
+
+```js
+// typography.config.mjs
+import { derive, fr } from '@shbernal/typography';
+
+export default derive(fr, {
+  name: 'acme-fr',
+  standard: 'ACME house style v3',
+  drop: ['mixed-no-break-space'],
+});
+```
+
+```bash
+typocheck check --style acme-fr docs/guide.fr.md
+# ...
+# typocheck 0.2.1 (acme-fr@<derived> via typography.config.mjs): 2 findings ...
+```
+
+`typocheck styles` lists what is available and where each one came from.
+`--config <path>` loads a module instead of searching for one, `--no-config`
+ignores any config, and passing both is refused rather than resolved. Two config
+files in one directory is an error rather than a precedence rule: which of them
+won would depend on an ordering nobody reading the directory can see.
+
+**It is a module and not JSON on purpose.** A declarative config able to say what
+`/rules` can say needs a string-keyed registry of builders and a schema for each
+builder's parameters, which is a second copy of the rule API that has to agree
+with the first. A module has no second copy: the config calls the same `compose`,
+`derive` and builders the shipped styles do. The cost is that the CLI executes
+code from the working tree, which is why `--no-config` exists.
+
+**A config style may take a shipped style's name.** A house French is still
+French, and every script that says `--style fr` should keep working. The stamp is
+derived from the rules and so cannot agree with the shipped one, and both the
+stamp and the config's path are in the report header and in `--json`, which is
+what makes the substitution visible rather than quiet. `typocheck styles` still
+lists the style that was shadowed.
+
+The library has no config concept at all: `check` takes a `Style`, and a host
+embedding this package composes one in its own code. The config file exists
+because a CLI cannot be handed an object.
 
 ## As a Claude Code skill
 

@@ -65,6 +65,13 @@ change to `src/prose.ts` or to a shared helper.
 - **Zero runtime dependencies**, and **a pack must not import
   `translation-harness`.** `{ id, normalize }` is the whole contract, satisfied
   structurally, with no registration call in either direction.
+- **The library has no config concept.** `src/config.ts` is imported by
+  `src/cli.ts` and by nothing else, and is not on the root export: `check` takes
+  a `Style`, and a host composes one in its own code. A config file exists
+  because a CLI cannot be handed an object, and it is a **module** rather than
+  JSON because a schema able to say what `src/rules/` can say is a second copy of
+  the builder API that has to agree with it. That is the same defect as a matcher
+  and a rewriter written separately, and it has shown up three times here.
 
 ## Pack ids are era stamps
 
@@ -85,6 +92,7 @@ how a corpus splits invisibly. Bumping a pack version is a CHANGELOG entry.
 | Adding a language | [`docs/development.md`](docs/development.md) |
 | Touching a pattern | [`docs/development.md`](docs/development.md), the linear-time section |
 | Changing the protocol | [`docs/design.md`](docs/design.md) |
+| Touching the CLI or the config | [`docs/api.md`](docs/api.md), the CLI and Config sections |
 | Touching the French width logic | [`docs/api.md`](docs/api.md), then `withWidth` in `src/fr.ts` |
 | Adding or changing a fixture | [`docs/development.md`](docs/development.md), the fixtures section |
 | Cutting a release | [`docs/development.md`](docs/development.md) |
