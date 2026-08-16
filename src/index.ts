@@ -3,7 +3,7 @@
 //
 // A consumer that wants one language should import one subpath instead
 // (`@shbernal/typography/fr`), which is why the styles are re-exported here by
-// name rather than being the headline. Importing this module pulls all five,
+// name rather than being the headline. Importing this module pulls all six,
 // which costs a few kilobytes of regular expressions and no dependencies.
 //
 // **The headline is `compose`.** A shipped style is a rule list with a name and
@@ -28,6 +28,7 @@ export { check, fix, styleFor, styles, unfixable } from './check.ts';
 export { audit, compose, derive, stampOf, type Violation } from './compose.ts';
 export { deCH } from './de-CH.ts';
 export { deDE } from './de-DE.ts';
+export { en } from './en.ts';
 export { es } from './es.ts';
 export { fr } from './fr.ts';
 export { nl } from './nl.ts';

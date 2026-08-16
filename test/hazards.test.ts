@@ -119,6 +119,15 @@ const APOSTROPHE_IN_CODE = ['fenced-javascript', 'json-payload', 'html-attribute
 const REWRITES_SYNTAX: Record<string, Record<string, readonly string[]>> = {
   'de-CH': { apostrophe: APOSTROPHE_IN_CODE },
   'de-DE': { apostrophe: APOSTROPHE_IN_CODE },
+  // English rewrites the same three and nothing else, which is worth reading
+  // rather than assuming: it is the style with the most rules about the
+  // apostrophe, and the two it adds are both narrowed by something the
+  // letter-to-letter rule has no equivalent of. `apostrophe-elision` needs a
+  // closed clitic set closed by a boundary, so `{ unit: 'em' }` fails it on the
+  // quote that follows; `decade-apostrophe` needs a digit and an `s`. The rule
+  // that does reach code is the one with the widest licence and the oldest
+  // follow-up.
+  en: { apostrophe: APOSTROPHE_IN_CODE },
   // Spanish rewrites none of it, and that is not luck: it has no apostrophe rule,
   // and its spacing rule is check-only precisely because deleting the space in
   // `a ? b : c` would corrupt a ternary.

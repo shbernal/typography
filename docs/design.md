@@ -106,7 +106,15 @@ width it imposes.
 
 That is the line between a national standard and a house style, and it is the
 only thing keeping the packs from becoming a place where preferences collect.
-English gets no pack for exactly this reason: the Oxford comma is not a standard.
+
+English is the case that shows what the line does and does not forbid. There is
+no body that decides English typography, and `en` ships anyway, citing two
+manuals and asserting only what both of them say. What the line rules out is not
+a language without a standards body; it is a rule with nothing behind it. The
+serial comma is the example: Chicago requires it and other authorities forbid it,
+so it is a divergence, and shipping either answer would be a preference wearing a
+citation. The rule is absent for the same reason the French guillemet rules were
+narrowed.
 
 The corollary, learned the expensive way: **a pack must not assert what its
 citation does not fix.** At `fr@0.1.0` the guillemet rules rewrote the space

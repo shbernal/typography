@@ -22,11 +22,13 @@
 //
 // Then `compose` the list, and `audit` it against text that reaches the rules.
 
-export { apostrophe } from './apostrophe.ts';
+export { apostrophe, wrongApostropheMarks } from './apostrophe.ts';
 export { apostropheAfterSymbol } from './apostrophe-after-symbol.ts';
 export { apostropheElision } from './apostrophe-elision.ts';
 export { type Ballot, ballot, type Tally } from './ballot.ts';
 export { colonSpacing } from './colon-spacing.ts';
+export { decadeApostrophe } from './decade-apostrophe.ts';
+export { doubleHyphen } from './double-hyphen.ts';
 export { type Guillemet, guillemetDirection } from './guillemet-direction.ts';
 export { ijCapital } from './ij-capital.ts';
 export { type InnerSpacing, innerSpace } from './inner-space.ts';

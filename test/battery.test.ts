@@ -1,4 +1,4 @@
-// The battery: 8,799 generated inputs through all seven styles.
+// The battery: 8,799 generated inputs through all eight styles.
 //
 // `hazards.test.ts` asks whether the rules can tell a sentence from a token, over
 // text somebody wrote. This asks the mechanical question the corpora used to:
@@ -48,6 +48,7 @@ import { combinations } from './fixtures.ts';
 const DIGESTS: Record<string, string> = {
   'de-CH': 'ce18734a695d',
   'de-DE': '62c2c138ebc4',
+  en: '328d500db6b4',
   es: 'c490cf732002',
   fr: '77b868df38ad',
   nl: '2507ee04f1f0',
@@ -59,12 +60,12 @@ test('the battery generates what it claims to', () => {
   // The count is here because every assertion below is over these inputs, and a
   // generator that silently produced eleven of them would pass all of them.
   assert.equal(combinations().length, 8799);
-  assert.equal(everyStyle().length, 7);
+  assert.equal(everyStyle().length, 8);
 });
 
 test('every style holds its three properties over every generated input', () => {
   // Idempotence, conformance and non-interference, which is `audit` doing on
-  // 8,849 inputs what a user runs it for on their own text. The inputs are
+  // 8,851 inputs what a user runs it for on their own text. The inputs are
   // deliberately not prose: an inserting rule that fails to match its own output
   // converges on `« mot »` and not on `«`, and this is where that shows.
   for (const { label, style } of everyStyle()) {

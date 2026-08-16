@@ -139,13 +139,16 @@ suite that names `fr`, `es`, `de-DE` and `de-CH` in a literal is a candidate: it
 does not fail when a language is added, it just stops covering it. Derive from
 `styles` instead.
 
-Deriving is not enough on its own, and English is the case that shows it. The
+Deriving is not enough on its own, and English is the case that showed it. The
 skill test asks whether the frontmatter description names each shipped language,
-and this package's own pitch is "non-English typography", so the day `en` ships
-that assertion would go green on a description that *declined* the language.
-`test/skill.test.ts` checks its own matcher against fabricated descriptions
-before pointing it at the real one, which is the general form: when a test is
-about to start passing for a new reason, show it failing first.
+and this package's own pitch was "non-English typography", so the day `en`
+shipped that assertion would have gone green on a description that *declined* the
+language. `test/skill.test.ts` checks its own matcher against fabricated
+descriptions before pointing it at the real one, which is the general form: when
+a test is about to start passing for a new reason, show it failing first. The
+prediction held. `en` shipped, and the description had to be rewritten to name
+English rather than disclaim it, in the one place a model reads before deciding
+whether to invoke the tool at all.
 
 ## Changing a rule
 

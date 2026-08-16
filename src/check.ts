@@ -14,6 +14,7 @@
 
 import { deCH } from './de-CH.ts';
 import { deDE } from './de-DE.ts';
+import { en } from './en.ts';
 import { es } from './es.ts';
 import { fr } from './fr.ts';
 import { nl } from './nl.ts';
@@ -25,8 +26,10 @@ import { excerptAt, type Finding, type Style } from './pack.ts';
  * would be a stamp that lies about which one a corpus was set in. `nl` is bare
  * for the same test read the other way: the Taalunie's spelling binds the
  * Netherlands, Flanders and Suriname, so there is one convention for the tag to
- * name. */
-export const styles: readonly Style[] = [deCH, deDE, es, fr, nl];
+ * name. `en` is bare for the same test read a third way: its two sources differ
+ * by manual rather than by region, and every rule it ships is one both of them
+ * state, so there is nothing in it for `en-US` or `en-GB` to change. */
+export const styles: readonly Style[] = [deCH, deDE, en, es, fr, nl];
 
 /**
  * The shipped style for a BCP 47 tag, or undefined.

@@ -1,6 +1,6 @@
 ---
 name: typography-check
-description: Check or fix French, Spanish, German and Dutch orthotypography with the typocheck CLI - no-break spaces before French punctuation, guillemets and their spacing, the paired Spanish opening marks ¿ and ¡, German quotation marks, Dutch apostrophes and mixed quotation systems, and straight apostrophes that should be U+2019. Use when validating or cleaning translated strings, a French, Spanish, German or Dutch document, subtitle or UI copy, or when someone asks whether text follows Imprimerie nationale, RAE, Duden or Taalunie convention. Not a speller, grammar checker or style guide, and it does not translate.
+description: Check or fix English, French, Spanish, German and Dutch orthotypography with the typocheck CLI - straight apostrophes that should be U+2019, no-break spaces before French punctuation, guillemets and their spacing, the paired Spanish opening marks ¿ and ¡, German quotation marks, Dutch apostrophes and mixed quotation systems, English elisions, decades and double hyphens. Use when validating or cleaning translated or generated strings, an English, French, Spanish, German or Dutch document, subtitle or UI copy, or when someone asks whether text follows Imprimerie nationale, RAE, Duden, Taalunie or Chicago convention. Not a speller, grammar checker or style guide, and it does not translate.
 ---
 
 # Typography check
@@ -42,7 +42,7 @@ Verbs and flags:
 |---|---|
 | `check` | report only. Never touches a file. The default thing to do. |
 | `fix --write` | apply the safe subset in place |
-| `--style <name>` | required: `fr`, `es`, `de-DE`, `de-CH`, `nl`, or a style the project's config defines |
+| `--style <name>` | required: `en`, `fr`, `es`, `de-DE`, `de-CH`, `nl`, or a style the project's config defines |
 | `--json` | machine-readable findings |
 | `--strict` | make warnings fail too |
 | `styles` | list the styles, their standards and where each came from |
@@ -149,6 +149,7 @@ against them.
 Read one only when the language is settled and the user asks *why* a rule exists
 or disputes a finding:
 
+- [references/en.md](references/en.md) - Chicago and New Hart's Rules
 - [references/fr.md](references/fr.md) - Imprimerie nationale
 - [references/es.md](references/es.md) - RAE
 - [references/de.md](references/de.md) - Duden, both regions
@@ -156,6 +157,12 @@ or disputes a finding:
 
 ## What this is not
 
-It does not translate, spell-check or judge grammar or style. It has no opinion
-about English: the Oxford comma is house style rather than a standard, and a pack
-asserting one would smuggle a preference in under a national standard's banner.
+It does not translate, spell-check or judge grammar or style.
+
+**English is the style with no standards body**, and it is narrower than the other
+four rather than broader for it: it ships what Chicago and New Hart's Rules agree
+on and rules on nothing they disagree about. The serial comma is therefore not in
+it, and neither is the choice between an em dash and a spaced en dash. If a user
+wants either enforced, that is a house style, and the package supports it the
+honest way - compose a style with the rule in it and cite the house style - rather
+than by widening `en`.

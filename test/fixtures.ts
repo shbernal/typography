@@ -107,6 +107,19 @@ export const PROSE: readonly Sample[] = [
   { name: 'de-DE-defective', text: "Er sagte » Wort « und „ Wort“ und es geht's." },
   { name: 'de-CH-correct', text: 'Sie sagte «Wort» und ging.' },
   { name: 'de-CH-defective', text: "Sie sagte « Wort » und zahlte 100'000 Franken." },
+  // English is the style whose defects are all one character, so its two
+  // samples carry the three positions that character occupies plus the two
+  // rules that report and do not repair. `en-defective` reaches every rule in
+  // the style, which is what `hazards.test.ts` asks of the whole file rather
+  // than of any one sample.
+  {
+    name: 'en-correct',
+    text: `It${RSQ}s the ${RSQ}90s again: “well,” she said, and ${RSQ}tis fine.`,
+  },
+  {
+    name: 'en-defective',
+    text: `It's the ${LSQ}90s again ; ${LSQ}tis a "quote" and a well--known dash.`,
+  },
   { name: 'nl-correct', text: `De auto${RSQ}s en ${RSQ}s morgens en de IJsland-reis.` },
   {
     name: 'nl-defective',

@@ -36,17 +36,23 @@ export function apostrophe(spec: {
 }
 
 /**
- * What the rule is called, derived from what it actually converts.
+ * What a rule converting `wrong` should call the marks it converts.
  *
- * Written this way rather than taken as a parameter because the two summaries
- * this replaces had already drifted apart: French and German said "Straight
+ * Derived rather than taken as a parameter because the two summaries this
+ * replaces had already drifted apart: French and German said "Straight
  * apostrophe" and Dutch said "Straight quote or U+2018", describing the same
  * character two ways in one report. Deriving the phrase from the class means a
  * style that widens the class cannot forget to widen the sentence.
+ *
+ * Exported for the two other rules built on the same class, in
+ * `apostrophe-elision.ts` and `decade-apostrophe.ts`. A style passes one `wrong`
+ * to all three of them, so the phrase has to come from one place too, or the
+ * report calls one character two things in three lines.
  */
+export function wrongApostropheMarks(wrong: string): string {
+  return wrong.includes(LEFT_SINGLE_QUOTE) ? 'Straight quote or U+2018' : 'Straight apostrophe';
+}
+
 function summarize(wrong: string, language: string): string {
-  const marks = wrong.includes(LEFT_SINGLE_QUOTE)
-    ? 'Straight quote or U+2018'
-    : 'Straight apostrophe';
-  return `${marks} between letters; ${language} uses U+2019`;
+  return `${wrongApostropheMarks(wrong)} between letters; ${language} uses U+2019`;
 }

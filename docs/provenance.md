@@ -16,13 +16,26 @@ answer that. `audit` in [`compose.ts`](../src/compose.ts) does.
 
 | Style | Where its defaults come from |
 |---|---|
+| `en` | *The Chicago Manual of Style* (17th ed., 2017) and *New Hart's Rules* (Oxford, 2014), where they agree |
 | `fr` | Imprimerie nationale, *Lexique des règles typographiques* (2002) |
 | `es` | RAE, *Ortografía de la lengua española* (2010) |
 | `de-DE`, `de-CH` | *Duden, Die deutsche Rechtschreibung*, Richtlinien |
 | `nl` | Nederlandse Taalunie, *Technische Handleiding* (oktober 2016), and Taaladvies.net (Taalunie, INT, Onze Taal) |
 
-Two of those are weaker than they look, and both weaknesses are load-bearing:
+Three of those are weaker than they look, and all three weaknesses are
+load-bearing:
 
+- **English has no standards body at all**, so `en` is the one style here whose
+  row names two sources and a stance between them. It ships the intersection: a
+  rule exists only because both manuals state it, and where they diverge the
+  style either reports without repairing or has no rule. The serial comma is the
+  divergence everybody asks about and it is absent for that reason, not for the
+  older one about national standards. Two consequences for whoever changes these
+  rules next. Citations here name a topic rather than a section, because the two
+  manuals number differently and a paragraph reference would be half the source;
+  and the 18th edition of Chicago (2024) supersedes the one cited, which the
+  topic-level citations survive but which is worth checking against before
+  adding a rule.
 - **The Lexique does not fix the width of the no-break space inside a
   guillemet.** It typesets its own guillemets with U+202F and its own table at
   p.149 specifies U+00A0; French practice outside Switzerland has settled on
@@ -106,6 +119,19 @@ A tenth gate reproduced `fr.normalize` byte for byte against the private
 implementation `fr` was extracted from, over 11,058 string fields of which that
 implementation rewrites 827. It could never run outside the maintainer's machine,
 and it is deleted with the rest.
+
+**`en` has no row here and will not get one.** It shipped after the corpora left,
+so it is the first style measured only by the fixtures and the three properties.
+That is the standard every style is held to now and it is not the same standard:
+the corpora answered whether a rule misfires on text somebody already set
+correctly, and nothing in the current suite asks that question of English. The
+rules most exposed to it are the two that convert U+2018 in a position a
+quotation can also open in. A document setting quotations with the single pair
+and opening one on a clitic or a figure is what would break them, which is to say
+`‘tis the season’` and `‘90s revival’` as quotations rather than as elisions.
+Both are narrow enough that no fixture holds one, and narrow is not the same as
+absent: the closed clitic set and the required boundary are what keep the odds
+that low, and neither has been checked against a corpus.
 
 Two things those measurements established that outlive them:
 

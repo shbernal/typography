@@ -11,10 +11,10 @@ const remaining = unfixable(findings);     // the ones needing a decision
 const cleaned = fr.normalize(text);        // only the safe subset
 ```
 
-Subpath exports are `/fr`, `/es`, `/de-DE`, `/de-CH` and `/nl`, so a consumer
-takes one language and not five, plus `/rules` for the builders a style is
-composed from. The root export carries the protocol, the composition layer, the
-runner and the registry, and importing it pulls all five styles, which costs a
+Subpath exports are `/en`, `/fr`, `/es`, `/de-DE`, `/de-CH` and `/nl`, so a
+consumer takes one language and not six, plus `/rules` for the builders a style
+is composed from. The root export carries the protocol, the composition layer,
+the runner and the registry, and importing it pulls all six styles, which costs a
 few kilobytes of regular expressions and no dependencies.
 
 ### The runner

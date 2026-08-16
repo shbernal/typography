@@ -1,15 +1,17 @@
 {
   "name": "@shbernal/typography",
   "version": "0.2.1",
-  "description": "Orthotypography rules for French, Spanish, German and Dutch as data: check text against a national standard, or fix the subset that is safe to fix unattended.",
+  "description": "Orthotypography rules for English, French, Spanish, German and Dutch as data: check text against a cited convention, or fix the subset that is safe to fix unattended.",
   "keywords": [
     "typography",
     "orthotypography",
+    "english",
     "french",
     "spanish",
     "german",
     "dutch",
     "imprimerie-nationale",
+    "chicago-manual-of-style",
     "rae",
     "duden",
     "taalunie",
@@ -59,6 +61,10 @@
     "./fr": {
       "types": "./dist/fr.d.ts",
       "import": "./dist/fr.js"
+    },
+    "./en": {
+      "types": "./dist/en.d.ts",
+      "import": "./dist/en.js"
     },
     "./es": {
       "types": "./dist/es.d.ts",

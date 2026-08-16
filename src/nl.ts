@@ -144,12 +144,20 @@ const rules: readonly Rule[] = [
     cite: `${HANDLEIDING}, hoofdstuk 11 "Het weglatingsteken"`,
   }),
 
-  // The rule that has no counterpart in the other three styles, because no other
-  // language here elides at the front of a word: `'s morgens`, `'t huis`,
-  // `'n keer`, `'s-Gravenhage`. The closed clitic set and what it holds off are
-  // in the builder.
+  // `'s morgens`, `'t huis`, `'n keer`, `'s-Gravenhage`. English is the only
+  // other style here that elides at the front of a word, and what the two share
+  // is the hazard rather than the words: the builder holds why a closed set and
+  // a required boundary are the whole of what makes this safe.
+  //
+  // `ns` leads the alternation because the engine takes the first branch that
+  // matches, and `n` alone would strand the `s` of `'ns`.
   apostropheElision({
     wrong: WRONG_APOSTROPHE,
+    clitics: '(?:ns|[stnkmr])',
+    // A hyphen, for `'s-Gravenhage`, which is a word rather than a sentence and
+    // is why Dutch does not close a clitic at the end of a value.
+    boundary: '[ \\-]',
+    examples: ['s', 't'],
     cite: `${HANDLEIDING}, hoofdstuk 11 "Het weglatingsteken"`,
   }),
 

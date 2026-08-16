@@ -20,7 +20,7 @@ not about you.
   and a rule that treats one national standard as the default is a bug in this
   repo.
 - **Assume a language barrier before assuming rudeness.** This project is about
-  four languages and its issue tracker is in English, which is a second or third
+  five languages and its issue tracker is in English, which is a second or third
   language for many of the people best placed to report a false positive.
 
 ## What is not

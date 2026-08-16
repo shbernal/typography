@@ -42,9 +42,12 @@ produces by accident. `test/perf.test.ts` runs every pack over the shapes that
 break a naive pattern, and `src/fr.ts` explains the fix at `CORRECT_AFTER_OPEN`.
 
 **A rule with no citation does not ship.** Every rule names the section of the
-Imprimerie nationale, the RAE or the Duden that decides it. That line is the only
-thing keeping the packs from becoming a place where preferences collect. It is
-also why there is no English pack: the Oxford comma is not a standard.
+Imprimerie nationale, the RAE, the Duden or the Taalunie that decides it, and
+English, which has no such body, cites two manuals and ships only what both of
+them say. That line is the only thing keeping the packs from becoming a place
+where preferences collect. It is why the serial comma is in no style here: the
+authorities disagree about it, so either answer would be a preference wearing a
+citation.
 
 The rest of the invariants are in [AGENTS.md](AGENTS.md), which is written for
 coding agents but is the accurate list either way.

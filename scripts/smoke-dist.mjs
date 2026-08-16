@@ -21,7 +21,7 @@ const run = (args, input = '') =>
 
 const listed = run(['styles']);
 assert.equal(listed.status, 0, listed.stderr);
-for (const tag of ['fr', 'es', 'de-DE', 'de-CH']) assert.ok(listed.stdout.includes(tag));
+for (const tag of ['en', 'fr', 'es', 'de-DE', 'de-CH', 'nl']) assert.ok(listed.stdout.includes(tag));
 
 const guess = run(['check', '-'], 'Bonjour!');
 assert.equal(guess.status, 2, 'the CLI must refuse to guess a language');

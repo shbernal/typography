@@ -4,7 +4,8 @@
 [![npm](https://img.shields.io/npm/v/@shbernal/typography)](https://www.npmjs.com/package/@shbernal/typography)
 [![No dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
 
-Orthotypography for French, Spanish, German and Dutch, as data rather than as advice.
+Orthotypography for English, French, Spanish, German and Dutch, as data rather
+than as advice.
 
 ```bash
 pnpm add @shbernal/typography
@@ -13,20 +14,21 @@ pnpm dlx @shbernal/typography check --style fr README.fr.md
 
 ## Why this exists
 
-Non-English typography is full of rules that are invisible in a diff and wrong
-in print. French wants a no-break space before `; : ! ?` and inside its
-guillemets. Spanish wants a paired `¿` at the start of a question. Germany sets
-`»Wort«` and Switzerland sets `«Wort»`. Get one wrong and nobody on the team can
-see it, because U+00A0, U+202F and an ordinary space render identically and `'`
-and `’` are a font away from each other.
+Typography is full of rules that are invisible in a diff and wrong in print.
+French wants a no-break space before `; : ! ?` and inside its guillemets.
+Spanish wants a paired `¿` at the start of a question. Germany sets `»Wort«` and
+Switzerland sets `«Wort»`. English wants U+2019 where a keyboard gives `'`, and
+in front of a decade where a smart-quote pass gives U+2018. Get one wrong and
+nobody on the team can see it, because U+00A0, U+202F and an ordinary space
+render identically and `'` and `’` are a font away from each other.
 
 Three things follow, and they are what this package is:
 
 **Rules come from the body that decides them, and each one cites its source.**
 Imprimerie nationale for French, RAE for Spanish, Duden for German, the
-Nederlandse Taalunie for Dutch. A rule with no citation does not ship. That is
-the line between a national standard and a house style, and English gets no pack
-for exactly that reason: the Oxford comma is not a standard.
+Nederlandse Taalunie for Dutch. A rule with no citation does not ship. English
+has no such body, so `en` cites two manuals and ships only what both of them
+say: the serial comma is a divergence and is therefore not in it.
 
 **Checking and fixing are different rule sets.** A Spanish sentence ending in `?`
 with no opening `¿` is unambiguously wrong and *not* safely fixable, because
@@ -68,14 +70,14 @@ the fact that these findings are invisible and must be quoted escaped.
 **Reading the rules.** A pack is a plain array of rules with summaries and
 citations. `import { fr } from '@shbernal/typography/fr'` and print it.
 
-## Five conventions, not one with a locale flag
+## Six conventions, not one with a locale flag
 
-| | French | Spanish | German (DE/AT) | German (CH) | Dutch |
-|---|---|---|---|---|---|
-| Quotation marks | `« … »` | `«…»` | `»…«` | `«…»` | **no rule** |
-| Space inside them | **required**, U+00A0 or U+202F | forbidden | forbidden | forbidden | n/a |
-| Space before `; : ! ?` | **required** | forbidden | forbidden | forbidden | forbidden |
-| Opening marks | none | `¿` `¡`, **paired** | none | none | none |
+| | English | French | Spanish | German (DE/AT) | German (CH) | Dutch |
+|---|---|---|---|---|---|---|
+| Quotation marks | curly, **no rule** on which pair | `« … »` | `«…»` | `»…«` | `«…»` | **no rule** |
+| Space inside them | **no rule** | **required**, U+00A0 or U+202F | forbidden | forbidden | forbidden | n/a |
+| Space before `; : ! ?` | forbidden | **required** | forbidden | forbidden | forbidden | forbidden |
+| Opening marks | none | none | `¿` `¡`, **paired** | none | none | none |
 
 French and Spanish use the identical pair of characters with opposite spacing.
 German points them the other way and Switzerland points them back. So there is
@@ -83,7 +85,16 @@ one module per convention, and **there is no bare `de`**: a pack id gets stamped
 onto a corpus, and a stamp that cannot tell a Swiss quotation from a German
 mistake is worse than no stamp at all.
 
-Dutch is the interesting column, and the blank is not a gap. The Taalunie's
+English is the newest column and the one with no standards body behind it. It
+ships the intersection of Chicago and New Hart's Rules and rules on nothing they
+disagree about, which is why the serial comma is absent and why the dash
+convention is reported rather than repaired: Chicago closes an em dash up and
+Oxford sets a spaced en dash, so a repair in either spelling would retype text
+that is correct in the other. What is left is mostly one character. `it's`,
+`'tis` and `'90s` all want U+2019, and a smart-quote pass gives the last two
+U+2018 instead.
+
+Dutch is the other interesting column, and the blank is not a gap. The Taalunie's
 standard is a spelling standard and rules on neither spacing nor quotation marks,
 and its advice service says outright that there are no fixed rules for choosing
 between `‘…’` and `“…”` - and then recommends picking one and keeping to it. So
@@ -93,10 +104,18 @@ Its centre of gravity is the apostrophe, where Dutch is unusually demanding:
 
 ## Status
 
-`0.2.1`, and pre-1.0 is the accurate thing to say. Every language has been run
-past real published text: 2.4M characters of French, 2.4M of German, 1.1M of
-Spanish, 880k of Dutch, 699k of Swiss German. French additionally reproduces the
-implementation it was extracted from byte for byte over 11,058 real values.
+`0.2.1`, and pre-1.0 is the accurate thing to say. The four original languages
+have been run past real published text: 2.4M characters of French, 2.4M of
+German, 1.1M of Spanish, 880k of Dutch, 699k of Swiss German. French
+additionally reproduces the implementation it was extracted from byte for byte
+over 11,058 real values.
+
+**English has had none of that**, and it is the first style here to ship without
+it. It was written against the fixtures and the properties rather than against a
+corpus, which is what every style is held to now; what it has not had is a
+measurement of how often its rules fire on text somebody already set correctly.
+That is the measurement that took the French guillemet rules apart, so treat
+`en`'s findings as the newest thing in the package.
 
 Dutch is the newest and the thinnest: it was measured against one corpus, which
 is also one of its two citations, and two of its rules met nothing they could
