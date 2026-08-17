@@ -4,13 +4,18 @@ Where each shipped style's defaults came from, and the measurements that shaped
 them. `cite` records provenance on a rule and no longer decides whether the rule
 may exist; this page is the same thing one level up, for the style.
 
-The numbers below were cut from nine corpora of published text, 5.8M characters,
-which this repository no longer carries. They left with the corpus gate, because
-the question changed. The gate asked "does this rule misfire on text a
-professional already set correctly", which is answered here and does not need
-re-asking. What the project asks now is "do twelve generations of the same
+Most of the numbers below were cut from nine corpora of published text, 5.8M
+characters, which this repository no longer carries. They left with the corpus
+gate, because the question changed. The gate asked "does this rule misfire on
+text a professional already set correctly", which is answered here and does not
+need re-asking. What the project asks now is "do twelve generations of the same
 content come back with the same typography", and no corpus of published text can
 answer that. `audit` in [`compose.ts`](../src/compose.ts) does.
+
+The rest are from one run made after they left, over 6.7M characters of English,
+because `en` shipped too late to have a corpus and was the only style with no
+false-positive measurement at all. It is recorded in the last section and it is
+not a gate either.
 
 ## The sources
 
@@ -63,7 +68,7 @@ corpus.
 | Constraint | What it costs to lose |
 |---|---|
 | `apostrophe` requires a letter on **both** sides ([`rules/apostrophe.ts`](../src/rules/apostrophe.ts)) | 22 of the 24 straight apostrophes in 698,683 characters of federal Swiss German are thousands separators. A rule matching a straight apostrophe anywhere reports `Z'graggen`, and also repairs `100'000` into `100’000`. |
-| `apostrophe-elision` needs a closed clitic set plus a following boundary ([`rules/apostrophe-elision.ts`](../src/rules/apostrophe-elision.ts)) | Widening either one turns it into a rule that retypes the opening quotation mark of any quoted word beginning with s, t, n, k, m or r. |
+| `apostrophe-elision` needs a closed clitic set plus a following boundary ([`rules/apostrophe-elision.ts`](../src/rules/apostrophe-elision.ts)) | Widening either one turns it into a rule that retypes the opening quotation mark of any quoted word beginning with s, t, n, k, m or r. Measured in English: 255 quotations opened with the single pair, 37 of them on a word beginning `t` or `e`, and the boundary declined every one. |
 | The spacing rules around `; : ! ?` run behind `looksMachine` ([`prose.ts`](../src/prose.ts)) | They fire on `a ? b : c` and on query strings. Under this project's input, generated text, that filter is more load-bearing than it was, not less. |
 | Guillemet inner spacing matches only what is wrong under both readings of the Lexique ([`rules/inner-space.ts`](../src/rules/inner-space.ts)) | 6,817 false positives against 103 real defects, over 2.4M characters of correctly set French. `admissible` is the one field that holds this, and `withWidth` widens it deliberately, for a caller who has stated a width. |
 | The space before a colon stays U+00A0 under every width ([`rules/colon-spacing.ts`](../src/rules/colon-spacing.ts)) | Nothing about that position is in dispute: the Lexique specifies the word space and the corpora used it 2,458 times against no counter-example. Imposing U+202F there would be a style asserting what its citation does not fix, in the one place the citation is explicit. |
@@ -135,29 +140,101 @@ implementation `fr` was extracted from, over 11,058 string fields of which that
 implementation rewrites 827. It could never run outside the maintainer's machine,
 and it is deleted with the rest.
 
-**`en` has no row here and will not get one.** It shipped after the corpora left,
-so it is the first style measured only by the fixtures and the three properties.
-That is the standard every style is held to now and it is not the same standard:
-the corpora answered whether a rule misfires on text somebody already set
-correctly, and nothing in the current suite asks that question of English. The
-rules most exposed to it are the two that convert U+2018 in a position a
-quotation can also open in. A document setting quotations with the single pair
-and opening one on a clitic or a figure is what would break them, which is to say
-`‘tis the season’` and `‘90s revival’` as quotations rather than as elisions.
-Both are narrow enough that no fixture holds one, and narrow is not the same as
-absent: the closed clitic set and the required boundary are what keep the odds
-that low, and neither has been checked against a corpus.
-
 Two things those measurements established that outlive them:
 
 - **A zero is not automatically a result.** A rule reports nothing either because
   the publisher set the text correctly or because the text contained nothing it
   could match, and only the first is evidence. Two Dutch rules, `ij-capital` and
   `apostrophe-after-symbol`, have never met a line of published Dutch containing
-  anything they could match. Their zeros were vacuous then and are vacuous now.
+  anything they could match. Their zeros were vacuous then and are vacuous now,
+  and the English run below produced two more of them.
 - **A reproduction gate constrains a rule only where its corpus exercises it.**
   The French narrowing above looked blocked by the reproduction gate, which pins
   `normalize` byte for byte. It was not: that corpus contains no guillemet the
   prior implementation had to re-space, so the narrowing was invisible to the
   gate that appeared to forbid it. The reasoning was sound and the conclusion was
   wrong, and measuring was what settled it.
+
+## The English run
+
+`en` shipped after the corpora left, with no row in the table above and the
+question they asked never put to it. It has been put now, once, over ten Project
+Gutenberg books: Frankenstein, The Great Gatsby, Jekyll and Hyde, Moby-Dick, On
+the Origin of Species, Pride and Prejudice, Relativity, The Principles of
+Scientific Management, The Wealth of Nations and The Yellow Wallpaper.
+6,658,520 characters after the Project Gutenberg licence wrapper is cut off each
+one, which is otherwise the same 19,000 characters counted ten times.
+
+**This is a recorded measurement and not a gate.** The books are official
+Project Gutenberg EPUB3 downloads, they are not committed, and nothing in
+`pnpm check` re-runs any of it. It is here for the same reason the rows above
+are: to say what the defaults were held against, so that whoever changes a rule
+knows what the change is walking away from.
+
+**Rerunnable, unlike the nine corpora.** The books and the four scripts that
+produced every number below sit untracked and gitignored under `.tmp/`, with the
+`.source.md` sidecar each EPUB was downloaded with: landing page, exact URL,
+retrieval date and SHA-256, so a copy can be checked against what was measured.
+`.tmp/README.md` is the entry point, and the one to read first is `census.ts`,
+which is what makes the zeros here mean anything.
+
+| What | Result |
+|---|---|
+| `check` over all ten | 371 findings, and 366 of them in one book |
+| False positives | zero |
+| `audit` over all ten | zero violations: idempotence, conformance and non-interference all hold on 6.6M characters of real prose |
+
+The one book is *The Principles of Scientific Management*, which Gutenberg ships
+as XHTML wrapped around its plain-text edition: no U+2019 anywhere in it, no
+curly double quote, 117 straight apostrophes and 271 straight double quotes. So
+its 366 findings are the recall half rather than the precision half, and they are
+all real. The other five are an artefact of the extraction rather than of the
+book: *Relativity* sets its inline formulae as images, and stripping an `<img>`
+out of `been <img/>; this` leaves a space in front of a semicolon that no reader
+of the book ever saw.
+
+**The zeros that are evidence.** A rule reports nothing either because the text
+was set correctly or because it held nothing to match, so each rule was counted
+against the correct spelling of its own position:
+
+| Rule | Reached | Reported |
+|---|---|---|
+| `apostrophe` | 5,204 correctly set U+2019 between letters | 95, all real |
+| `apostrophe-elision` | 67 correct `’tis` / `’twas` / `’em`, and 255 quotations opened with the single pair, 37 of them on a word beginning `t` or `e` | none |
+| `straight-double-quote` | 12,380 curly marks in the nine typeset books | 271, all real, all in the plain-text edition |
+| `punctuation-spacing` | 18,507 positions where a letter meets `; : ! ?` | none, once the image artefact above is set aside |
+
+The second row is the one this run was worth making for. Before it, the named
+hazard for `en` was a quotation opened with the single pair on a clitic or a
+figure, `‘tis the season’` and `‘90s revival’` set as quotations rather than as
+elisions, which is the one shape that turns `apostrophe-elision` and
+`decade-apostrophe` into rules that retype somebody's quotation marks. The corpus
+opens 255 quotations with the single pair and not one of them lands on either:
+zero on a clitic word with or without the boundary, zero in front of a figure.
+The closed set and the required boundary held on every one.
+
+**The zeros that are not.** `decade-apostrophe` was never reached at all, in
+either spelling, since nineteenth-century prose does not write `’90s`.
+`double-hyphen` met 4,310 dashes and no double hyphen, so its recall is untested
+and its false-positive hazard, `--` as a stylesheet modifier, needs code this
+corpus does not contain. Both zeros are the vacuous kind and neither is evidence
+of anything.
+
+**What it found, and it is a ceiling rather than a defect.** `fix` repaired 95 of
+the 117 straight apostrophes in the plain-text book and left 22. Nineteen are
+quotation marks, which is the parse `en` declines everywhere. The other three are
+possessives that follow an `s`: `bricklayers' unions` twice and `goodness' sake`
+once, sitting in a document where `day's` beside them has been repaired. A
+word-final apostrophe and a closing single quotation mark are the same character
+in the same position, which is the U+2019 collision counted above in Dutch,
+arriving in a third position. **`check` does not report them either**, so `fix`
+on ASCII English returns a document carrying both marks and the report afterwards
+calls it clean. `test/fixtures.ts`'s `en-possessive` and a case in
+`test/en.test.ts` hold that boundary now, so it is asserted rather than
+remembered.
+
+The run says nothing about the hazard this package actually ships for. Ten novels
+and treatises contain no fenced block, no JSON payload and no identifier, which
+is the whole subject of `test/fixtures.ts`'s `MACHINE` group and of the open
+question about `apostrophe` retyping code. A corpus of published prose could not
+have answered that one, which is why it is not what replaced the corpora.

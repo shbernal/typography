@@ -41,6 +41,14 @@ const GENERATED = ['dist/**', 'pnpm-lock.yaml'];
 // The two dotted patterns are not redundant: a dotted directory is only entered
 // when a pattern names it, so the workflows and the plugin manifests would
 // otherwise go unchecked, silently and while still reporting a pass.
+//
+// **That rule is load-bearing in the other direction too, and by accident.** A
+// glob here resolves against the filesystem rather than against git, so an
+// untracked file is read like any other: the scratch corpus under `.tmp/` is
+// skipped only because its name starts with a dot. Nothing in `ignore` says so,
+// and renaming that directory to `tmp/` would quietly start linting six million
+// characters of Project Gutenberg prose, whose em dashes are its subject rather
+// than a defect. Keep the dot, or add the pattern to `ignore` then.
 const TEXT_FILES = [
   '**/*.{ts,md,json,mjs,cjs,txt,yml,yaml}',
   '.github/**/*.{yml,yaml,md}',

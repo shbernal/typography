@@ -120,6 +120,12 @@ export const PROSE: readonly Sample[] = [
     name: 'en-defective',
     text: `It's the ${LSQ}90s again ; ${LSQ}tis a "quote" and a well--known dash.`,
   },
+  // The ceiling the English corpus run found, as a sample rather than as a note:
+  // one of these three apostrophes is repaired and the other two are invisible to
+  // both verbs, because a word-final apostrophe and a closing single quotation
+  // mark are the same character in the same position. So this is what a document
+  // carrying both marks looks like, and `check` calls the repaired form clean.
+  { name: 'en-possessive', text: "the bricklayers' union did a day's work, for goodness' sake" },
   { name: 'nl-correct', text: `De auto${RSQ}s en ${RSQ}s morgens en de IJsland-reis.` },
   {
     name: 'nl-defective',

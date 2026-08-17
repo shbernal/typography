@@ -43,6 +43,21 @@ test('a quoted word that begins like a clitic is left alone', () => {
     assert.equal(en.normalize(text), text, `retyped a quotation mark in ${JSON.stringify(text)}`);
 });
 
+test('a possessive after the s is neither fixed nor reported', () => {
+  // The ceiling the corpus run found, held here so it is asserted rather than
+  // remembered. `apostrophe` needs a letter on both sides, which is what keeps it
+  // off a quotation mark, and a plural possessive has a space on its right: the
+  // two are the same character in the same position and no lookaround separates
+  // them. Measured on 6.66M characters of English in `docs/provenance.md`.
+  const text = "the bricklayers' union did a day's work, for goodness' sake";
+  const fixed = `the bricklayers' union did a day${RSQ}s work, for goodness' sake`;
+  assert.equal(en.normalize(text), fixed);
+  // The consequence worth the test: the repaired document still carries two
+  // straight apostrophes and the report afterwards is empty, so a caller reading
+  // `check` alone cannot tell this document from one that was set correctly.
+  assert.deepEqual(ids(fixed), []);
+});
+
 test('a decade takes an apostrophe and not an opening quotation mark', () => {
   assert.equal(en.normalize("the '90s"), `the ${RSQ}90s`);
   assert.equal(en.normalize(`the ${LSQ}20s`), `the ${RSQ}20s`);

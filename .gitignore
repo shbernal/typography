@@ -7,3 +7,17 @@ dist/
 # output of `dist/`, which is already ignored, so committing one would ship a
 # stale copy of an artefact the release workflow builds from source.
 *.tgz
+
+# Text this repo measures against and does not ship. `.tmp/corpus/` is ten
+# Project Gutenberg EPUBs borrowed from another repository's fixtures, 29 MB of
+# them, and the harness beside it reruns the English measurement in
+# `docs/provenance.md`. Nothing in `pnpm check` reads any of it, which is the
+# point: a measurement is recorded in the docs and in the comment above the rule
+# it constrains, and the corpus that produced it is reproducible rather than
+# committed. `.tmp/README.md` says how to refill the directory.
+#
+# **The leading dot is doing work beyond this file.** charcheck globs the
+# filesystem rather than git and reads untracked files happily; what keeps it out
+# of the corpus is that a dotted directory is only entered when a pattern names
+# one. `charcheck.config.ts` says so where the globs are.
+.tmp/

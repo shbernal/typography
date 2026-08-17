@@ -45,6 +45,14 @@
 // `src/styles/nl.ts` carries. So English reports it, like every other style here, and
 // this package does not guess.
 //
+// **Measured once, on 6.66M characters of English, and the run is not a gate.**
+// Ten Project Gutenberg books through `check` and `audit`: zero false positives,
+// zero property violations, and the rules were reached rather than merely quiet.
+// Every finding in the whole corpus came from the one edition Gutenberg ships
+// from plain text, which carries no U+2019 and no curly double quote anywhere.
+// `docs/provenance.md` has the counts, the two rules it could not reach, and the
+// ceiling it found.
+//
 // Citations name a topic rather than a section, on purpose. The two manuals
 // number differently and every rule below is asserted only because both of them
 // say it, so a citation pointing at one manual's paragraph would be half the
@@ -87,6 +95,19 @@ const rules: readonly Rule[] = [
   // English elides constantly - `it's`, `don't`, `o'clock` - and a model emits
   // the straight form by default, so this is most of what `fix --style en`
   // repairs on ordinary generated prose.
+  //
+  // Measured: 5,204 correctly set apostrophes left alone and 95 straight ones
+  // repaired, over 6.66M characters, with no false positive. **What it cannot
+  // reach is the possessive that follows the `s`**, and the corpus priced it:
+  // `bricklayers' unions` and `goodness' sake` keep their straight mark in a
+  // document where `day's` beside them has been repaired, because a word-final
+  // apostrophe and a closing single quotation mark are the same character in the
+  // same position. That is the U+2019 collision `src/styles/nl.ts` counts, in a
+  // third position, and its consequence is sharper than a missed repair: `check`
+  // does not report those two either, so `fix` returns a document carrying both
+  // marks and the report afterwards says it is clean. A ceiling rather than a
+  // defect, since choosing between the two is the parse this style declines in
+  // `straight-double-quote` for the same reason.
   apostrophe({
     language: 'English',
     wrong: WRONG_APOSTROPHE,
