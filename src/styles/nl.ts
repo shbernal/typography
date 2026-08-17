@@ -138,6 +138,12 @@ const rules: readonly Rule[] = [
   // Dutch, between two letters, it can only be a weglatingsteken that a
   // smart-quote pass turned the wrong way, since the standard uses U+2018 to
   // open a quotation 144 times and as an apostrophe never.
+  //
+  // The wide class has since been held against a register nobody wrote with this
+  // checker in mind: 976,000 characters of Dutch statute contain 101 correctly
+  // set letter-to-letter apostrophes, all of them the vowel-final plural
+  // (`risico's`, `CSIRT's`, `video's`), and not one straight mark or U+2018 in
+  // that position. The rule left all 101 alone. `docs/provenance.md` has the run.
   apostrophe({
     language: 'Dutch',
     wrong: WRONG_APOSTROPHE,
@@ -151,6 +157,13 @@ const rules: readonly Rule[] = [
   //
   // `ns` leads the alternation because the engine takes the first branch that
   // matches, and `n` alone would strand the `s` of `'ns`.
+  //
+  // Both halves are measured, on a small denominator and in the one place it
+  // mattered: Dutch statute sets `’s avonds`, `’s ochtends` and
+  // `’s Rijksbelastingen` correctly and the rule left all three alone, while the
+  // Waterwet sets the last of those with a straight mark and the rule repaired
+  // it. One publisher, one phrase, two spellings, which is the uniformity claim
+  // arriving in published law rather than in a model's output.
   apostropheElision({
     wrong: WRONG_APOSTROPHE,
     clitics: '(?:ns|[stnkmr])',
@@ -167,6 +180,11 @@ const rules: readonly Rule[] = [
 
   // The standard sets 18 of these and 7 more after `@ & +`, which is what makes
   // it worth a rule in a style this small.
+  //
+  // Unmeasured outside that standard, and knowing which rules are is the point:
+  // two Dutch corpora, 1.86M characters, contain nothing this rule could match in
+  // either spelling, so its silence in both is worth nothing. `A4'tje` is not a
+  // thing legislation or advice prose has occasion to write.
   apostropheAfterSymbol({
     wrong: WRONG_APOSTROPHE,
     cite: `${HANDLEIDING}, paragraaf 11.5`,
@@ -181,6 +199,15 @@ const rules: readonly Rule[] = [
   // Unlike French, this style ballots and reports over the same pattern. Every
   // mark in opening position is both a vote and a candidate for the report,
   // because a mark is either one of the three systems or not a quotation mark.
+  //
+  // **A ballot rule cannot be measured one unit at a time**, which is worth
+  // knowing before running it past a corpus and believing the zero. It counts a
+  // document and reports the minority, so a per-unit run hands it one unit's
+  // worth of votes and it can never report anything, whatever the corpus does.
+  // The same is true of a sample given to `audit`. Measured that way, 976,000
+  // characters of Dutch statute turn out to contain no quotation mark of any of
+  // the three systems at all: legislation defines rather than quotes, so this
+  // rule's zero there is vacuous and no amount of further statute changes that.
   minorityReport({
     id: 'mixed-quotation-marks',
     summary: 'More than one system of quotation marks used in the same text',
@@ -190,6 +217,13 @@ const rules: readonly Rule[] = [
     spelling: (match) => match[1],
   }),
 
+  // The least measured rule in the package, and the reason is a fact about
+  // registers rather than about the rule. Two Dutch corpora, 1.86M characters,
+  // put two words in front of it, `IJsselmeer` and `IJssel`. A bigger corpus of
+  // the same kind will not help: the Omgevingswet is the largest statute in Dutch
+  // law and those two words are its whole contribution, because legislation names
+  // ministries and not places. What would measure this cheaply is geography or
+  // journalism, and until it does, its zero is not evidence of anything.
   ijCapital({
     cite: `${HANDLEIDING}, paragraaf 2.4`,
   }),
@@ -199,6 +233,11 @@ const rules: readonly Rule[] = [
   // contact in Belgium, and French spacing carried into Dutch is a defect under
   // the Belgian half of the Taalunie's own authority rather than a Belgian
   // convention, which is why this is one style and not `nl-BE` plus `nl-NL`.
+  //
+  // The best-measured rule this style has, and the register it was measured in is
+  // the reason: Dutch statute enumerates, so 976,000 characters of it put 1,498
+  // letter-to-`; : ! ?` positions in front of this rule and it reported none of
+  // them.
   spaceBeforePunctuation({
     language: 'Dutch',
     cite: `${TAALADVIES}, "Wel of geen spaties voor en na leestekens en symbolen"`,
@@ -207,6 +246,12 @@ const rules: readonly Rule[] = [
   // Dutch has three admissible pairs to choose between rather than two, with
   // nothing in any citation that would settle which, so the parse the builder
   // declines to attempt is one branch wider here than anywhere else.
+  //
+  // Half measured, and the half that is missing is the one that matters. The
+  // Gemeentewet sets its oath formulae with ASCII double quotes and this rule
+  // reports all four, so recall holds in published law; but no curly mark stands
+  // anywhere in 976,000 characters of statute, so nothing there measures whether
+  // it would have left a correct pair alone.
   straightDoubleQuote({
     instead: 'Dutch quotation marks are a matched curly pair',
     cite: `${TAALADVIES}, "Dubbele of enkele aanhalingstekens bij een citaat"`,

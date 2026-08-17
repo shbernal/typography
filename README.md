@@ -135,16 +135,19 @@ they established is in [docs/provenance.md](docs/provenance.md), and what
 replaced them is `audit`, which holds a style to idempotence, conformance and
 non-interference over text you supply.
 
-**English has had none of that**, and it is the first style here to ship without
-it. It was written against the fixtures and the properties rather than against a
-corpus, which is what every style is held to now; what it has not had is a
-measurement of how often its rules fire on text somebody already set correctly.
-That is the measurement that took the French guillemet rules apart, so treat
-`en`'s findings as the newest thing in the package.
+**English shipped without any of that**, and it is the first style here to have
+done so. It has since been held against 6.7M characters of Project Gutenberg
+prose, which found zero false positives and one ceiling: a possessive after an
+`s` is neither repaired nor reported, because a word-final apostrophe and a
+closing single quotation mark are the same character in the same position.
 
-Dutch is the thinnest of the measured ones: it saw one corpus, which is also one
-of its two citations, and two of its rules met nothing they could match. That is
-recorded in [docs/provenance.md](docs/provenance.md) rather than
+Dutch is still the thinnest-measured, and now for a sharper reason. It has seen
+two corpora, 1.86M characters, one of them published by the body that wrote its
+citations and the other 976k characters of Dutch statute; between them, three of
+its seven rules have met nothing they could match, because legislation does not
+quote, barely contracts and names no places.
+
+Both runs are recorded in [docs/provenance.md](docs/provenance.md) rather than
 smoothed over, along with what each number is worth and the narrowings the
 measurements bought. Zero findings can mean the text was set correctly or that it
 contained nothing the rule could match, and only the first is evidence.

@@ -12,10 +12,12 @@ need re-asking. What the project asks now is "do twelve generations of the same
 content come back with the same typography", and no corpus of published text can
 answer that. `audit` in [`compose.ts`](../src/compose.ts) does.
 
-The rest are from one run made after they left, over 6.7M characters of English,
-because `en` shipped too late to have a corpus and was the only style with no
-false-positive measurement at all. It is recorded in the last section and it is
-not a gate either.
+The rest are from two runs made after they left, and neither is a gate either.
+One is over 6.7M characters of English, because `en` shipped too late to have a
+corpus and was the only style with no false-positive measurement at all. The
+other is 976k characters of Dutch statute, because `nl` was the thinnest-measured
+style and its one corpus was published by the body that wrote its citations. Both
+are recorded in the last two sections.
 
 ## The sources
 
@@ -145,9 +147,10 @@ Two things those measurements established that outlive them:
 - **A zero is not automatically a result.** A rule reports nothing either because
   the publisher set the text correctly or because the text contained nothing it
   could match, and only the first is evidence. Two Dutch rules, `ij-capital` and
-  `apostrophe-after-symbol`, have never met a line of published Dutch containing
-  anything they could match. Their zeros were vacuous then and are vacuous now,
-  and the English run below produced two more of them.
+  `apostrophe-after-symbol`, had never met a line of published Dutch containing
+  anything they could match; a second Dutch corpus and 976k characters later,
+  they still effectively have not, and the Dutch section below says what it cost
+  to find that out. The English run produced two more of them.
 - **A reproduction gate constrains a rule only where its corpus exercises it.**
   The French narrowing above looked blocked by the reproduction gate, which pins
   `normalize` byte for byte. It was not: that corpus contains no guillemet the
@@ -238,3 +241,95 @@ and treatises contain no fenced block, no JSON payload and no identifier, which
 is the whole subject of `test/fixtures.ts`'s `MACHINE` group and of the open
 question about `apostrophe` retyping code. A corpus of published prose could not
 have answered that one, which is why it is not what replaced the corpora.
+
+## The Dutch run
+
+`nl` was the thinnest-measured style: one corpus, published by the body that
+wrote two of its citations, and two of its seven rules reached by nothing in it.
+[Issue #4](https://github.com/shbernal/typography/issues/4) put a second corpus
+to it from a different register and, better than that, counted per rule how much
+of the resulting zero was evidence. This section is that measurement reproduced
+independently and then widened at the rules that had no denominator, which is
+what the issue offered.
+
+Four consolidated statutes, as the Staatsblad's own BWB XML served by
+wetten.overheid.nl. **Nothing renders the text before the checker sees it**: no
+PDF, no HTML page, no CMS, so these are the strings the government stores.
+
+| Statute | Characters | Why this one |
+|---|---|---|
+| Cyberbeveiligingswet (the NIS2 transposition) | 140,356 | the corpus the issue reported |
+| Waterwet | 35,756 | chosen for geography; it holds the run's one defect |
+| Gemeentewet | 232,046 | chosen for `'s`-initial municipality names |
+| Omgevingswet | 567,821 | the largest statute in Dutch law, for a denominator |
+
+975,979 characters in 7,222 distinct units, at `nl@54bd114c5488`, after
+`<meta-data>` comes off and repeated units are collapsed. **Rerunnable and not a
+gate**, on the English section's terms: the XML and the four scripts sit
+gitignored under `.tmp/nl/`, each statute beside a sidecar giving the exact URL,
+the retrieval date and a SHA-256, and `.tmp/nl/README.md` is the entry point.
+
+| What | Result |
+|---|---|
+| `check` | 5 findings, all five real |
+| False positives | zero |
+| `normalize` | 1 of 7,222 units rewritten |
+| `audit` | zero violations over every unit and over each whole statute |
+
+**The zeros that are evidence.** Each rule was counted against the correct
+spelling of its own position, an opportunity being text sitting where the rule
+looks, set the way the rule leaves alone:
+
+| Rule | Reached | Reported |
+|---|---|---|
+| `punctuation-spacing` | 1,498 positions where a letter meets `; : ! ?` | none |
+| `apostrophe` | 101 correctly set U+2019 between letters, and no straight mark or U+2018 in that position anywhere | none |
+| `apostrophe-elision` | 3 correct (`’s avonds`, `’s ochtends`, `’s Rijksbelastingen`) and 1 defective | 1, real, repaired |
+
+`punctuation-spacing` is the row that carries weight, and it is the one this
+register is good for: 1,498 marks across four statutes and no complaint about any
+of them.
+
+**The zeros that are not, and there are three of them.** `mixed-quotation-marks`
+had no ballot to count: there is not one quotation mark of any of the three Dutch
+systems in 976k characters of statute, which also means `straight-double-quote`'s
+four findings are recall and not precision, since no curly mark stood beside them
+to be left alone. `apostrophe-after-symbol` was never reached. `ij-capital` met
+two opportunities, `IJsselmeer` and `IJssel`, which is not a denominator.
+
+**A bigger corpus of the same register would not fix that, and this was measured
+rather than assumed.** The Omgevingswet is the largest statute in Dutch law, 4.2MB
+of XML, and it contains exactly two `IJ`-initial words: legislative Dutch names
+ministries rather than places, does not quote, and barely contracts. So the
+register that measures the spacing rules best is the worst available for the
+quotation rules, and `ij-capital` needs geography or journalism rather than more
+statute. Choosing the next corpus at a named rule is the cheap move here, and it
+is honest as long as the count is reported per rule.
+
+**What it found, and it is the uniformity claim in the wild.** The single defect
+is `'s Rijksbelastingen` in the Waterwet, set with a straight apostrophe, which
+`fix` repairs to U+2019. The Gemeentewet sets the same phrase with U+2019
+already. One publisher, one phrase, two spellings, each correct-looking in its own
+document and no reader of either ever placed side by side: that is exactly the
+failure this package is about one register up from a model's output, and it is why
+the question is whether the same content comes back the same way twice. The other
+four findings are the Gemeentewet's oath formulae, set with ASCII double quotes,
+which `straight-double-quote` reports and declines to repair for the reason it
+always does.
+
+**Two things about the method, because they change what the numbers mean.**
+
+- **A ballot rule cannot be measured one unit at a time.**
+  `mixed-quotation-marks` counts a document and reports its minority, so a
+  per-unit run hands it one unit's worth of votes and it can never report
+  anything, whatever the document does. Every statute here was therefore checked
+  unit by unit, which is how a consumer calls it, and then once as a single
+  string. The same applies to `audit`: a sample too short to hold two votes
+  measures nothing about a ballot.
+- **A denominator depends on where the unit boundary is drawn, so it has to be
+  stated.** The issue measured 121,469 characters of the Cyberbeveiligingswet and
+  407 `punctuation-spacing` opportunities; this walk measures 140,356 characters
+  of the same statute, because it also takes headings and table cells, and 322
+  opportunities, because it counts only the position the rule actually reads, a
+  letter in front of the mark. Both agree on the finding that matters, which is
+  which rules the register reaches at all.
