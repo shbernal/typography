@@ -22,16 +22,10 @@
 // half that does not generalise is the imposing: imposing one no-break space is
 // a substitution, and imposing one quotation system is not, because U+2019 is
 // both the closing single quotation mark and the apostrophe and no pattern
-// separates them. `src/nl.ts` carries the count.
+// separates them. `src/styles/nl.ts` carries the count.
 
 export { check, fix, styleFor, styles, unfixable } from './check.ts';
 export { audit, compose, derive, stampOf, type Violation } from './compose.ts';
-export { deCH } from './de-CH.ts';
-export { deDE } from './de-DE.ts';
-export { en } from './en.ts';
-export { es } from './es.ts';
-export { fr } from './fr.ts';
-export { nl } from './nl.ts';
 export {
   composeNormalize,
   conformRule,
@@ -50,3 +44,9 @@ export {
   type Style,
   THIN,
 } from './pack.ts';
+export { deCH } from './styles/de-CH.ts';
+export { deDE } from './styles/de-DE.ts';
+export { en } from './styles/en.ts';
+export { es } from './styles/es.ts';
+export { fr } from './styles/fr.ts';
+export { nl } from './styles/nl.ts';

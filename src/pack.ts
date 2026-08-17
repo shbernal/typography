@@ -388,7 +388,7 @@ export function composeNormalize(rules: readonly Rule[]): (value: string) => str
 // literal would be a character in the file that names it, indistinguishable from
 // the ordinary space beside it. An escape rather than `String.fromCharCode`
 // because these three keep their literal types, which is what lets a tally be
-// keyed by width in `src/fr.ts`.
+// keyed by width in `src/styles/fr.ts`.
 
 /** U+00A0, the full no-break space. */
 export const NO_BREAK = '\u00a0';

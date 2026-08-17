@@ -9,9 +9,8 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-
-import { es } from '../src/es.ts';
 import { NARROW_NO_BREAK, NO_BREAK } from '../src/pack.ts';
+import { es } from '../src/styles/es.ts';
 
 const CLI = resolve(fileURLToPath(import.meta.url), '..', '..', 'src', 'cli.ts');
 

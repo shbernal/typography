@@ -42,7 +42,7 @@
 // between an opening and a closing mark means pairing across a document, and a
 // `"` inside a code token has to survive it. The single-quote half is worse,
 // since U+2019 is the closing mark *and* the apostrophe, which is the count
-// `src/nl.ts` carries. So English reports it, like every other style here, and
+// `src/styles/nl.ts` carries. So English reports it, like every other style here, and
 // this package does not guess.
 //
 // Citations name a topic rather than a section, on purpose. The two manuals
@@ -50,14 +50,14 @@
 // say it, so a citation pointing at one manual's paragraph would be half the
 // source.
 
-import { compose } from './compose.ts';
-import { LEFT_SINGLE_QUOTE, type Rule, type Style } from './pack.ts';
-import { apostrophe } from './rules/apostrophe.ts';
-import { apostropheElision } from './rules/apostrophe-elision.ts';
-import { decadeApostrophe } from './rules/decade-apostrophe.ts';
-import { doubleHyphen } from './rules/double-hyphen.ts';
-import { spaceBeforePunctuation } from './rules/space-before-punctuation.ts';
-import { straightDoubleQuote } from './rules/straight-double-quote.ts';
+import { compose } from '../compose.ts';
+import { LEFT_SINGLE_QUOTE, type Rule, type Style } from '../pack.ts';
+import { apostrophe } from '../rules/apostrophe.ts';
+import { apostropheElision } from '../rules/apostrophe-elision.ts';
+import { decadeApostrophe } from '../rules/decade-apostrophe.ts';
+import { doubleHyphen } from '../rules/double-hyphen.ts';
+import { spaceBeforePunctuation } from '../rules/space-before-punctuation.ts';
+import { straightDoubleQuote } from '../rules/straight-double-quote.ts';
 
 const CHICAGO = 'The Chicago Manual of Style (17th ed., 2017)';
 const HART = "New Hart's Rules (Oxford, 2014)";

@@ -27,10 +27,6 @@ import { test } from 'node:test';
 
 import { styles } from '../src/check.ts';
 import { audit, derive } from '../src/compose.ts';
-import { deCH } from '../src/de-CH.ts';
-import { deDE } from '../src/de-DE.ts';
-import { es } from '../src/es.ts';
-import { fr, withWidth } from '../src/fr.ts';
 import {
   LEFT_SINGLE_QUOTE as LSQ,
   NARROW_NO_BREAK,
@@ -41,6 +37,10 @@ import {
 } from '../src/pack.ts';
 import { innerSpace } from '../src/rules/inner-space.ts';
 import { ANY_SPACE } from '../src/rules/space.ts';
+import { deCH } from '../src/styles/de-CH.ts';
+import { deDE } from '../src/styles/de-DE.ts';
+import { es } from '../src/styles/es.ts';
+import { fr, withWidth } from '../src/styles/fr.ts';
 import { FIXTURES, MACHINE, texts } from './fixtures.ts';
 
 /** Every style a caller can be handed, the two derived French ones included.

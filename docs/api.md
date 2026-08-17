@@ -159,12 +159,13 @@ behaviour. It throws on any width but those two, because U+2009 is the right
 width and breaks lines.
 
 Three things about the derived style that are not obvious, all of them explained
-where they are implemented in [`src/fr.ts`](../src/fr.ts): the space before a
-colon stays U+00A0 under either width, since that is the one position the
-citation is explicit about; `mixed-no-break-space` is dropped, because reaching
-this function is the author making the call that rule reserves for them; and the
-stamp differs from `fr`'s and between the two widths, because a corpus with
-correct text retyped into an imposed width is not the same era as one without.
+where they are implemented in [`src/styles/fr.ts`](../src/styles/fr.ts): the
+space before a colon stays U+00A0 under either width, since that is the one
+position the citation is explicit about; `mixed-no-break-space` is dropped,
+because reaching this function is the author making the call that rule reserves
+for them; and the stamp differs from `fr`'s and between the two widths, because
+a corpus with correct text retyped into an imposed width is not the same era as
+one without.
 
 ## CLI
 

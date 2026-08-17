@@ -9,10 +9,12 @@ where to read before you touch a rule.
 Composable orthotypography rules, published as `@shbernal/typography`. **A rule
 is the primitive and a style is a rule list with a name**, built by `compose` out
 of the parameterized builders in `src/rules/`; each rule cites where it came
-from. Six styles ship, for English, French, Spanish, German and Dutch, and a user
-composes their own the same way, with `compose`, `derive` and the builders on
-`@shbernal/typography/rules`. There is a library, a `typocheck` CLI, and a skill
-in `skills/` that ships from this same repo.
+from. The shipped rule lists are `src/styles/` and the engine that composes them
+is the rest of `src/`; a subpath export names a style and does not have to match
+its path on disk. Six styles ship, for English, French, Spanish, German and
+Dutch, and a user composes their own the same way, with `compose`, `derive` and
+the builders on `@shbernal/typography/rules`. There is a library, a `typocheck`
+CLI, and a skill in `skills/` that ships from this same repo.
 
 **The input is a model's output.** Generated or translated text, arriving set
 however the model happened to set it, which is why the goal is uniformity rather
@@ -143,7 +145,7 @@ it.
 | Touching a pattern | [`docs/development.md`](docs/development.md), the linear-time section |
 | Changing the protocol | [`docs/design.md`](docs/design.md) |
 | Touching the CLI or the config | [`docs/api.md`](docs/api.md), the CLI and Config sections |
-| Touching the French width logic | [`docs/api.md`](docs/api.md), then `withWidth` in `src/fr.ts` |
+| Touching the French width logic | [`docs/api.md`](docs/api.md), then `withWidth` in `src/styles/fr.ts` |
 | Adding or changing a fixture | [`docs/development.md`](docs/development.md), the fixtures section |
 | Cutting a release | [`docs/development.md`](docs/development.md) |
 
@@ -179,8 +181,8 @@ compose a style that fails it before believing the one that passes.
 ## Conventions
 
 - Strict TypeScript, ESM, small pure functions. Match the surrounding style, and
-  read `src/fr.ts` for the comment density expected: every narrowing says what it
-  is protecting.
+  read `src/styles/fr.ts` for the comment density expected: every narrowing says
+  what it is protecting.
 - `pnpm` for every command example, in docs and in CI. The one exception is
   `skills/typography-check/SKILL.md`, which uses `npx` because it runs on
   whatever machine the end user has.

@@ -27,8 +27,8 @@ import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 
 import { styles } from '../src/check.ts';
-import { withWidth } from '../src/fr.ts';
 import { NARROW_NO_BREAK, NO_BREAK, reveal, type Style } from '../src/pack.ts';
+import { withWidth } from '../src/styles/fr.ts';
 import { combinations, texts } from '../test/fixtures.ts';
 
 /**

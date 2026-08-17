@@ -8,12 +8,12 @@
 // So the one thing a shared German style could not have done is exactly the thing
 // a reader needs: tell a Swiss quotation from a German mistake.
 
-import { compose } from './compose.ts';
+import { compose } from '../compose.ts';
+import type { Rule, Style } from '../pack.ts';
+import { guillemetDirection } from '../rules/guillemet-direction.ts';
+import { innerSpace } from '../rules/inner-space.ts';
+import { ANY_SPACE } from '../rules/space.ts';
 import { DUDEN, germanCommonRules } from './de-common.ts';
-import type { Rule, Style } from './pack.ts';
-import { guillemetDirection } from './rules/guillemet-direction.ts';
-import { innerSpace } from './rules/inner-space.ts';
-import { ANY_SPACE } from './rules/space.ts';
 
 const rules: readonly Rule[] = [
   ...germanCommonRules,

@@ -16,8 +16,8 @@ import { test } from 'node:test';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { explain } from '../src/config.ts';
-import { fr } from '../src/fr.ts';
 import * as library from '../src/index.ts';
+import { fr } from '../src/styles/fr.ts';
 
 const ROOT = resolve(fileURLToPath(import.meta.url), '..', '..');
 const CLI = join(ROOT, 'src', 'cli.ts');

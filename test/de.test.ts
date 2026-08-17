@@ -6,8 +6,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { check } from '../src/check.ts';
-import { deCH } from '../src/de-CH.ts';
-import { deDE } from '../src/de-DE.ts';
+import { deCH } from '../src/styles/de-CH.ts';
+import { deDE } from '../src/styles/de-DE.ts';
 
 const RSQUO = '’';
 const idsDE = (text: string) => check(deDE, text).map((f) => f.rule);

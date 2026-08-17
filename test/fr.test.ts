@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { check } from '../src/check.ts';
-import { fr, surveyWidth, withWidth } from '../src/fr.ts';
+import { fr, surveyWidth, withWidth } from '../src/styles/fr.ts';
 
 const NBSP = '\u00a0';
 const NNBSP = '\u202f';

@@ -59,28 +59,28 @@
       "import": "./dist/index.js"
     },
     "./fr": {
-      "types": "./dist/fr.d.ts",
-      "import": "./dist/fr.js"
+      "types": "./dist/styles/fr.d.ts",
+      "import": "./dist/styles/fr.js"
     },
     "./en": {
-      "types": "./dist/en.d.ts",
-      "import": "./dist/en.js"
+      "types": "./dist/styles/en.d.ts",
+      "import": "./dist/styles/en.js"
     },
     "./es": {
-      "types": "./dist/es.d.ts",
-      "import": "./dist/es.js"
+      "types": "./dist/styles/es.d.ts",
+      "import": "./dist/styles/es.js"
     },
     "./de-DE": {
-      "types": "./dist/de-DE.d.ts",
-      "import": "./dist/de-DE.js"
+      "types": "./dist/styles/de-DE.d.ts",
+      "import": "./dist/styles/de-DE.js"
     },
     "./de-CH": {
-      "types": "./dist/de-CH.d.ts",
-      "import": "./dist/de-CH.js"
+      "types": "./dist/styles/de-CH.d.ts",
+      "import": "./dist/styles/de-CH.js"
     },
     "./nl": {
-      "types": "./dist/nl.d.ts",
-      "import": "./dist/nl.js"
+      "types": "./dist/styles/nl.d.ts",
+      "import": "./dist/styles/nl.js"
     },
     "./rules": {
       "types": "./dist/rules/index.d.ts",

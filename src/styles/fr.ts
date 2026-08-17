@@ -39,18 +39,18 @@
 // that is the line between a national standard and a house style, and it is the
 // only thing keeping this file from becoming a place where preferences collect.
 
-import { compose, derive } from './compose.ts';
-import { NARROW_NO_BREAK, NO_BREAK, type Rule, type Style } from './pack.ts';
-import { apostrophe } from './rules/apostrophe.ts';
-import { ballot } from './rules/ballot.ts';
-import { colonSpacing } from './rules/colon-spacing.ts';
-import { innerSpace } from './rules/inner-space.ts';
-import { minorityReport } from './rules/minority-report.ts';
-import { missingPunctuationSpace } from './rules/missing-punctuation-space.ts';
-import { ANY_SPACE_OR_THIN } from './rules/space.ts';
-import { requireSpaceBeforePunctuation } from './rules/space-before-punctuation.ts';
-import { conform, impose } from './rules/spelling.ts';
-import { straightDoubleQuote } from './rules/straight-double-quote.ts';
+import { compose, derive } from '../compose.ts';
+import { NARROW_NO_BREAK, NO_BREAK, type Rule, type Style } from '../pack.ts';
+import { apostrophe } from '../rules/apostrophe.ts';
+import { ballot } from '../rules/ballot.ts';
+import { colonSpacing } from '../rules/colon-spacing.ts';
+import { innerSpace } from '../rules/inner-space.ts';
+import { minorityReport } from '../rules/minority-report.ts';
+import { missingPunctuationSpace } from '../rules/missing-punctuation-space.ts';
+import { ANY_SPACE_OR_THIN } from '../rules/space.ts';
+import { requireSpaceBeforePunctuation } from '../rules/space-before-punctuation.ts';
+import { conform, impose } from '../rules/spelling.ts';
+import { straightDoubleQuote } from '../rules/straight-double-quote.ts';
 
 const LEXIQUE = 'Imprimerie nationale, Lexique des règles typographiques (2002)';
 

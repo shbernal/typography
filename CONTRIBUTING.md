@@ -39,7 +39,8 @@ run of spaces backtracks through all of them, and a pattern starting with
 it to the run's start. In this package that is not academic: the French guillemet
 rules took 15 seconds on a single 3,000-space line, which an indented block
 produces by accident. `test/perf.test.ts` runs every style over the shapes that
-break a naive pattern, and `src/fr.ts` explains the fix at `CORRECT_AFTER_OPEN`.
+break a naive pattern, and `src/styles/fr.ts` explains the fix at
+`CORRECT_AFTER_OPEN`.
 
 **Every rule carries a citation.** It is provenance rather than permission: it
 says where a default came from and it shows in the report, and it does not decide
@@ -108,8 +109,8 @@ stamp is what a consumer's stored text carries.
 ## Style
 
 Strict TypeScript, ESM, small pure functions, Biome for formatting. Match the
-surrounding comment density: in `src/fr.ts` every narrowing says what it is
-protecting, and that is the standard rather than an accident.
+surrounding comment density: in `src/styles/fr.ts` every narrowing says what it
+is protecting, and that is the standard rather than an accident.
 
 No em dashes (U+2014) anywhere in the repo, and no pasted invisible characters:
 U+0020, U+00A0 and U+202F look identical in a source file, and a test using them

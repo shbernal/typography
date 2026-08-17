@@ -114,11 +114,11 @@ scan that consumes to the end of it.
 
 Rules in three of the four rule sets then shipping had one or the other, and the
 German and Spanish ones were found only after the French one had been fixed and
-written up as French-only. So: write the exception as a lookahead at the position where the
-run starts, take the run once, and do not enumerate the defects as alternatives.
-`src/fr.ts` works through it at the constant `CORRECT_AFTER_OPEN`, and
-`test/perf.test.ts` holds every style to linear time so a fourth instance fails
-rather than ships.
+written up as French-only. So: write the exception as a lookahead at the
+position where the run starts, take the run once, and do not enumerate the
+defects as alternatives. `src/styles/fr.ts` works through it at the constant
+`CORRECT_AFTER_OPEN`, and `test/perf.test.ts` holds every style to linear time
+so a fourth instance fails rather than ships.
 
 `SECURITY.md` calls a pattern that behaves this way a vulnerability in this
 package, which makes `test/perf.test.ts` the assertion behind that claim rather
@@ -127,8 +127,9 @@ than a benchmark.
 ## Adding a rule
 
 A rule lives in `src/rules/`, one module per family, each exporting a builder
-that a style calls with its own citation and character classes. Read `src/fr.ts`
-for the comment density expected: every narrowing says what it is protecting.
+that a style calls with its own citation and character classes. Read
+`src/styles/fr.ts` for the comment density expected: every narrowing says what it
+is protecting.
 
 1. Look for the family first. Six builders already cover most of the
    declarations in the package, and the question a new rule asks is usually one
@@ -155,14 +156,28 @@ for the comment density expected: every narrowing says what it is protecting.
 
 ## Adding a style
 
-1. `src/<name>.ts`, a `compose({ name, lang?, standard, rules })` call over
-   builders from `src/rules/`. There is no version constant to write: the stamp
-   is derived.
+1. `src/styles/<name>.ts`, a `compose({ name, lang?, standard, rules })` call
+   over builders from `src/rules/`. There is no version constant to write: the
+   stamp is derived. `src/styles/` holds the shipped rule lists and nothing else;
+   the rest of `src/` is the engine those lists are composed by.
 2. Where the style is about a language, its tag is as specific as the convention
    requires and no more. There is no bare `de`, and no fallback from a region to
-   a bare language.
+   a bare language. **The converse is the part that gets proposed periodically:
+   a region tag is earned by a rule that differs by region and has a repair, not
+   by symmetry with a neighbouring file.** German carries `de-DE` and `de-CH`
+   because one opens a quotation with `»` and the other with `«`; `en`, `es`,
+   `fr` and `nl` are bare because no rule in those lists reads a region, and
+   their citations are broader than any one country anyway - Chicago against New
+   Hart's, the RAE with ASALE, the Taalunie across the Netherlands and Flanders.
+   The tag is the front half of the id a consumer's stored text carries, so a tag
+   naming a region the rules do not use is a stamp claiming a distinction that is
+   not there. That makes the mixed filenames in `src/styles/` information: a
+   region tag means the language has a divergence this package repairs.
+   `src/styles/en.ts` argues the same thing from inside English.
 3. Register it in `src/check.ts`'s `styles` and add a subpath export in
-   `package.json`. Re-export it from `src/index.ts` too.
+   `package.json`, pointing at `./dist/styles/<name>.js`. The subpath is the
+   public name and is not required to match the path on disk. Re-export it from
+   `src/index.ts` too.
 4. Fixtures in `test/fixtures.ts` that reach every one of its rules. This is not
    optional politeness: `test/hazards.test.ts` fails until they exist, because a
    rule no sample reaches is a rule every property in the suite is silent about.
@@ -243,11 +258,11 @@ the one a rule change owes.
 **A recorded decision carries its reason forward whether or not the reason is
 still true.** The same guard was held back for a release because it would split
 2.4M characters of French corpus into a new era, and that argument outlived the
-corpora it named: it sat in `src/fr.ts`, in `rules/inner-space.ts` and in an open
-question, quoted as live, for four commits after the corpora were deleted. A
-deletion has to go looking for the arguments that were resting on what it
-deleted, the same way a rule change has to measure before concluding a gate
-forbids it.
+corpora it named: it sat in `src/styles/fr.ts`, in `rules/inner-space.ts` and in
+an open question, quoted as live, for four commits after the corpora were
+deleted. A deletion has to go looking for the arguments that were resting on
+what it deleted, the same way a rule change has to measure before concluding a
+gate forbids it.
 
 ## Cutting a release
 

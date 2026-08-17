@@ -15,10 +15,10 @@
 // Citations are section-level, to Duden, `Die deutsche Rechtschreibung`,
 // Richtlinien zur Rechtschreibung und Zeichensetzung.
 
-import type { Rule } from './pack.ts';
-import { apostrophe } from './rules/apostrophe.ts';
-import { spaceBeforePunctuation } from './rules/space-before-punctuation.ts';
-import { straightDoubleQuote } from './rules/straight-double-quote.ts';
+import type { Rule } from '../pack.ts';
+import { apostrophe } from '../rules/apostrophe.ts';
+import { spaceBeforePunctuation } from '../rules/space-before-punctuation.ts';
+import { straightDoubleQuote } from '../rules/straight-double-quote.ts';
 
 export const DUDEN = 'Duden, Die deutsche Rechtschreibung, Richtlinien';
 

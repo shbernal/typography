@@ -15,11 +15,11 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { audit, compose, derive, stampOf } from '../src/compose.ts';
-import { deCH } from '../src/de-CH.ts';
-import { es } from '../src/es.ts';
-import { fr, withWidth } from '../src/fr.ts';
 import { conformRule, NARROW_NO_BREAK, NO_BREAK, type Rule, replaceRule } from '../src/pack.ts';
 import { straightDoubleQuote } from '../src/rules/straight-double-quote.ts';
+import { deCH } from '../src/styles/de-CH.ts';
+import { es } from '../src/styles/es.ts';
+import { fr, withWidth } from '../src/styles/fr.ts';
 import { texts } from './fixtures.ts';
 
 const CITE = 'ACME house style v3, section 2';

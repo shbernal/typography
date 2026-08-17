@@ -12,13 +12,13 @@
 // not in here and does not need to be, since `check` takes the style rather than
 // looking one up.
 
-import { deCH } from './de-CH.ts';
-import { deDE } from './de-DE.ts';
-import { en } from './en.ts';
-import { es } from './es.ts';
-import { fr } from './fr.ts';
-import { nl } from './nl.ts';
 import { excerptAt, type Finding, type Style } from './pack.ts';
+import { deCH } from './styles/de-CH.ts';
+import { deDE } from './styles/de-DE.ts';
+import { en } from './styles/en.ts';
+import { es } from './styles/es.ts';
+import { fr } from './styles/fr.ts';
+import { nl } from './styles/nl.ts';
 
 /** Every style this package ships, in tag order.
  *

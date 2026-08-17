@@ -23,8 +23,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { check, fix, styles } from '../src/check.ts';
-import { withWidth } from '../src/fr.ts';
 import { NARROW_NO_BREAK, NO_BREAK, THIN } from '../src/pack.ts';
+import { withWidth } from '../src/styles/fr.ts';
 
 /** The registry plus the two styles `withWidth` derives. Those carry patterns the
  * registry ones do not - the guillemet runs with the correct-spelling exclusion

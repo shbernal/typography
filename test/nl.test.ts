@@ -12,8 +12,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { check } from '../src/check.ts';
-import { nl } from '../src/nl.ts';
 import { NO_BREAK, RIGHT_SINGLE_QUOTE as RSQ } from '../src/pack.ts';
+import { nl } from '../src/styles/nl.ts';
 
 const LSQ = '‘';
 const LDQ = '“';

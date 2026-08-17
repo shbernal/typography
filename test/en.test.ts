@@ -11,8 +11,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { check } from '../src/check.ts';
-import { en } from '../src/en.ts';
 import { LEFT_SINGLE_QUOTE as LSQ, RIGHT_SINGLE_QUOTE as RSQ } from '../src/pack.ts';
+import { en } from '../src/styles/en.ts';
 
 const ids = (text: string) => check(en, text).map((f) => f.rule);
 

@@ -42,16 +42,16 @@
 // authoritative statement that exists on Dutch punctuation, because the treaty
 // body declined to make one.
 
-import { compose } from './compose.ts';
-import { LEFT_SINGLE_QUOTE, type Rule, type Style } from './pack.ts';
-import { apostrophe } from './rules/apostrophe.ts';
-import { apostropheAfterSymbol } from './rules/apostrophe-after-symbol.ts';
-import { apostropheElision } from './rules/apostrophe-elision.ts';
-import { ballot } from './rules/ballot.ts';
-import { ijCapital } from './rules/ij-capital.ts';
-import { minorityReport } from './rules/minority-report.ts';
-import { spaceBeforePunctuation } from './rules/space-before-punctuation.ts';
-import { straightDoubleQuote } from './rules/straight-double-quote.ts';
+import { compose } from '../compose.ts';
+import { LEFT_SINGLE_QUOTE, type Rule, type Style } from '../pack.ts';
+import { apostrophe } from '../rules/apostrophe.ts';
+import { apostropheAfterSymbol } from '../rules/apostrophe-after-symbol.ts';
+import { apostropheElision } from '../rules/apostrophe-elision.ts';
+import { ballot } from '../rules/ballot.ts';
+import { ijCapital } from '../rules/ij-capital.ts';
+import { minorityReport } from '../rules/minority-report.ts';
+import { spaceBeforePunctuation } from '../rules/space-before-punctuation.ts';
+import { straightDoubleQuote } from '../rules/straight-double-quote.ts';
 
 const HANDLEIDING = 'Nederlandse Taalunie, Technische Handleiding (oktober 2016)';
 const TAALADVIES = 'Taaladvies.net (Nederlandse Taalunie, INT, Onze Taal)';

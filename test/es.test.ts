@@ -5,8 +5,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { check } from '../src/check.ts';
-import { es } from '../src/es.ts';
 import { NARROW_NO_BREAK } from '../src/pack.ts';
+import { es } from '../src/styles/es.ts';
 
 const ids = (text: string) => check(es, text).map((f) => f.rule);
 

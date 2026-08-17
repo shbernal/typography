@@ -10,12 +10,12 @@
 // Everything else about Swiss German typography is Duden's, so this style is the
 // common rules plus its own quotation marks.
 
-import { compose } from './compose.ts';
+import { compose } from '../compose.ts';
+import type { Rule, Style } from '../pack.ts';
+import { guillemetDirection } from '../rules/guillemet-direction.ts';
+import { innerSpace } from '../rules/inner-space.ts';
+import { ANY_SPACE } from '../rules/space.ts';
 import { DUDEN, germanCommonRules } from './de-common.ts';
-import type { Rule, Style } from './pack.ts';
-import { guillemetDirection } from './rules/guillemet-direction.ts';
-import { innerSpace } from './rules/inner-space.ts';
-import { ANY_SPACE } from './rules/space.ts';
 
 const rules: readonly Rule[] = [
   ...germanCommonRules,
