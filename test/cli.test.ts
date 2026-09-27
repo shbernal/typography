@@ -4,10 +4,10 @@
 
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { chmodSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { test } from 'node:test';
+import { after, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { styles } from '../src/check.ts';
 import { NARROW_NO_BREAK, NO_BREAK } from '../src/pack.ts';
@@ -19,8 +19,17 @@ function run(args: readonly string[], input?: string) {
   return spawnSync(process.execPath, [CLI, ...args], { encoding: 'utf8', input: input ?? '' });
 }
 
+/** Every temp directory this file made, removed when it is done. `force`, so a
+ * test that failed part way does not turn into a second failure in teardown. */
+const MADE: string[] = [];
+after(() => {
+  for (const dir of MADE) rmSync(dir, { recursive: true, force: true });
+});
+
 function withFile(contents: string): string {
-  const path = join(mkdtempSync(join(tmpdir(), 'typocheck-')), 'sample.txt');
+  const dir = mkdtempSync(join(tmpdir(), 'typocheck-'));
+  MADE.push(dir);
+  const path = join(dir, 'sample.txt');
   writeFileSync(path, contents);
   return path;
 }
@@ -237,12 +246,17 @@ test('a file that cannot be written is exit 2, and the rest of the run happens',
   assert.notEqual(readFileSync(open, 'utf8'), 'Il a dit : oui', 'the next file is still fixed');
 });
 
-test('a file that cannot be read is exit 2', { skip: !MODE_BITS_HOLD }, () => {
-  const locked = withFile('Il a dit : oui');
-  chmodSync(locked, 0o000);
-  const r = run(['check', '--style', 'fr', locked]);
+test('a file that cannot be read is exit 2', () => {
+  const r = run(['check', '--style', 'fr', join(tmpdir(), 'typocheck-absent', 'x.txt')]);
   assert.equal(r.status, 2);
   assert.match(r.stderr, /cannot read/);
+});
+
+test('no files is a misuse, and says how to pass stdin', () => {
+  const r = run(['check', '--style', 'fr']);
+  assert.equal(r.status, 2);
+  assert.match(r.stderr, /no files/);
+  assert.match(r.stderr, / - /);
 });
 
 test('a flag that takes a value does not swallow the next flag', () => {

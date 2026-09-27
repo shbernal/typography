@@ -26,7 +26,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { relative } from 'node:path';
 
-import { check, fix, styles } from './check.ts';
+import { check, fix, styles, unfixable } from './check.ts';
 import { available, type Config, findConfig, loadConfig, resolveStyle } from './config.ts';
 import type { Finding, Style } from './pack.ts';
 
@@ -409,7 +409,7 @@ async function main(argv: readonly string[]): Promise<number> {
 
     const errors = findings.filter((f) => f.severity === 'error').length;
     const warnings = findings.length - errors;
-    const notFixable = findings.filter((f) => !f.fixable).length;
+    const notFixable = unfixable(findings).length;
 
     say(
       `\n${stamp(style, config)}: ${findings.length} findings in ${all.length} file(s) ` +

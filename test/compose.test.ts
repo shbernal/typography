@@ -14,8 +14,12 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
+import { check, unfixable } from '../src/check.ts';
 import { audit, compose, derive, stampOf } from '../src/compose.ts';
 import { conformRule, NARROW_NO_BREAK, NO_BREAK, type Rule, replaceRule } from '../src/pack.ts';
+import { apostropheElision } from '../src/rules/apostrophe-elision.ts';
+import { innerSpace } from '../src/rules/inner-space.ts';
+import { ANY_SPACE } from '../src/rules/space.ts';
 import { straightDoubleQuote } from '../src/rules/straight-double-quote.ts';
 import { deCH } from '../src/styles/de-CH.ts';
 import { es } from '../src/styles/es.ts';
@@ -253,4 +257,49 @@ test('a derived style inherits the properties, over the whole fixture set', () =
       [],
       'a derived French style fails a property',
     );
+});
+
+test('unfixable keeps exactly the findings whose rule has no fix', () => {
+  // Exported, documented, and what the skill calls the interesting half of a
+  // report, so it is held to the rules rather than to its own filter: a finding
+  // is unfixable because its rule has no `fix`, and nothing else.
+  const repairs = new Map(fr.rules.map((rule) => [rule.id, rule.fix !== undefined]));
+  const findings = texts().flatMap((text) => check(fr, text));
+  const kept = unfixable(findings);
+  // Both kinds, or the equality below is about an empty list.
+  assert.ok(kept.length > 0 && kept.length < findings.length);
+  assert.deepEqual(
+    kept,
+    findings.filter((finding) => !repairs.get(finding.rule)),
+  );
+});
+
+test('a builder refuses a parameter its own sentence would misdescribe', () => {
+  // Both guards exist to catch a mistake at construction rather than at review,
+  // so each is shown firing, and on its message: the message says what to do
+  // instead, and a guard whose message rots is most of its value gone.
+  assert.throws(
+    () =>
+      apostropheElision({
+        wrong: "'",
+        clitics: '(?:s|t)',
+        boundary: ' ',
+        examples: ['ns'],
+        cite: CITE,
+      }),
+    /"ns" is offered as an example of the clitic set and is not in it/,
+  );
+  assert.throws(
+    () =>
+      innerSpace({
+        summary: 'Space after an opening English quotation mark',
+        cite: CITE,
+        mark: '\u201C',
+        side: 'open',
+        spaces: ANY_SPACE,
+        correct: '',
+        guard: true,
+      }),
+    /no position is named for "\u201C"\. Add it to FAMILY/,
+  );
 });

@@ -9,10 +9,10 @@
 
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
-import { test } from 'node:test';
+import { after, test } from 'node:test';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { explain } from '../src/config.ts';
@@ -23,10 +23,25 @@ const ROOT = resolve(fileURLToPath(import.meta.url), '..', '..');
 const CLI = join(ROOT, 'src', 'cli.ts');
 const LIB = pathToFileURL(join(ROOT, 'src', 'index.ts')).href;
 
+/** Every temp tree this file made, removed when it is done. `force`, so a test
+ * that failed part way does not turn into a second failure in teardown. */
+const MADE: string[] = [];
+after(() => {
+  for (const dir of MADE) rmSync(dir, { recursive: true, force: true });
+});
+
 /** A temp tree. Keys are relative paths, so a test can put a config two
- * directories above the one the command runs in. */
-function tree(files: Record<string, string>): string {
+ * directories above the one the command runs in.
+ *
+ * A repository by default, which is what every real invocation runs in. Without
+ * the `.git` the config search has no boundary and walks out through the system
+ * temp directory to `/`, so a stray `typography.config.mjs` anywhere on that
+ * path would change what these tests assert without the suite saying so. Only
+ * the tests whose subject is the boundary build a tree that is not one. */
+function tree(files: Record<string, string>, { repository = true } = {}): string {
   const root = mkdtempSync(join(tmpdir(), 'typocheck-config-'));
+  MADE.push(root);
+  if (repository) files = { '.git/HEAD': 'ref: refs/heads/main\n', ...files };
   for (const [path, contents] of Object.entries(files)) {
     const full = join(root, path);
     mkdirSync(dirname(full), { recursive: true });
@@ -73,11 +88,14 @@ test('the search stops at the repository, and a config beside .git is still foun
   // deciding the typography of every project on the machine. What it must not
   // break is the monorepo, where the config is at the repository root and every
   // package under it is entitled to find it.
-  const outside = tree({
-    'typography.config.mjs': houseConfig(),
-    'repo/.git/HEAD': 'ref: refs/heads/main\n',
-    'repo/package/sample.txt': 'Il a dit : oui',
-  });
+  const outside = tree(
+    {
+      'typography.config.mjs': houseConfig(),
+      'repo/.git/HEAD': 'ref: refs/heads/main\n',
+      'repo/package/sample.txt': 'Il a dit : oui',
+    },
+    { repository: false },
+  );
   const stopped = run(
     ['check', '--style', 'acme-house', 'sample.txt'],
     join(outside, 'repo', 'package'),
@@ -85,11 +103,14 @@ test('the search stops at the repository, and a config beside .git is still foun
   assert.equal(stopped.status, 2);
   assert.match(stopped.stderr, /no style called 'acme-house'/);
 
-  const inside = tree({
-    'repo/.git/HEAD': 'ref: refs/heads/main\n',
-    'repo/typography.config.mjs': houseConfig(),
-    'repo/package/sample.txt': 'Il a dit : oui',
-  });
+  const inside = tree(
+    {
+      'repo/.git/HEAD': 'ref: refs/heads/main\n',
+      'repo/typography.config.mjs': houseConfig(),
+      'repo/package/sample.txt': 'Il a dit : oui',
+    },
+    { repository: false },
+  );
   const found = run(
     ['check', '--style', 'acme-house', 'sample.txt'],
     join(inside, 'repo', 'package'),

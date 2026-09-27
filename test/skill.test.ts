@@ -173,7 +173,7 @@ test('the skill teaches the four things that are not in --help', () => {
   );
 });
 
-test('every stamp the skill quotes is one a style currently carries', () => {
+test('every stamp the skill and the docs quote is one a style currently carries', () => {
   // The failure this catches, which had already happened: the skill's worked
   // example of a report footer quoted a stamp the package had moved past, and
   // the same file told the reader that a report carrying that stamp predated the
@@ -184,20 +184,35 @@ test('every stamp the skill quotes is one a style currently carries', () => {
   // thinking about the skill, so this cannot be left to review. It moves more
   // readily now than it did when a maintainer had to type a version, which makes
   // this test more load-bearing rather than less.
+  //
+  // The docs that show a stamp as what a style carries today are held the same
+  // way. `docs/provenance.md` and `CHANGELOG.md` are not, on purpose: the stamps
+  // there say which rules a measurement or a release was taken under, and those
+  // are meant to go on naming a stamp the package has moved past.
   const current = new Set(styles.map((style) => style.id));
   // Built from the registry rather than written out, for the reason above one
   // level up: a hand-kept alternation of tags does not fail when a language is
   // added, it just stops watching that language's stamps.
   const tags = TAGS.map((tag) => tag.replace('-', '\\-')).join('|');
-  const quoted = [...SKILL.matchAll(new RegExp(`\\b((?:${tags})@[0-9a-f]{12})\\b`, 'g'))];
+  const root = resolve(SKILL_DIR, '..', '..');
+  const documents: Record<string, string> = {
+    'SKILL.md': SKILL,
+    'README.md': readFileSync(join(root, 'README.md'), 'utf8'),
+    'docs/api.md': readFileSync(join(root, 'docs', 'api.md'), 'utf8'),
+    'docs/design.md': readFileSync(join(root, 'docs', 'design.md'), 'utf8'),
+  };
 
-  assert.ok(quoted.length > 0, 'the skill should show at least one stamp');
-  for (const match of quoted)
-    assert.ok(
-      current.has(match[1]!),
-      `SKILL.md quotes ${match[1]}, which no style carries. A stamp is derived from ` +
-        'the rules, so this moved because a rule moved.',
-    );
+  for (const [file, body] of Object.entries(documents)) {
+    const quoted = [...body.matchAll(new RegExp(`\\b((?:${tags})@[0-9a-f]{12})\\b`, 'g'))];
+    // Per file, so a document that drops its example does not go quiet here.
+    assert.ok(quoted.length > 0, `${file} should show at least one stamp`);
+    for (const match of quoted)
+      assert.ok(
+        current.has(match[1]!),
+        `${file} quotes ${match[1]}, which no style carries. A stamp is derived from ` +
+          'the rules, so this moved because a rule moved.',
+      );
+  }
 });
 
 test('the references exist and one is read only once the language is known', () => {
