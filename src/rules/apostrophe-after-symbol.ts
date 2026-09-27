@@ -15,11 +15,13 @@ import { looksMachine } from '../prose.ts';
 export function apostropheAfterSymbol(spec: {
   /** Everything that turns up in this position and is not U+2019. */
   wrong: string;
+  /** The language, in English, completing `...where ${language} takes U+2019`. */
+  language: string;
   cite: string;
 }): Rule {
   return detectRule({
     id: 'apostrophe-after-symbol',
-    summary: 'Straight quote after a digit or symbol where Dutch takes U+2019',
+    summary: `Straight quote after a digit or symbol where ${spec.language} takes U+2019`,
     cite: spec.cite,
     pattern: new RegExp(`(?<=[\\p{N}@&+])${spec.wrong}(?=\\p{L})`, 'gu'),
     refine: (match, value) =>

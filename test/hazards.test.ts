@@ -25,9 +25,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { styles } from '../src/check.ts';
+import { check, styles } from '../src/check.ts';
 import { audit, derive } from '../src/compose.ts';
 import {
+  excerptAt,
   LEFT_SINGLE_QUOTE as LSQ,
   NARROW_NO_BREAK,
   NO_BREAK,
@@ -311,4 +312,36 @@ test('the French guard declines exactly one thing, and it is the ambiguous one',
     fr.normalize(`L${RSQ}«affaire» est close.`),
     `L${RSQ}«${NARROW_NO_BREAK}affaire${NARROW_NO_BREAK}» est close.`,
   );
+});
+
+test('a finding never points inside a character', () => {
+  // Two rules match a letter as context and trim it off the finding, and both
+  // used to assume the letter was one code unit. U+1D400 is a letter and is two,
+  // so the finding began at the low half of the pair, and a host slicing by
+  // `{ index, length }` got a lone surrogate. Mathematical alphanumerics turn up
+  // in generated Markdown, which is the input this package is for. Asserted on
+  // the slice, which says what is wrong, rather than on the offset.
+  const bold = '\u{1D400}';
+  const cases = [
+    { style: es, rule: 'punctuation-spacing', text: `Un texto ${bold} : y mas`, slice: ' ' },
+    { style: fr, rule: 'missing-punctuation-space', text: `Le mot ${bold}: voila`, slice: ':' },
+  ];
+  for (const { style, rule, text, slice } of cases) {
+    const found = check(style, text).find((finding) => finding.rule === rule);
+    assert.ok(found, `${style.name} has no ${rule} finding to measure`);
+    assert.equal(
+      text.slice(found.index, found.index + found.length),
+      slice,
+      `${style.name} ${rule}`,
+    );
+  }
+
+  // And the excerpt window, which cuts at a fixed radius whatever is there. The
+  // symptom is not a lone surrogate in the report, since `reveal` escapes one,
+  // but a letter shown as `\udc00` or dropped from the window altogether. So a
+  // pair straddling each edge of the window, which reaches 25 code units out
+  // from the match and so lands on the second half of each.
+  const value = `a${bold}${'b'.repeat(24)}c${'b'.repeat(24)}${bold}`;
+  const excerpt = excerptAt(value, { index: value.indexOf('c'), length: 1 });
+  assert.equal(excerpt.split(bold).length, 3, 'the excerpt window splits a character');
 });

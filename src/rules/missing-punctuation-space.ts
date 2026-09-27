@@ -18,7 +18,7 @@
 // rewrite: on the journals corpus 355 of its 355 findings were foreign-language
 // titles in bibliographies.
 
-import { detectRule, type Rule } from '../pack.ts';
+import { charWidth, detectRule, type Rule } from '../pack.ts';
 
 export function missingPunctuationSpace(spec: { cite: string }): Rule {
   return detectRule({
@@ -27,7 +27,8 @@ export function missingPunctuationSpace(spec: { cite: string }): Rule {
     cite: spec.cite,
     pattern: /\p{L}[;:!?](?=[\s»)\]"'’]|$)/gu,
     // The letter is context and not the defect, so the report points at the
-    // punctuation mark that is missing its space.
-    refine: (match) => ({ index: match.index + 1, length: 1 }),
+    // punctuation mark that is missing its space, which is one or two code units
+    // in depending on the letter.
+    refine: (match) => ({ index: match.index + charWidth(match[0]), length: 1 }),
   });
 }

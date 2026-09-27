@@ -443,10 +443,32 @@ export function reveal(text: string): string {
   );
 }
 
-/** A revealed window around a match, for a report line. */
+/** How many UTF-16 code units the character at `at` takes: 2 for a letter
+ * outside the BMP, 1 otherwise. For a rule that matches a letter as context and
+ * trims it off the finding: `\p{L}` under the `u` flag matches a whole code
+ * point, and `U+1D400` and the rest of the mathematical alphanumerics are
+ * letters that turn up in generated Markdown. Assuming 1 there points the
+ * finding at the low half of a surrogate pair. */
+export function charWidth(text: string, at = 0): number {
+  return (text.codePointAt(at) ?? 0) > 0xffff ? 2 : 1;
+}
+
+/** Whether `at` falls between the two halves of a surrogate pair. */
+function splitsPair(value: string, at: number): boolean {
+  if (at <= 0 || at >= value.length) return false;
+  const before = value.charCodeAt(at - 1);
+  const after = value.charCodeAt(at);
+  return before >= 0xd800 && before <= 0xdbff && after >= 0xdc00 && after <= 0xdfff;
+}
+
+/** A revealed window around a match, for a report line. Widened by a code unit
+ * at either end that would otherwise cut a character in half, which `reveal`
+ * would then print as an escaped `\udc00` that nobody wrote. */
 export function excerptAt(value: string, at: Match, radius = 25): string {
-  const from = Math.max(0, at.index - radius);
-  const to = Math.min(value.length, at.index + at.length + radius);
+  let from = Math.max(0, at.index - radius);
+  let to = Math.min(value.length, at.index + at.length + radius);
+  if (splitsPair(value, from)) from--;
+  if (splitsPair(value, to)) to++;
   return reveal(value.slice(from, to));
 }
 

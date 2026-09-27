@@ -26,7 +26,7 @@
 // A comment claiming parity with another pack is an assertion nothing tests,
 // and one builder is the assertion made true by construction.
 
-import { conformRule, detectRule, type Rule } from '../pack.ts';
+import { charWidth, conformRule, detectRule, type Rule } from '../pack.ts';
 import { looksMachine } from '../prose.ts';
 import { ANY_SPACE } from './space.ts';
 import type { Spelling } from './spelling.ts';
@@ -49,10 +49,11 @@ export function spaceBeforePunctuation(spec: {
     // the match is trimmed to the run of spaces themselves so the report points
     // at the characters that are wrong rather than at the word beside them.
     pattern: new RegExp(`\\p{L}${ANY_SPACE}+[;:!?]`, 'gu'),
-    refine: (match, value) =>
-      looksMachine(value, match.index)
-        ? null
-        : { index: match.index + 1, length: match[0].length - 2 },
+    refine: (match, value) => {
+      if (looksMachine(value, match.index)) return null;
+      const lead = charWidth(match[0]);
+      return { index: match.index + lead, length: match[0].length - lead - 1 };
+    },
   });
 }
 

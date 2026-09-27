@@ -187,6 +187,7 @@ const rules: readonly Rule[] = [
   // thing legislation or advice prose has occasion to write.
   apostropheAfterSymbol({
     wrong: WRONG_APOSTROPHE,
+    language: 'Dutch',
     cite: `${HANDLEIDING}, paragraaf 11.5`,
   }),
 
