@@ -199,9 +199,14 @@ under `--json` also means the JSON does not parse.
 typocheck fix --style fr --write - < draft.md > fixed.md
 ```
 
-Exit codes: `0` clean, `1` findings (`--strict` counts warnings too), `2` misuse.
-An argument starting with a dash that is not a flag it knows is a misuse, so a
-mistyped `--write` fails rather than falling through to the file list.
+Exit codes: `0` clean, `1` findings (`--strict` counts warnings too), `2` misuse
+or a file that could not be read or written. An argument starting with a dash
+that is not a flag it knows is a misuse, so a mistyped `--write` fails rather
+than falling through to the file list, and so is `--style` or `--config` followed
+by another flag instead of its value, and a second `-`. A file `fix --write`
+cannot write is reported, the rest of the run still happens, and the exit is `2`
+rather than `1`, so a job reading `1` as "there are findings" is not told that
+about a read-only file.
 
 ```bash
 pnpm dlx @shbernal/typography check --style fr docs/guide.fr.md

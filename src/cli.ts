@@ -89,6 +89,8 @@ interface Options {
   /** Arguments that look like flags and are not. Collected rather than thrown so
    * a caller who mistyped two of them hears about both. */
   readonly unknown: string[];
+  /** Flags that take a value and were not given one. */
+  readonly missing: string[];
 }
 
 function parse(argv: readonly string[]): Options {
@@ -101,13 +103,32 @@ function parse(argv: readonly string[]): Options {
   let help = false;
   const paths: string[] = [];
   const unknown: string[] = [];
+  const missing: string[] = [];
+
+  // The value after a flag that takes one, unless the next token is itself a
+  // flag. Taking it anyway is how `--style --json` used to become a search for a
+  // style called `--json`, answered with a paragraph about German regions, and
+  // how `--config --no-config` would have swallowed the one flag that says not
+  // to load a config. The flag is left for the loop to parse on its own.
+  const value = (i: number): string | undefined => {
+    const next = argv[i + 1];
+    if (next === undefined || (next !== '-' && next.startsWith('-'))) {
+      missing.push(argv[i]!);
+      return undefined;
+    }
+    return next;
+  };
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]!;
-    if (arg === '--style') style = argv[++i];
-    else if (arg.startsWith('--style=')) style = arg.slice('--style='.length);
-    else if (arg === '--config') config = argv[++i];
-    else if (arg.startsWith('--config=')) config = arg.slice('--config='.length);
+    if (arg === '--style') {
+      style = value(i);
+      if (style !== undefined) i++;
+    } else if (arg.startsWith('--style=')) style = arg.slice('--style='.length);
+    else if (arg === '--config') {
+      config = value(i);
+      if (config !== undefined) i++;
+    } else if (arg.startsWith('--config=')) config = arg.slice('--config='.length);
     else if (arg === '--no-config') noConfig = true;
     else if (arg === '--write') write = true;
     else if (arg === '--json') json = true;
@@ -123,7 +144,7 @@ function parse(argv: readonly string[]): Options {
     else paths.push(arg);
   }
 
-  return { style, config, noConfig, write, json, strict, help, paths, unknown };
+  return { style, config, noConfig, write, json, strict, help, paths, unknown, missing };
 }
 
 /** Read a path, or stdin for `-`. stdin is here because the inputs this meets
@@ -246,6 +267,23 @@ async function main(argv: readonly string[]): Promise<number> {
     );
     return 2;
   }
+  if (opts.missing.length) {
+    console.error(
+      opts.missing
+        .map((flag) => `typocheck: ${flag} needs ${flag === '--style' ? 'a name' : 'a path'}.`)
+        .join('\n'),
+    );
+    return 2;
+  }
+  // stdin can be read once. A second `-` read nothing and was counted as a clean
+  // file, and under `--write` it would have echoed the text to stdout twice.
+  // Refused rather than de-duplicated, for the reason `--config` and
+  // `--no-config` are: a caller who wrote it twice meant something, and the tool
+  // cannot tell what.
+  if (opts.paths.filter((path) => path === '-').length > 1) {
+    console.error('typocheck: - appears more than once. stdin can be read only once.');
+    return 2;
+  }
 
   let config: Config | undefined;
   try {
@@ -289,7 +327,7 @@ async function main(argv: readonly string[]): Promise<number> {
     return 2;
   }
 
-  const all: { path: string; findings: Finding[]; changed: boolean }[] = [];
+  const all: { path: string; findings: Finding[]; changed: boolean; unwritten: boolean }[] = [];
   for (const path of opts.paths) {
     let text: string;
     try {
@@ -301,6 +339,7 @@ async function main(argv: readonly string[]): Promise<number> {
 
     const findings = check(style, text);
     let changed = false;
+    let unwritten = false;
 
     if (verb === 'fix') {
       const fixed = fix(style, text);
@@ -312,14 +351,25 @@ async function main(argv: readonly string[]): Promise<number> {
         // say about does not pass it through, it deletes it. A file is written
         // only when it changed, because there the unchanged case already has a
         // correct copy on disk and rewriting it moves an mtime for nothing.
-        if (path === '-') process.stdout.write(fixed);
-        else if (changed) writeFileSync(path, fixed);
+        //
+        // A write that fails is exit 2, like a read that fails, and not a crash:
+        // an uncaught throw exits 1, which is this tool's code for "there are
+        // findings", so a CI job running `fix --write` could not tell a
+        // read-only file from a typo in it. The run goes on, so the files that
+        // did land are reported and the ones after it are still fixed.
+        try {
+          if (path === '-') process.stdout.write(fixed);
+          else if (changed) writeFileSync(path, fixed);
+        } catch (error) {
+          console.error(`typocheck: cannot write ${label(path)}: ${(error as Error).message}`);
+          unwritten = true;
+        }
       }
       // Without `--write` nothing is written and nothing is echoed, including
       // for stdin: a dry run reports.
     }
 
-    all.push({ path, findings, changed });
+    all.push({ path, findings, changed, unwritten });
   }
 
   const findings = all.flatMap((f) => f.findings);
@@ -367,8 +417,10 @@ async function main(argv: readonly string[]): Promise<number> {
     );
 
     if (verb === 'fix') {
-      const moved = all.filter((f) => f.changed).map((f) => label(f.path));
-      if (!moved.length) say('fix: nothing to rewrite.');
+      const moved = all.filter((f) => f.changed && !f.unwritten).map((f) => label(f.path));
+      const stuck = all.filter((f) => f.changed && f.unwritten).map((f) => label(f.path));
+      if (stuck.length) say(`fix: could not rewrite ${stuck.join(', ')}`);
+      if (!moved.length) say(stuck.length ? 'fix: rewrote nothing.' : 'fix: nothing to rewrite.');
       else if (opts.write) say(`fix: rewrote ${moved.join(', ')}`);
       else say(`fix: would rewrite ${moved.join(', ')}. Pass --write to do it.`);
     }
@@ -379,6 +431,7 @@ async function main(argv: readonly string[]): Promise<number> {
       );
   }
 
+  if (all.some((f) => f.unwritten)) return 2;
   const failing = opts.strict
     ? findings.length
     : findings.filter((f) => f.severity === 'error').length;

@@ -4,7 +4,7 @@
 
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
@@ -213,6 +213,57 @@ test('a bare - is still stdin and not a flag', () => {
   const r = run(['check', '--style', 'fr', '-'], 'Bonjour!');
   assert.notEqual(r.status, 2);
   assert.match(r.stdout, /<stdin>/);
+});
+
+// Root ignores the mode bit and Windows ignores most of it, so on either a
+// read-only file is writable and the tests below would assert nothing.
+const MODE_BITS_HOLD = process.platform !== 'win32' && process.getuid?.() !== 0;
+
+test('a file that cannot be written is exit 2, and the rest of the run happens', {
+  skip: !MODE_BITS_HOLD,
+}, () => {
+  // It used to be an uncaught throw, which exits 1: this tool's code for "there
+  // are findings". A CI job running `fix --write` could not tell the two apart.
+  const locked = withFile('Il a dit : oui');
+  const open = withFile('Il a dit : oui');
+  chmodSync(locked, 0o444);
+  const r = run(['fix', '--style', 'fr', '--write', locked, open]);
+  assert.equal(r.status, 2);
+  assert.match(r.stderr, /cannot write/);
+  assert.doesNotMatch(r.stderr, /at main/, 'a write failure must not print a stack');
+  assert.match(r.stdout, /colon-spacing/, 'the report is still printed');
+  assert.match(r.stdout, /could not rewrite .*sample\.txt/);
+  assert.equal(readFileSync(locked, 'utf8'), 'Il a dit : oui');
+  assert.notEqual(readFileSync(open, 'utf8'), 'Il a dit : oui', 'the next file is still fixed');
+});
+
+test('a file that cannot be read is exit 2', { skip: !MODE_BITS_HOLD }, () => {
+  const locked = withFile('Il a dit : oui');
+  chmodSync(locked, 0o000);
+  const r = run(['check', '--style', 'fr', locked]);
+  assert.equal(r.status, 2);
+  assert.match(r.stderr, /cannot read/);
+});
+
+test('a flag that takes a value does not swallow the next flag', () => {
+  // `--style --json` used to look for a style called `--json`, and answered
+  // with a paragraph about German regions.
+  for (const [args, message] of [
+    [['check', '--style', '--json', '-'], /--style needs a name/],
+    [['check', '--style', 'fr', '--config', '--no-config', '-'], /--config needs a path/],
+    [['check', '-', '--style'], /--style needs a name/],
+  ] as const) {
+    const r = run(args, 'Bonjour');
+    assert.equal(r.status, 2);
+    assert.match(r.stderr, message);
+    assert.doesNotMatch(r.stderr, /no style called/);
+  }
+});
+
+test('stdin is named once', () => {
+  const r = run(['check', '--style', 'fr', '-', '-'], 'Bonjour!');
+  assert.equal(r.status, 2);
+  assert.match(r.stderr, /more than once/);
 });
 
 test('-h works after a verb, where it used to be read as a filename', () => {

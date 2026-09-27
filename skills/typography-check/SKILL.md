@@ -49,7 +49,7 @@ Verbs and flags:
 | `--no-config` | ignore the project's config and use the shipped styles |
 | `--version` | the tool version and every style stamp |
 
-Exit `0` clean, `1` findings, `2` misuse.
+Exit `0` clean, `1` findings, `2` misuse or a file it could not read or write.
 
 ## Four things to get right
 
