@@ -113,8 +113,18 @@ const BATCH_MS = 25;
  * moves them together. Measured over fifteen trials of the four packs then shipping, that took
  * the worst ratio seen from 4.8x down to 3.9x, against a bound of 5x, and put
  * every pack's median between 3.1x and 3.3x, which is what linear looks like
- * here. */
-const ROUNDS = 3;
+ * here.
+ *
+ * Seven rather than three, because three was not enough rounds for the minimum
+ * to shed a stall. Over twenty runs of the eight measured styles, three rounds
+ * put 3 of 160 ratios over the bound, the worst at 7.5x on a rule set that had
+ * not changed, which made the gate red about one run in ten and a gate people
+ * re-run until it is green. Seven rounds over the same twenty runs kept all 160
+ * between 1.6x and 3.5x, median 3.1x, for about 0.8 s more on the file. The bound
+ * did not move: 5x is where it is because linear and quadratic land on either
+ * side of it, and widening it would spend that gap to buy what more samples
+ * buy for free. */
+const ROUNDS = 7;
 
 /** Cost of one call, from a batch of `runs` of them. */
 function perRun(fn: () => unknown, runs: number): number {
