@@ -194,5 +194,3 @@ export const en: Style = compose({
   standard: "Chicago and New Hart's Rules, where they agree",
   rules,
 });
-
-export default en;

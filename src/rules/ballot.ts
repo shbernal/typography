@@ -20,7 +20,9 @@
 // Nothing here is a rule. A ballot is what a rule's `choose` or `survey` is
 // built out of.
 
-/** How many votes each candidate got. */
+/** How many votes each candidate got. Exported although nothing in this repo
+ * imports it, because it is what `tally` and `fold` return: a consumer writing a
+ * function that takes one has to be able to name it. */
 export type Tally<K extends string> = Readonly<Record<K, number>>;
 
 export interface Ballot<K extends string> {

@@ -39,7 +39,7 @@ import type { Style } from './pack.ts';
  * Node gives for it is about a file extension rather than about TypeScript. That
  * is the one failure `explain` translates.
  */
-export const CONFIG_NAMES: readonly string[] = [
+const CONFIG_NAMES: readonly string[] = [
   'typography.config.mjs',
   'typography.config.js',
   'typography.config.ts',

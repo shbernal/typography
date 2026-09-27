@@ -75,5 +75,3 @@ export const deCH: Style = compose({
   standard: 'Duden',
   rules,
 });
-
-export default deCH;

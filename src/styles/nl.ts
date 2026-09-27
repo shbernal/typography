@@ -275,5 +275,3 @@ export const nl: Style = compose({
   standard: 'Nederlandse Taalunie',
   rules,
 });
-
-export default nl;

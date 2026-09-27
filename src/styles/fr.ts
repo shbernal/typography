@@ -287,8 +287,6 @@ export const fr: Style = compose({
   rules,
 });
 
-export default fr;
-
 // ---------------------------------------------------------------------------
 // Corpus-wide width: for a host normalizing many values
 // ---------------------------------------------------------------------------

@@ -120,5 +120,3 @@ export const es: Style = compose({
   standard: 'Real Academia Española',
   rules,
 });
-
-export default es;
