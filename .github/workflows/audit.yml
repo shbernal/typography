@@ -1,0 +1,41 @@
+name: Audit
+
+# A schedule rather than a step in CI, because what it answers moves on the
+# registry's clock and not on this repository's: an advisory published on a
+# Tuesday is news whether or not anybody pushed. And a step in the push gate
+# would block unrelated work on a dev-dependency advisory, which is the only
+# kind this package can have. It has no runtime dependencies, and that is an
+# invariant, so an advisory reaches the build and never a consumer of the
+# tarball.
+#
+# The job fails on a high or critical advisory, and a failed scheduled run is
+# what GitHub notifies the maintainer about. That is the report; nothing here
+# needs to write to the repository to deliver it.
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out typography
+        uses: actions/checkout@v7
+
+      # Pinned to a commit for the reason given in ci.yml.
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      # Reads the lockfile and asks the registry. Nothing is installed, so
+      # nothing from the dependency tree runs.
+      - name: Audit
+        run: pnpm audit --audit-level high
