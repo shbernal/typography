@@ -92,6 +92,21 @@ test('naming a language means naming it, not declining it', () => {
   assert.ok(!namesLanguage('Frenchify nothing', 'French'));
 });
 
+/** Every language the tool ships is named in `text`, and no language it does
+ * not ship is. Both directions, for the reason given at its first use below. */
+function assertNamesExactly(text: string, where: string): void {
+  for (const { tag, name } of LANGUAGES)
+    assert.ok(
+      namesLanguage(text, name),
+      `${where} does not name ${name} (${tag}), which the tool ships`,
+    );
+  for (const tag of ['en', 'it', 'pt', 'ja', 'pl']) {
+    if (LANGUAGES.some((language) => language.tag === tag)) continue;
+    const name = ENGLISH.of(tag)!;
+    assert.ok(!namesLanguage(text, name), `${where} names ${name}, which no style answers for`);
+  }
+}
+
 test('the description names every language the tool ships, and no other', () => {
   // This assertion used to carry `|| /french|spanish|german/i.test(...)`, which
   // meant it passed for every pack as long as the description mentioned any one
@@ -101,23 +116,21 @@ test('the description names every language the tool ships, and no other', () => 
   // Nothing here is a literal any more. The language names come from the
   // registry through `Intl`, so a fifth language fails this the moment it is
   // registered and before its skill copy is written.
-  const fm = frontmatter();
-  for (const { tag, name } of LANGUAGES)
-    assert.ok(
-      namesLanguage(fm.description!, name),
-      `the skill description does not name ${name} (${tag}), which the tool ships`,
-    );
-  // And the direction that was never checked. A description listing a language
-  // no style answers for is not a smaller mistake than one omitting a language:
-  // the model reads it, invokes the tool, and gets `--style` refused.
-  for (const tag of ['en', 'it', 'pt', 'ja', 'pl']) {
-    if (LANGUAGES.some((language) => language.tag === tag)) continue;
-    const name = ENGLISH.of(tag)!;
-    assert.ok(
-      !namesLanguage(fm.description!, name),
-      `the skill description names ${name}, which no style answers for`,
-    );
-  }
+  //
+  // Both directions are checked. A description listing a language no style
+  // answers for is not a smaller mistake than one omitting a language: the model
+  // reads it, invokes the tool, and gets `--style` refused.
+  assertNamesExactly(frontmatter().description!, 'the skill description');
+});
+
+test('the --help headline names every language the tool ships, and no other', () => {
+  // `typocheck --help` is the first thing anybody runs. Its `Built in:` line is
+  // derived from the registry, and its headline was a literal that went on
+  // declining English for a release after English shipped.
+  const source = readFileSync(resolve(SKILL_DIR, '..', '..', 'src', 'cli.ts'), 'utf8');
+  const pitch = /^const PITCH = '([^']*)';$/m.exec(source);
+  assert.ok(pitch, 'src/cli.ts has no PITCH constant');
+  assertNamesExactly(pitch[1]!, 'the --help headline');
 });
 
 test('every --style the skill names is a shipped style', () => {
@@ -247,10 +260,20 @@ test('the plugin manifests agree with the package they ship in', () => {
   };
   const plugin = JSON.parse(readFileSync(join(root, '.claude-plugin', 'plugin.json'), 'utf8')) as {
     name: string;
+    description: string;
+    keywords: string[];
   };
   const market = JSON.parse(
     readFileSync(join(root, '.claude-plugin', 'marketplace.json'), 'utf8'),
-  ) as { plugins: { name: string; source: { source: string; package?: string } }[] };
+  ) as {
+    description: string;
+    plugins: {
+      name: string;
+      description: string;
+      tags: string[];
+      source: { source: string; package?: string };
+    }[];
+  };
 
   assert.equal(plugin.name, 'typography-check');
   assert.equal(market.plugins[0]!.name, plugin.name);
@@ -260,6 +283,21 @@ test('the plugin manifests agree with the package they ship in', () => {
     pkg.files.includes('.claude-plugin'),
     'the manifest must be inside the tarball it names',
   );
+
+  // The copy a marketplace shows, and what a model reads to decide whether to
+  // install the skill at all. Both went on naming four languages after English
+  // shipped, so they are held to the registry the way the skill is.
+  assertNamesExactly(plugin.description, 'plugin.json');
+  assertNamesExactly(market.description, 'marketplace.json');
+  assertNamesExactly(market.plugins[0]!.description, "marketplace.json's plugin");
+  for (const { tag, name } of LANGUAGES) {
+    const keyword = name.toLowerCase();
+    assert.ok(plugin.keywords.includes(keyword), `plugin.json keywords omit ${keyword} (${tag})`);
+    assert.ok(
+      market.plugins[0]!.tags.includes(keyword),
+      `marketplace.json tags omit ${keyword} (${tag})`,
+    );
+  }
 });
 
 test('the skill is inside the published tarball', () => {

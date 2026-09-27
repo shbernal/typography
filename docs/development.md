@@ -186,8 +186,11 @@ is protecting.
    the input count in that file's header if it moved.
 6. A `skills/typography-check/references/<primary-subtag>.md`, linked from
    `SKILL.md`, and the language named in the skill's frontmatter description.
-   `test/skill.test.ts` derives all three from the registry and will fail until
-   they exist, which is the intended order: the style first, then its documents.
+   The language is named the same way in the `typocheck --help` headline
+   (`PITCH` in `src/cli.ts`) and in both `.claude-plugin/` manifests, whose
+   keywords and tags carry it too. `test/skill.test.ts` derives all of these
+   from the registry and will fail until they exist, which is the intended
+   order: the style first, then its documents.
 
 **Check what the source declines to say, not only what it says.** `nl` is the
 worked example. Dutch has no rule about which quotation marks to use, so the

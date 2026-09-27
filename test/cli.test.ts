@@ -9,6 +9,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { styles } from '../src/check.ts';
 import { NARROW_NO_BREAK, NO_BREAK } from '../src/pack.ts';
 import { es } from '../src/styles/es.ts';
 
@@ -27,7 +28,7 @@ function withFile(contents: string): string {
 test('help exits zero and names the languages', () => {
   const r = run(['--help']);
   assert.equal(r.status, 0);
-  for (const lang of ['fr', 'es', 'de-DE', 'de-CH']) assert.ok(r.stdout.includes(lang));
+  for (const { name } of styles) assert.ok(r.stdout.includes(name), `--help omits ${name}`);
 });
 
 test('it refuses to guess a language', () => {

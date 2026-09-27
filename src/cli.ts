@@ -38,8 +38,13 @@ const version = (createRequire(import.meta.url)('../package.json') as { version:
 const RENAMED_OPTIONS: Record<string, string> = { '--lang': '--style' };
 const RENAMED_VERBS: Record<string, string> = { langs: 'styles' };
 
+/** What the tool is for, in the headline of `--help`. A constant so that
+ * `test/skill.test.ts` can read it back and hold it to the registry: it named
+ * four languages for a release after English shipped, and nothing noticed. */
+const PITCH = 'orthotypography for English, French, Spanish, German and Dutch';
+
 function usage(): string {
-  return `typocheck ${version} - orthotypography for French, Spanish, German and Dutch
+  return `typocheck ${version} - ${PITCH}
 
   typocheck check --style <name> [options] <file...>
   typocheck fix   --style <name> [--write] [options] <file...>
