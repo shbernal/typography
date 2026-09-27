@@ -16,6 +16,7 @@ pnpm install
 pnpm check          # typecheck + lint + test. The done gate
 pnpm build
 pnpm battery        # every style over every fixture, as a diffable dump
+pnpm knip           # unused files and exports. An audit, not part of the gate
 ```
 
 `pnpm check` is the whole gate and needs no network. The corpus gates that used
@@ -23,6 +24,11 @@ to sit beside it are gone; what replaced them is `audit`, which holds a style to
 idempotence, conformance and non-interference over samples the caller supplies.
 [provenance.md](provenance.md) records what the corpora established before they
 left.
+
+`pnpm knip` takes its entry points from `exports` and `bin` in `package.json`,
+through `knip.ts`, so a new style subpath is an entry without anybody listing it.
+It is clean today, and a finding from it is a dead export or a public one that
+should say why it is public. `Tally` in `src/rules/ballot.ts` is the second kind.
 
 ## The fixtures
 
