@@ -108,7 +108,7 @@ export async function loadConfig(path: string): Promise<Config> {
   try {
     exported = ((await import(pathToFileURL(path).href)) as { default?: unknown }).default;
   } catch (error) {
-    throw new Error(explain(error as Error, path));
+    throw new Error(explain(error as Error, path), { cause: error });
   }
 
   if (exported === undefined)

@@ -163,7 +163,7 @@ test('findings are ordered by position in the text', () => {
       const offsets = found.map((f) => f.index);
       assert.deepEqual(
         offsets,
-        [...offsets].sort((a, b) => a - b),
+        offsets.toSorted((a, b) => a - b),
         `${style.id} reports ${name} out of order`,
       );
     }

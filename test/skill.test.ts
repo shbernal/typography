@@ -36,9 +36,9 @@ function frontmatter(): Record<string, string> {
 
 test('frontmatter matches the skill format', () => {
   const fm = frontmatter();
-  assert.deepEqual(Object.keys(fm).sort(), ['description', 'name']);
+  assert.deepEqual(Object.keys(fm).toSorted(), ['description', 'name']);
   assert.equal(fm.name, 'typography-check', 'name must match the directory');
-  assert.ok(fm.name!.length <= 64);
+  assert.ok(fm.name.length <= 64);
   // Over the limit the description risks being truncated or rejected, and it is
   // the only thing a model sees when deciding to invoke the skill.
   assert.ok(fm.description!.length <= 1024, `description is ${fm.description!.length} characters`);

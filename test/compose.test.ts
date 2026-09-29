@@ -65,7 +65,7 @@ test('order is part of the stamp', () => {
   // `normalize` is the fixable rules in sequence, so two orderings are two
   // functions and a stamp that could not tell them apart would be claiming
   // something false about a corpus.
-  const reversed = [...fr.rules].reverse();
+  const reversed = fr.rules.toReversed();
   assert.notEqual(stampOf(reversed), stampOf(fr.rules));
 });
 

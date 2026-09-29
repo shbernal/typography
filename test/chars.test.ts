@@ -54,7 +54,10 @@ test('the rules catch what they ban', async () => {
     'sample.md',
     fileRules(loaded.config.rules),
   );
-  assert.deepEqual(inFile.map((f) => f.ruleId).sort(), ['no-em-dash', 'no-invisible-characters']);
+  assert.deepEqual(inFile.map((f) => f.ruleId).toSorted(), [
+    'no-em-dash',
+    'no-invisible-characters',
+  ]);
 
   // The commit message is a surface no file scan reaches, so it is the one that
   // would go untested by a repo-wide assertion alone.

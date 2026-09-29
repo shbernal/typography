@@ -254,9 +254,9 @@ test('the three French eras stamp three different ways', () => {
   // `Spelling` and reaches the text through `choose`, so a stamp hashed over
   // patterns alone would put both under one id and nothing would ever have said
   // so. `rules/spelling.ts` is what makes this assertion pass.
-  const ids = [fr.id, withWidth(NBSP).id, withWidth(NNBSP).id];
-  for (const id of ids) assert.match(id, /^fr@[0-9a-f]{12}$/);
-  assert.equal(new Set(ids).size, 3);
+  const stamps = [fr.id, withWidth(NBSP).id, withWidth(NNBSP).id];
+  for (const id of stamps) assert.match(id, /^fr@[0-9a-f]{12}$/);
+  assert.equal(new Set(stamps).size, 3);
 });
 
 test('an imposed width drops the rule that says the width is undecided', () => {

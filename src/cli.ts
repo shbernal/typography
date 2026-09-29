@@ -297,8 +297,8 @@ async function main(argv: readonly string[]): Promise<number> {
     for (const { style, from, shadowed } of available(config))
       console.log(
         `${style.name.padEnd(12)} ${style.id.padEnd(24)} ${style.standard.padEnd(24)} ` +
-          `${from === 'config' ? configLabel(config!) : 'built-in'}` +
-          `${shadowed ? ` (shadowed by ${configLabel(config!)})` : ''}`,
+          (from === 'config' ? configLabel(config!) : 'built-in') +
+          (shadowed ? ` (shadowed by ${configLabel(config!)})` : ''),
       );
     return 0;
   }

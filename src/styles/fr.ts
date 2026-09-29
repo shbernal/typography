@@ -122,7 +122,7 @@ const BALLOT = `(?<=\u00AB)(.)|(.)(?=\u00BB)|(.)(?=[;!?])`;
  * verdict is already the string a repair is spelled in and there is no table
  * between the two to get out of step.
  */
-const width = ballot({
+const widthBallot = ballot({
   candidates: [NARROW_NO_BREAK, NO_BREAK],
   pattern: new RegExp(BALLOT, 'gs'),
   // Most of what sits in these positions is an ordinary character and abstains.
@@ -152,7 +152,7 @@ const width = ballot({
  * differently from the rules `withWidth` builds by imposing a width. The two
  * produce identical patterns, so without this the two eras would share an id.
  */
-const houseWidth = conform(width);
+const houseWidth = conform(widthBallot);
 
 const rules: readonly Rule[] = [
   // The shared builder carries the pattern and the narrowing that makes it safe.
@@ -245,7 +245,7 @@ const rules: readonly Rule[] = [
     id: 'mixed-no-break-space',
     summary: 'Both U+00A0 and U+202F used inside guillemets or before `; ! ?`',
     cite: `${LEXIQUE}, "Guillemets" and "Ponctuation"`,
-    ballot: width,
+    ballot: widthBallot,
     pattern: new RegExp(
       `(?<=\u00AB)(${NO_BREAK_SPACE})|(${NO_BREAK_SPACE})(?=\u00BB)|(${NO_BREAK_SPACE})(?=[;!?])`,
       'g',
@@ -342,12 +342,12 @@ export interface WidthSurvey {
  * reaching for `withWidth`, because harmonizing rewrites text that is correct.
  */
 export function surveyWidth(values: Iterable<string>): WidthSurvey {
-  const counts = width.fold(values);
-  const minority = width.minority(counts)[0] ?? null;
+  const counts = widthBallot.fold(values);
+  const minority = widthBallot.minority(counts)[0] ?? null;
   return {
     full: counts[NO_BREAK],
     narrow: counts[NARROW_NO_BREAK],
-    verdict: width.verdict(counts),
+    verdict: widthBallot.verdict(counts),
     minority,
     minorityCount: minority === null ? 0 : counts[minority],
   };

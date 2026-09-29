@@ -69,7 +69,7 @@ export function check(style: Style, text: string): Finding[] {
     }
   }
 
-  return findings.sort((a, b) => a.index - b.index || a.rule.localeCompare(b.rule));
+  return findings.toSorted((a, b) => a.index - b.index || a.rule.localeCompare(b.rule));
 }
 
 /**
