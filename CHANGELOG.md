@@ -1,5 +1,39 @@
 # Changelog
 
+## Unreleased
+
+No stamp moved, and over every input `pnpm battery` held at `0.3.0` the output
+is byte-identical, so text normalized under it does not need re-normalizing.
+
+### The breaking changes
+
+- **A style module has no default export.** Every shipped style module ended in
+  an undocumented `export default`, a second spelling that no example used. It is
+  gone: `import { fr } from '@shbernal/typography/fr'` is the only way in.
+- **Three builders take a required `language`.** `apostropheAfterSymbol`,
+  `missingPunctuationSpace` and `colonSpacing` wrote "Dutch" or "French" into
+  their summaries, so a second style using one would have told its reader about
+  the wrong language. They complete the summary with it the way `apostrophe`
+  does. A config calling one of them without `language` no longer typechecks.
+- **`typocheck` exits 2 where it used to exit 1 or carry on.** A file `fix
+  --write` cannot write is reported, the rest of the run happens, and the exit is
+  `2`; it used to be an uncaught throw, which exits `1`, the findings code.
+  `--style` or `--config` followed by another flag instead of its value is a
+  misuse, as is a second `-`.
+
+### Fixed
+
+- **A finding next to an astral letter points at the right character.**
+  `punctuation-spacing` and `missing-punctuation-space` trimmed one code unit of
+  letter off a match where a letter outside the BMP is two, so the offset landed
+  inside the letter and `column` with it. An excerpt window no longer cuts a
+  surrogate pair in half either.
+- **`typocheck fix --write - | head` ends quietly.** A reader closing the pipe
+  early used to surface as an EPIPE stack and exit 1. The run now finishes and
+  exits with the code its findings earned.
+- **`--help` and the plugin manifests name all six styles**, where they still
+  described a tool without English and Dutch.
+
 ## 0.3.0
 
 **The packs become composable styles.** A rule is the primitive now and a style
