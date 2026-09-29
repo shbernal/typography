@@ -20,10 +20,14 @@
 
 import { charWidth, detectRule, type Rule } from '../pack.ts';
 
-export function missingPunctuationSpace(spec: { cite: string }): Rule {
+export function missingPunctuationSpace(spec: {
+  /** The language, in English, completing `...where ${language} requires one`. */
+  language: string;
+  cite: string;
+}): Rule {
   return detectRule({
     id: 'missing-punctuation-space',
-    summary: 'No space at all before `; : ! ?`, where French requires one',
+    summary: `No space at all before \`; : ! ?\`, where ${spec.language} requires one`,
     cite: spec.cite,
     pattern: /\p{L}[;:!?](?=[\s»)\]"'’]|$)/gu,
     // The letter is context and not the defect, so the report points at the

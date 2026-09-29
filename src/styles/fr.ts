@@ -166,6 +166,7 @@ const rules: readonly Rule[] = [
   }),
 
   colonSpacing({
+    language: 'French',
     cite: `${LEXIQUE}, "Ponctuation"`,
   }),
 
@@ -256,6 +257,7 @@ const rules: readonly Rule[] = [
   // space that is absent, and French requires one before all four marks. It is
   // only *which* no-break space that the colon is exempt from.
   missingPunctuationSpace({
+    language: 'French',
     cite: `${LEXIQUE}, "Ponctuation"`,
   }),
 
