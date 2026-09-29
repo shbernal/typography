@@ -438,4 +438,18 @@ async function main(argv: readonly string[]): Promise<number> {
   return failing ? 1 : 0;
 }
 
+// A reader that leaves early is not a failure. `typocheck fix --write - | head`
+// closes the pipe once `head` has its lines, and Node reports that as an EPIPE
+// emitted on the stream, after the write has returned, so no `try` around a
+// write can see it: without a listener it surfaces as an uncaught stack and
+// exit 1, which is this tool's code for "there are findings". Silenced, the run
+// finishes and exits with the code it computed, because the findings did not
+// change when the reader stopped reading. Any other failure on stdout is a
+// failed write, and exit 2 like one.
+process.stdout.on('error', (error: NodeJS.ErrnoException) => {
+  if (error.code === 'EPIPE') return;
+  console.error(`typocheck: cannot write stdout: ${error.message}`);
+  process.exitCode = 2;
+});
+
 process.exitCode = await main(process.argv.slice(2));

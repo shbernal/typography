@@ -206,7 +206,9 @@ than falling through to the file list, and so is `--style` or `--config` followe
 by another flag instead of its value, and a second `-`. A file `fix --write`
 cannot write is reported, the rest of the run still happens, and the exit is `2`
 rather than `1`, so a job reading `1` as "there are findings" is not told that
-about a read-only file.
+about a read-only file. A reader that closes the pipe early, as `| head` does,
+is not a failure: the run finishes silently and exits with the code its findings
+earned.
 
 ```bash
 pnpm dlx @shbernal/typography check --style fr docs/guide.fr.md

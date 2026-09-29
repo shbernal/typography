@@ -3,7 +3,7 @@
 // the refusals are the part a caller depends on.
 
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -117,6 +117,20 @@ test('fix --write - puts the repaired text on stdout and the report on stderr', 
   assert.equal(r.stdout, `Il a dit${NO_BREAK}: oui`);
   assert.match(r.stderr, /colon-spacing/);
   assert.match(r.stderr, /^fix: rewrote <stdin>/m);
+});
+
+// `| head` closes the pipe before the text is through it. Clean input, so the
+// only way to a non-zero exit is the broken pipe itself, which used to be an
+// uncaught EPIPE stack and exit 1, the findings code.
+test('fix --write - exits quietly when the reader leaves early', async () => {
+  const child = spawn(process.execPath, [CLI, 'fix', '--style', 'fr', '--write', '-']);
+  child.stdout.destroy();
+  let stderr = '';
+  child.stderr.setEncoding('utf8').on('data', (chunk: string) => (stderr += chunk));
+  child.stdin.end('Rien a signaler ici. '.repeat(100_000));
+  const status = await new Promise((done) => child.on('close', done));
+  assert.doesNotMatch(stderr, /EPIPE/);
+  assert.equal(status, 0);
 });
 
 test('fix --write - --json emits JSON a caller can parse', () => {
