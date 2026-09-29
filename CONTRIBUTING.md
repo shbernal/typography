@@ -108,7 +108,8 @@ stamp is what a consumer's stored text carries.
 
 ## Style
 
-Strict TypeScript, ESM, small pure functions, Biome for formatting. Match the
+Strict TypeScript, ESM, small pure functions, oxlint and oxfmt for linting and
+formatting (`pnpm lint:fix` applies both; Markdown is left as written). Match the
 surrounding comment density: in `src/styles/fr.ts` every narrowing says what it
 is protecting, and that is the standard rather than an accident.
 

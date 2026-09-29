@@ -29,12 +29,19 @@ pre-commit:
     # rewording rather than a substitution.
     - name: charcheck
       run: node node_modules/charcheck/dist/cli.js --staged
-      # Biome, on what is being committed. The full `pnpm check` belongs to CI:
-      # mirroring it here would put a typecheck and the whole test suite in
-      # front of every commit.
-    - name: biome
-      glob: '*.ts'
-      run: node node_modules/@biomejs/biome/bin/biome check --write --no-errors-on-unmatched {staged_files}
+    # oxlint and oxfmt, on what is being committed. The full `pnpm check`
+    # belongs to CI: mirroring it here would put a typecheck and the whole test
+    # suite in front of every commit. Each is called through its package's `bin`
+    # script rather than `node_modules/.bin`, whose shim is a `.CMD` on Windows.
+    - name: oxlint
+      glob: '*.{ts,mjs}'
+      run: node node_modules/oxlint/bin/oxlint --fix --max-warnings 0 {staged_files}
+      stage_fixed: true
+    # oxfmt skips an ignored path even when it is named, and errors when that
+    # leaves nothing to format, hence the flag.
+    - name: oxfmt
+      glob: '*.{ts,mjs,json,yml,yaml}'
+      run: node node_modules/oxfmt/bin/oxfmt --no-error-on-unmatched-pattern {staged_files}
       stage_fixed: true
 
 commit-msg:

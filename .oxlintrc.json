@@ -1,0 +1,43 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import", "node"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error"
+  },
+  // Type-aware rules through oxlint-tsgolint, on every run rather than as a
+  // separate pass: the whole tree lints in about a second either way.
+  "options": { "typeAware": true },
+  "ignorePatterns": ["dist/**", ".tmp/**"],
+  "rules": {
+    "unicorn/prefer-node-protocol": "error",
+    "typescript/consistent-type-imports": "error",
+    "typescript/no-explicit-any": "error",
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }],
+    // `test()` from node:test returns a promise the runner already tracks.
+    "typescript/no-floating-promises": [
+      "error",
+      {
+        "allowForKnownSafeCalls": [
+          { "from": "package", "package": "node:test", "name": ["test", "describe", "it", "suite"] }
+        ]
+      }
+    ],
+    // Every assertion it flags is at a boundary with nothing typed behind it:
+    // `JSON.parse`, a dynamic `import()`, a caught `error as Error`. Satisfying
+    // it means a runtime validator at each, in a package with zero runtime
+    // dependencies.
+    "typescript/no-unsafe-type-assertion": "off"
+    // `typescript/no-non-null-assertion` stays off, as it is by default: under
+    // `noUncheckedIndexedAccess` every index read is `T | undefined`, and `src/`
+    // uses `!` where a match group or a loop bound already guarantees the value.
+  },
+  "overrides": [
+    {
+      // A helper declared inside the test that uses it reads better than one
+      // hoisted away from its only caller.
+      "files": ["test/**"],
+      "rules": { "unicorn/consistent-function-scoping": "off" }
+    }
+  ]
+}

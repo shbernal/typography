@@ -37,9 +37,9 @@ pnpm battery        # every style over every fixture, as a diffable dump
 ```
 
 Git hooks are lefthook's, installed by `prepare` on `pnpm install` and declared
-in `lefthook.yml`: charcheck and Biome over the staged content on `pre-commit`,
-charcheck and the shared `no-ai-attribution` rule on `commit-msg`. They are a
-fast pre-filter rather than the gate, they are skippable with `--no-verify`, and
+in `lefthook.yml`: charcheck, oxlint and oxfmt over the staged content on
+`pre-commit`, charcheck and the shared `no-ai-attribution` rule on `commit-msg`.
+They are a fast pre-filter rather than the gate, skippable with `--no-verify`, and
 `scripts/install-hooks.ts` steps around a `core.hooksPath` lefthook does not own
 rather than failing the install, because `prepare` failing takes every `pnpm run`
 down with it.

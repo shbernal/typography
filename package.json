@@ -94,20 +94,22 @@
     "prepare": "node scripts/install-hooks.ts",
     "check": "pnpm run typecheck && pnpm run lint && pnpm test",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "lint": "biome check && pnpm run lint:chars",
+    "lint": "oxlint --max-warnings 0 && oxfmt --check && pnpm run lint:chars",
     "lint:chars": "charcheck",
-    "lint:fix": "biome check --write",
-    "format": "biome format --write",
+    "lint:fix": "oxlint --fix && oxfmt",
+    "format": "oxfmt",
     "knip": "knip",
     "test": "node --test \"test/**/*.test.ts\"",
     "battery": "node scripts/battery.ts"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.14",
     "@types/node": "^26.6.2",
     "charcheck": "^0.4.0",
     "knip": "^6.38.0",
     "lefthook": "^2.1.14",
+    "oxfmt": "^0.71.0",
+    "oxlint": "^1.86.0",
+    "oxlint-tsgolint": "^7.0.2003",
     "typescript": "^7.0.2"
   }
 }
