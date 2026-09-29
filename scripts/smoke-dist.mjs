@@ -21,7 +21,8 @@ const run = (args, input = '') =>
 
 const listed = run(['styles']);
 assert.equal(listed.status, 0, listed.stderr);
-for (const tag of ['en', 'fr', 'es', 'de-DE', 'de-CH', 'nl']) assert.ok(listed.stdout.includes(tag));
+for (const tag of ['en', 'fr', 'es', 'de-DE', 'de-CH', 'nl'])
+  assert.ok(listed.stdout.includes(tag));
 
 const guess = run(['check', '-'], 'Bonjour!');
 assert.equal(guess.status, 2, 'the CLI must refuse to guess a language');
@@ -49,11 +50,15 @@ writeFileSync(
   `import { derive, fr } from '${pathToFileURL(resolve('dist/index.js')).href}';\n` +
     "export default derive(fr, { name: 'smoke-house', standard: 'smoke test' });\n",
 );
-const configured = spawnSync(process.execPath, [resolve(CLI), 'check', '--style', 'smoke-house', '-'], {
-  cwd: dir,
-  encoding: 'utf8',
-  input: 'Rien a signaler ici.',
-});
+const configured = spawnSync(
+  process.execPath,
+  [resolve(CLI), 'check', '--style', 'smoke-house', '-'],
+  {
+    cwd: dir,
+    encoding: 'utf8',
+    input: 'Rien a signaler ici.',
+  },
+);
 assert.equal(configured.status, 0, configured.stdout + configured.stderr);
 assert.match(configured.stdout, /smoke-house@[0-9a-f]{12} via/);
 

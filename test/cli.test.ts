@@ -242,23 +242,27 @@ test('a bare - is still stdin and not a flag', () => {
 // read-only file is writable and the tests below would assert nothing.
 const MODE_BITS_HOLD = process.platform !== 'win32' && process.getuid?.() !== 0;
 
-test('a file that cannot be written is exit 2, and the rest of the run happens', {
-  skip: !MODE_BITS_HOLD,
-}, () => {
-  // It used to be an uncaught throw, which exits 1: this tool's code for "there
-  // are findings". A CI job running `fix --write` could not tell the two apart.
-  const locked = withFile('Il a dit : oui');
-  const open = withFile('Il a dit : oui');
-  chmodSync(locked, 0o444);
-  const r = run(['fix', '--style', 'fr', '--write', locked, open]);
-  assert.equal(r.status, 2);
-  assert.match(r.stderr, /cannot write/);
-  assert.doesNotMatch(r.stderr, /at main/, 'a write failure must not print a stack');
-  assert.match(r.stdout, /colon-spacing/, 'the report is still printed');
-  assert.match(r.stdout, /could not rewrite .*sample\.txt/);
-  assert.equal(readFileSync(locked, 'utf8'), 'Il a dit : oui');
-  assert.notEqual(readFileSync(open, 'utf8'), 'Il a dit : oui', 'the next file is still fixed');
-});
+test(
+  'a file that cannot be written is exit 2, and the rest of the run happens',
+  {
+    skip: !MODE_BITS_HOLD,
+  },
+  () => {
+    // It used to be an uncaught throw, which exits 1: this tool's code for "there
+    // are findings". A CI job running `fix --write` could not tell the two apart.
+    const locked = withFile('Il a dit : oui');
+    const open = withFile('Il a dit : oui');
+    chmodSync(locked, 0o444);
+    const r = run(['fix', '--style', 'fr', '--write', locked, open]);
+    assert.equal(r.status, 2);
+    assert.match(r.stderr, /cannot write/);
+    assert.doesNotMatch(r.stderr, /at main/, 'a write failure must not print a stack');
+    assert.match(r.stdout, /colon-spacing/, 'the report is still printed');
+    assert.match(r.stdout, /could not rewrite .*sample\.txt/);
+    assert.equal(readFileSync(locked, 'utf8'), 'Il a dit : oui');
+    assert.notEqual(readFileSync(open, 'utf8'), 'Il a dit : oui', 'the next file is still fixed');
+  },
+);
 
 test('a file that cannot be read is exit 2', () => {
   const r = run(['check', '--style', 'fr', join(tmpdir(), 'typocheck-absent', 'x.txt')]);
