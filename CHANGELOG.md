@@ -2,8 +2,11 @@
 
 ## Unreleased
 
-No stamp moved, and over every input `pnpm battery` held at `0.3.0` the output
-is byte-identical, so text normalized under it does not need re-normalizing.
+Five stamps moved, `de-CH`, `de-DE`, `en`, `es` and `nl`, all for the one
+change below about U+2009, and the `pnpm battery` lines that moved all contain
+one. `fr` and its two widths did not move: text normalized under `fr@0.3.0` does
+not need re-normalizing, and text under the other five does only where it holds a
+thin space.
 
 ### The breaking changes
 
@@ -15,6 +18,10 @@ is byte-identical, so text normalized under it does not need re-normalizing.
   their summaries, so a second style using one would have told its reader about
   the wrong language. They complete the summary with it the way `apostrophe`
   does. A config calling one of them without `language` no longer typechecks.
+- **There is one space class.** `ANY_SPACE` includes U+2009 now and
+  `ANY_SPACE_OR_THIN` is gone, so `innerSpace` and
+  `requireSpaceBeforePunctuation` no longer take `spaces`, and `runStart(spaces)`
+  is the constant `RUN_START`.
 - **`typocheck` exits 2 where it used to exit 1 or carry on.** A file `fix
   --write` cannot write is reported, the rest of the run happens, and the exit is
   `2`; it used to be an uncaught throw, which exits `1`, the findings code.
@@ -23,6 +30,11 @@ is byte-identical, so text normalized under it does not need re-normalizing.
 
 ### Fixed
 
+- **A thin space is a space in every style.** Only `fr` matched U+2009, so
+  `es.normalize('«<THINSP>hola<THINSP>»')` and both German styles left a thin
+  space inside the marks where their own summaries say none belongs, `es` left
+  one after `¿`, and `punctuation-spacing` did not report one before `;` in any
+  style but French. All of them take it now.
 - **A finding next to an astral letter points at the right character.**
   `punctuation-spacing` and `missing-punctuation-space` trimmed one code unit of
   letter off a match where a letter outside the BMP is two, so the offset landed

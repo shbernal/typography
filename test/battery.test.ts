@@ -46,16 +46,21 @@ import { combinations } from './fixtures.ts';
  * reasons the reader already knows about stops being read.
  */
 const DIGESTS: Record<string, string> = {
-  'de-CH': 'ce18734a695d',
-  'de-DE': '62c2c138ebc4',
-  en: '328d500db6b4',
-  es: 'c490cf732002',
+  // Five rows moved when U+2009 joined the one space class every style matches
+  // on, which only `fr` had matched before, and the French rows did not. Every
+  // line that moved has a thin space in it: 480 in `de-DE`, 283 in `es`, 281 in
+  // `de-CH`, and 8 each in `en` and `nl`, which have only `punctuation-spacing`
+  // to reach it with.
+  'de-CH': 'c6e0727636d9',
+  'de-DE': '509a864c5c18',
+  en: '42e8773a8a00',
+  es: '792bd0b9ae8f',
   // The three French rows moved when the cross-language guard went on `fr`'s two
   // inner-space rules, and no other row did. The diff was 713 distinct inputs
   // and every one of them has a letter or a digit immediately outside a
   // guillemet, which is the guard's condition and nothing wider.
   fr: 'f0369d6a78d0',
-  nl: '2507ee04f1f0',
+  nl: 'd0643ccb74ce',
   'fr+00A0': 'c4eebc40f8e2',
   'fr+202F': '804a0b17d89b',
 };

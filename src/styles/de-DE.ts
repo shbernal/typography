@@ -12,7 +12,6 @@ import { compose } from '../compose.ts';
 import type { Rule, Style } from '../pack.ts';
 import { guillemetDirection } from '../rules/guillemet-direction.ts';
 import { innerSpace } from '../rules/inner-space.ts';
-import { ANY_SPACE } from '../rules/space.ts';
 import { DUDEN, germanCommonRules } from './de-common.ts';
 
 const rules: readonly Rule[] = [
@@ -33,7 +32,6 @@ const rules: readonly Rule[] = [
     cite: `${DUDEN}, "Anführungszeichen"`,
     mark: '„',
     side: 'open',
-    spaces: ANY_SPACE,
     correct: '',
     guard: false,
   }),
@@ -47,7 +45,6 @@ const rules: readonly Rule[] = [
     cite: `${DUDEN}, "Anführungszeichen"`,
     mark: '»',
     side: 'open',
-    spaces: ANY_SPACE,
     correct: '',
     guard: true,
   }),
@@ -57,7 +54,6 @@ const rules: readonly Rule[] = [
     cite: `${DUDEN}, "Anführungszeichen"`,
     mark: '«',
     side: 'close',
-    spaces: ANY_SPACE,
     correct: '',
     guard: true,
   }),

@@ -8,11 +8,11 @@
 // reports a fenced code block line by line, which is how a check-only rule stops
 // being read at all.
 //
-// **Why this is shared where `ANY_SPACE` deliberately is not.** `es.ts` and
-// `de-common.ts` each spell out their own space classes, and the comment there
-// says why: the day RAE and Duden disagree, a shared constant has to be split by
-// whoever is holding the release. That argument is about rule content. This is
-// not rule content. No standards body has an opinion about what a URL looks
+// **Why this is shared.** `es.ts` and `de-common.ts` used to spell out their own
+// space classes, on the argument that the day RAE and Duden disagree, a shared
+// constant has to be split by whoever is holding the release. That argument was
+// about rule content, and `rules/space.ts` says why it did not survive. This
+// was never rule content. No standards body has an opinion about what a URL looks
 // like, and a URL is a URL under the Ortografía and under the Duden alike, so
 // there is no disagreement here for a release to have to split. Two copies of it
 // would be the failure this package is about, one level down: a heuristic

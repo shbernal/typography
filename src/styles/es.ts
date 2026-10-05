@@ -24,7 +24,6 @@ import { compose } from '../compose.ts';
 import type { Rule, Style } from '../pack.ts';
 import { innerSpace } from '../rules/inner-space.ts';
 import { openingMarkSpace } from '../rules/opening-mark-space.ts';
-import { ANY_SPACE } from '../rules/space.ts';
 import { spaceBeforePunctuation } from '../rules/space-before-punctuation.ts';
 import { straightDoubleQuote } from '../rules/straight-double-quote.ts';
 import { unpairedMark } from '../rules/unpaired-mark.ts';
@@ -46,7 +45,6 @@ const rules: readonly Rule[] = [
     cite: `${ORTOGRAFIA}, "Las comillas"`,
     mark: '«',
     side: 'open',
-    spaces: ANY_SPACE,
     correct: '',
     guard: true,
   }),
@@ -56,7 +54,6 @@ const rules: readonly Rule[] = [
     cite: `${ORTOGRAFIA}, "Las comillas"`,
     mark: '»',
     side: 'close',
-    spaces: ANY_SPACE,
     correct: '',
     guard: true,
   }),

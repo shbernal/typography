@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { check } from '../src/check.ts';
-import { NARROW_NO_BREAK } from '../src/pack.ts';
+import { NARROW_NO_BREAK, THIN } from '../src/pack.ts';
 import { es } from '../src/styles/es.ts';
 
 const ids = (text: string) => check(es, text).map((f) => f.rule);
@@ -62,6 +62,11 @@ test('guillemets are closed up, the opposite of French', () => {
   assert.equal(es.normalize('« hola »'), '«hola»');
   assert.equal(es.normalize('«hola»'), '«hola»');
   assert.equal(es.normalize(`«${NARROW_NO_BREAK}hola${NARROW_NO_BREAK}»`), '«hola»');
+  // A thin space is a space here too. Only French matched it until the classes
+  // were merged, so this came back exactly as it went in.
+  assert.equal(es.normalize(`«${THIN}hola${THIN}»`), '«hola»');
+  assert.equal(es.normalize(`¿${THIN}Como estas?`), '¿Como estas?');
+  assert.ok(ids(`hola${THIN}; adios`).includes('punctuation-spacing'));
 });
 
 test('a space after an opening mark is fixable; a space before punctuation is not', () => {

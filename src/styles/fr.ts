@@ -47,17 +47,11 @@ import { colonSpacing } from '../rules/colon-spacing.ts';
 import { innerSpace } from '../rules/inner-space.ts';
 import { minorityReport } from '../rules/minority-report.ts';
 import { missingPunctuationSpace } from '../rules/missing-punctuation-space.ts';
-import { ANY_SPACE_OR_THIN } from '../rules/space.ts';
 import { requireSpaceBeforePunctuation } from '../rules/space-before-punctuation.ts';
 import { conform, impose } from '../rules/spelling.ts';
 import { straightDoubleQuote } from '../rules/straight-double-quote.ts';
 
 const LEXIQUE = 'Imprimerie nationale, Lexique des règles typographiques (2002)';
-
-// `ANY_SPACE_OR_THIN` is everything that turns up between a guillemet and the
-// word beside it in text that reaches this package. It is spelled out in
-// `rules/space.ts`, along with why French names U+2009 and the other three
-// styles do not.
 
 /** The two admissible spellings of the no-break space this style has to choose
  * between, and never a third. Passed as `admissible` wherever a rule here has to
@@ -180,7 +174,6 @@ const rules: readonly Rule[] = [
   requireSpaceBeforePunctuation({
     summary: 'Breaking space before `; ! ?`; French requires a no-break space',
     cite: `${LEXIQUE}, "Ponctuation"`,
-    spaces: ANY_SPACE_OR_THIN,
     admissible: NO_BREAK_SPACE,
     marks: HIGH_PUNCTUATION,
     spelling: houseWidth,
@@ -212,7 +205,6 @@ const rules: readonly Rule[] = [
     cite: `${LEXIQUE}, "Guillemets"`,
     mark: '\u00AB',
     side: 'open',
-    spaces: ANY_SPACE_OR_THIN,
     correct: { admissible: NO_BREAK_SPACE, spelling: houseWidth },
     guard: true,
   }),
@@ -222,7 +214,6 @@ const rules: readonly Rule[] = [
     cite: `${LEXIQUE}, "Guillemets"`,
     mark: '\u00BB',
     side: 'close',
-    spaces: ANY_SPACE_OR_THIN,
     correct: { admissible: NO_BREAK_SPACE, spelling: houseWidth },
     guard: true,
   }),
@@ -382,7 +373,6 @@ function harmonizingRules(width: string): readonly Rule[] {
     requireSpaceBeforePunctuation({
       summary: `Space before \`; ! ?\` that is not the corpus's no-break space`,
       cite: `${LEXIQUE}, "Ponctuation"`,
-      spaces: ANY_SPACE_OR_THIN,
       admissible: null,
       marks: HIGH_PUNCTUATION,
       spelling: impose(width),
@@ -392,7 +382,6 @@ function harmonizingRules(width: string): readonly Rule[] {
       cite: `${LEXIQUE}, "Guillemets"`,
       mark: '«',
       side: 'open',
-      spaces: ANY_SPACE_OR_THIN,
       correct: { admissible: null, spelling: impose(width) },
       guard: true,
     }),
@@ -401,7 +390,6 @@ function harmonizingRules(width: string): readonly Rule[] {
       cite: `${LEXIQUE}, "Guillemets"`,
       mark: '»',
       side: 'close',
-      spaces: ANY_SPACE_OR_THIN,
       correct: { admissible: null, spelling: impose(width) },
       guard: true,
     }),

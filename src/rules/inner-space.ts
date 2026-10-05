@@ -29,7 +29,7 @@
 // only one left: every guillemet rule in the package carries the guard now.
 
 import { conformRule, type Rule } from '../pack.ts';
-import { runStart } from './space.ts';
+import { ANY_SPACE, RUN_START } from './space.ts';
 import { impose, type Spelling } from './spelling.ts';
 
 /**
@@ -91,10 +91,6 @@ export function innerSpace(spec: {
   /** Which side of the quotation this mark is on, and so whether the space this
    * rule is about follows the mark or precedes it. */
   side: 'open' | 'close';
-  /** Every space character that turns up in this position, as a class body.
-   * A required parameter and not a default, because the four packs that spelled
-   * it out for themselves did not all spell it the same: `rules/space.ts`. */
-  spaces: string;
   correct: InnerSpacing;
   /**
    * Whether to assert that the mark is not doing the opposite job.
@@ -147,10 +143,10 @@ export function innerSpace(spec: {
   // space has to match the empty run, or it can never insert one, and it has to
   // match its own output, or `normalize` never converges and every pass looks
   // like progress.
-  const run = `${spec.spaces}${closedUp ? '+' : '*'}`;
+  const run = `${ANY_SPACE}${closedUp ? '+' : '*'}`;
 
   if (spec.side === 'open') {
-    const already = admissible === null ? '' : `(?!${admissible}(?!${spec.spaces}))`;
+    const already = admissible === null ? '' : `(?!${admissible}(?!${ANY_SPACE}))`;
     return conformRule({
       id,
       summary: spec.summary,
@@ -169,11 +165,11 @@ export function innerSpace(spec: {
     id,
     summary: spec.summary,
     cite: spec.cite,
-    // The mirror, anchored on its left by `runStart` instead of by the mark,
+    // The mirror, anchored on its left by `RUN_START` instead of by the mark,
     // without which every position inside a run of spaces starts a fresh scan
     // for a mark that is not there.
     pattern: new RegExp(
-      `${runStart(spec.spaces)}${already}${run}${spec.mark}${spec.guard ? NOT_WORD_AFTER : ''}`,
+      `${RUN_START}${already}${run}${spec.mark}${spec.guard ? NOT_WORD_AFTER : ''}`,
       'gu',
     ),
     choose: (value) => `${inner.of(value)}${spec.mark}`,

@@ -78,8 +78,6 @@ export function spaceBeforePunctuation(spec: {
 export function requireSpaceBeforePunctuation(spec: {
   summary: string;
   cite: string;
-  /** Every space that turns up in this position, as a class body. */
-  spaces: string;
   /** The spellings already correct here, as a class body, or null to take the
    * position whatever it holds. */
   admissible: string | null;
@@ -99,7 +97,7 @@ export function requireSpaceBeforePunctuation(spec: {
     id: PUNCTUATION_SPACING,
     summary: spec.summary,
     cite: spec.cite,
-    pattern: new RegExp(`${already}${spec.spaces}(?=${spec.marks})`, 'gu'),
+    pattern: new RegExp(`${already}${ANY_SPACE}(?=${spec.marks})`, 'gu'),
     choose: spec.spelling.of,
     params: [spec.spelling.signature],
   });

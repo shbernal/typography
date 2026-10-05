@@ -37,7 +37,6 @@ import {
   type Style,
 } from '../src/pack.ts';
 import { innerSpace } from '../src/rules/inner-space.ts';
-import { ANY_SPACE } from '../src/rules/space.ts';
 import { deCH } from '../src/styles/de-CH.ts';
 import { deDE } from '../src/styles/de-DE.ts';
 import { es } from '../src/styles/es.ts';
@@ -231,7 +230,6 @@ test('the joined-words property bites', () => {
         cite: 'es@0.1.0, reconstructed: the guard this rule shipped without',
         mark: '«',
         side: 'open',
-        spaces: ANY_SPACE,
         correct: '',
         guard: false,
       }),
@@ -240,7 +238,6 @@ test('the joined-words property bites', () => {
         cite: 'es@0.1.0, reconstructed: the guard this rule shipped without',
         mark: '»',
         side: 'close',
-        spaces: ANY_SPACE,
         correct: '',
         guard: false,
       }),

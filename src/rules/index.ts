@@ -35,7 +35,7 @@ export { type InnerSpacing, innerSpace } from './inner-space.ts';
 export { minorityReport } from './minority-report.ts';
 export { missingPunctuationSpace } from './missing-punctuation-space.ts';
 export { openingMarkSpace } from './opening-mark-space.ts';
-export { ANY_SPACE, ANY_SPACE_OR_THIN, runStart } from './space.ts';
+export { ANY_SPACE, RUN_START } from './space.ts';
 export {
   requireSpaceBeforePunctuation,
   spaceBeforePunctuation,

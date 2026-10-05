@@ -19,7 +19,6 @@ import { audit, compose, derive, stampOf } from '../src/compose.ts';
 import { conformRule, NARROW_NO_BREAK, NO_BREAK, type Rule, replaceRule } from '../src/pack.ts';
 import { apostropheElision } from '../src/rules/apostrophe-elision.ts';
 import { innerSpace } from '../src/rules/inner-space.ts';
-import { ANY_SPACE } from '../src/rules/space.ts';
 import { straightDoubleQuote } from '../src/rules/straight-double-quote.ts';
 import { deCH } from '../src/styles/de-CH.ts';
 import { es } from '../src/styles/es.ts';
@@ -296,7 +295,6 @@ test('a builder refuses a parameter its own sentence would misdescribe', () => {
         cite: CITE,
         mark: '\u201C',
         side: 'open',
-        spaces: ANY_SPACE,
         correct: '',
         guard: true,
       }),

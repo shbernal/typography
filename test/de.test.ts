@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { check } from '../src/check.ts';
+import { THIN } from '../src/pack.ts';
 import { deCH } from '../src/styles/de-CH.ts';
 import { deDE } from '../src/styles/de-DE.ts';
 
@@ -92,4 +93,12 @@ test('the two styles stamp two different eras', () => {
   assert.match(deDE.id, /^de-DE@[0-9a-f]{12}$/);
   assert.match(deCH.id, /^de-CH@[0-9a-f]{12}$/);
   assert.notEqual(deDE.stamp, deCH.stamp);
+});
+
+test('a thin space inside the marks is closed up like any other', () => {
+  // Duden takes no space in either position, so U+2009 is as wrong as U+0020
+  // there. Only French matched it until the space classes were merged.
+  assert.equal(deDE.normalize(`»${THIN}Wort${THIN}«`), '»Wort«');
+  assert.equal(deDE.normalize(`„${THIN}Wort“`), '„Wort“');
+  assert.equal(deCH.normalize(`«${THIN}Wort${THIN}»`), '«Wort»');
 });
