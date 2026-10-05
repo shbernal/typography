@@ -20,9 +20,10 @@ Check and fix the typography a model gets wrong without anyone seeing it.
 
 </div>
 
-<p align="center">
-  <img alt="typocheck checking a French Markdown file, fixing it, and checking it again" src="assets/demo.gif" width="860">
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/demo-dark.svg">
+  <img alt="An English and a French sentence as a model returned them, checked finding by finding: the fixable findings repaired in place, the rest reported for a human" src="assets/demo-light.svg" width="100%">
+</picture>
 
 ## What it is
 
