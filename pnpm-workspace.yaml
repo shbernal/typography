@@ -1,5 +1,5 @@
-# pnpm 11 keeps its settings here rather than in package.json, in a
-# single-package repo too. The only entry is the postinstall approval lefthook
+# pnpm keeps its settings here rather than in package.json, in a
+# single-package repo too. The first entry is the postinstall approval lefthook
 # needs: its npm package puts the binary in place from a postinstall script,
 # which pnpm blocks by default, and until it is approved `lefthook` fails with
 # ERR_PNPM_IGNORED_BUILDS while `prepare` still looks like it worked. Committed
@@ -13,3 +13,12 @@ allowBuilds:
 # repo here would sit a day behind a fix filed from one of them.
 minimumReleaseAgeExclude:
   - charcheck
+
+# `@types/node` follows the oldest runtime the package claims, `engines.node`,
+# rather than the Node 24 it is developed on: the types are the only thing that
+# stops `src/` calling an API Node 22 lacks, since the Node 22 job in CI smokes
+# the built CLI and nothing else. `pnpm update --latest` would take it to the
+# newest major and quietly drop that guard, so it is held out of that.
+updateConfig:
+  ignoreDependencies:
+    - '@types/node'

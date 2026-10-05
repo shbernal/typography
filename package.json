@@ -36,7 +36,7 @@
     "provenance": true
   },
   "type": "module",
-  "packageManager": "pnpm@11.21.0",
+  "packageManager": "pnpm@12.9.1",
   "engines": {
     "node": ">=22"
   },
@@ -103,10 +103,10 @@
     "battery": "node scripts/battery.ts"
   },
   "devDependencies": {
-    "@types/node": "^26.6.2",
+    "@types/node": "^22.20.5",
     "charcheck": "^0.4.0",
-    "knip": "^6.38.0",
-    "lefthook": "^2.1.14",
+    "knip": "^6.39.0",
+    "lefthook": "^2.1.16",
     "oxfmt": "^0.71.0",
     "oxlint": "^1.86.0",
     "oxlint-tsgolint": "^7.0.2003",

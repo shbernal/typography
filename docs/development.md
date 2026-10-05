@@ -9,7 +9,10 @@ Node 24 for development: the sources run directly under Node's type stripping,
 which is why `erasableSyntaxOnly` is on and why relative imports keep their `.ts`
 extension. `rewriteRelativeImportExtensions` turns them into `.js` on the way
 into `dist/`. The **published** package targets Node 22, and
-`scripts/smoke-dist.mjs` in CI is what backs that claim.
+`scripts/smoke-dist.mjs` in CI is what backs that claim. That smoke test runs
+the built CLI and nothing else, so `@types/node` stays on the major of the
+published floor rather than the one development runs on: the types are what keep
+`src/` off an API Node 22 lacks, and `pnpm update --latest` is told to leave them.
 
 ```bash
 pnpm install
