@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
 
 Every stamp moved, because every rule now skips Markdown code, which is part of
 what a rule signs. Text normalized under `0.3.0` needs re-normalizing only where
