@@ -18,7 +18,7 @@ So the unit is a rule, and a style is a rule list with a name:
 
 ```ts
 interface Style {
-  readonly id: string;      // `fr@4ed7f1b2db8f`
+  readonly id: string;      // `fr@6154dd89738a`
   readonly name: string;
   readonly stamp: string;
   readonly lang?: string;   // where the style is about a language, which is not required
@@ -96,6 +96,29 @@ survived the pivot: eleven of the nineteen rule ids have no `fix` in at least on
 style, and each of them is check-only because the repair is a parse rather than a
 substitution. Dropping `check` would mean dropping those rules or guessing at
 their repairs.
+
+## Code is not text
+
+A model's output puts prose and code in one value, and a rule that reads `it's`
+as an elision reads it the same way inside a string literal. So the three rule
+constructors take every fenced block and inline code span out of a value before
+the rule sees it and put them back afterwards: `check`, `normalize`, a single
+`rule.fix` and `audit` all skip the same regions, and no builder has a parameter
+for it. A builder parameter would be one decision copied into every builder.
+
+Each region is one Unicode noncharacter while the rule runs, so the prose either
+side keeps the context it had, a `conformRule` ballot counts prose only, and a
+finding's offset is mapped back into the value the caller passed. A fence is
+three or more backticks or tildes at the start of a line, open until a line of
+the same character at least as long, or to the end of the value. A span is a run
+of backticks closed by the next run of the same length in the same paragraph. An
+indented block is not code here, because four spaces of indent is also a list
+item's second paragraph.
+
+What has no delimiter is not skipped: a value that *is* a JSON payload, an HTML
+attribute or a log line is all syntax, and `test/hazards.test.ts` lists the rules
+that still rewrite it. The skipping is part of every rule's signature, so turning
+it on moved every stamp and nothing else.
 
 ## Three rule constructors
 

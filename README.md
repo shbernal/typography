@@ -59,12 +59,13 @@ fixed](docs/provenance.md) is the most useful thing in this repo.
 **Checking documentation and content in CI.** `typocheck check --style fr --strict`
 over your French or Spanish Markdown, exiting non-zero on findings. Every finding
 carries a line, a column, the citation and an escaped excerpt, so a report is
-readable and a reviewer can see the character.
+readable and a reviewer can see the character. Fenced blocks and inline code
+spans are skipped, so `it's` in a code sample stays as the program wrote it.
 
 **Normalizing generated or translated text.** `style.normalize` is the safe
 subset and nothing else, and `{ id, normalize }` is the whole contract, so a host
 binds a style without either package importing the other. The `id` is an era
-stamp, `fr@4ed7f1b2db8f`, **derived from the rules themselves**: two bodies of
+stamp, `fr@6154dd89738a`, **derived from the rules themselves**: two bodies of
 text carrying it were checked by the same rules, and the day a rule moves
 the stamp moves without anybody remembering to bump it. Carry it beside anything
 you normalized. If you normalize field by field and the fields must agree with

@@ -104,22 +104,20 @@ test('every style holds idempotence, conformance and non-interference', () => {
  * each one rewrites.
  *
  * **Every entry here is a defect**, and the list exists because writing "no rule
- * touches machine text" would have been false. The apostrophe one is the same
- * rewrite in four styles: `it's` between two letters is an elision in prose and
- * a string delimiter in code, and nothing in `apostrophe` looks at which.
- * `looksMachine` is not the repair either, since the token around the apostrophe
- * inside a fence is `"it's`, which looks like prose because it is prose, in a
- * string, in a program; the repair is a skipped region computed once per value
- * and honoured by every rule, which is the first thing here that would be about
- * the document rather than about the characters. The French pair is the same
- * shape one position over, where `a ? b : c` inside a code span is a ternary and
- * gets a no-break space in front of both marks.
+ * touches machine text" would have been false. What is left is machine text
+ * with no delimiter around it. A fenced block and an inline code span are
+ * skipped by every rule, in `src/pack.ts`, and the fixtures holding one dropped
+ * off this list when that went in. A JSON payload, an HTML attribute and a log
+ * line are a whole value of syntax rather than a region of one, so there is
+ * nothing to skip: `it's` between two letters is an elision in prose and a
+ * string delimiter in code, and nothing in `apostrophe` looks at which. The
+ * French `punctuation-spacing` row is the same shape one position over.
  *
  * A rule appearing here that is not written down fails the test, which is the
  * point: this is a ratchet on how much syntax the package is willing to rewrite,
  * and it only moves when somebody decides to move it.
  */
-const APOSTROPHE_IN_CODE = ['fenced-javascript', 'json-payload', 'html-attributes'];
+const APOSTROPHE_IN_CODE = ['json-payload', 'html-attributes'];
 const REWRITES_SYNTAX: Record<string, Record<string, readonly string[]>> = {
   'de-CH': { apostrophe: APOSTROPHE_IN_CODE },
   'de-DE': { apostrophe: APOSTROPHE_IN_CODE },
@@ -137,8 +135,7 @@ const REWRITES_SYNTAX: Record<string, Record<string, readonly string[]>> = {
   // `a ? b : c` would corrupt a ternary.
   fr: {
     apostrophe: APOSTROPHE_IN_CODE,
-    'colon-spacing': ['fenced-python', 'inline-code-span'],
-    'punctuation-spacing': ['fenced-python', 'inline-code-span', 'log-line'],
+    'punctuation-spacing': ['log-line'],
   },
   nl: { apostrophe: APOSTROPHE_IN_CODE },
 };

@@ -211,11 +211,12 @@ export function replaceRule(spec: {
     severity,
     // Nothing here is a closure, so the declaration is the signature.
     signature: signatureOf('replace', id, summary, cite, severity, pattern, [replacement]),
-    find: (value) =>
+    find: outsideCode((value) =>
       matches(pattern, value).filter(
         (m) => value.slice(m.index, m.index + m.length) !== replacement,
       ),
-    fix: (value) => value.replace(fresh(pattern), replacement),
+    ),
+    fix: proseOnly((value) => value.replace(fresh(pattern), replacement)),
   };
 }
 
@@ -276,19 +277,22 @@ export function conformRule(spec: {
     cite,
     severity,
     signature: signatureOf('conform', id, summary, cite, severity, pattern, spec.params),
-    find: (value) => {
+    // `choose` is handed the value with its code taken out, like the pattern, so
+    // a document's ballot is over its prose: a fenced block of French source
+    // does not vote on how the French around it is spaced.
+    find: outsideCode((value) => {
       const replacement = choose(value);
       return matches(pattern, value).filter(
         (m) => value.slice(m.index, m.index + m.length) !== replacement,
       );
-    },
+    }),
     // A replacer function rather than a replacement string, so a `$` in whatever
     // `choose` returns is a dollar sign and not a substitution. `replaceRule` can
     // reject that at construction; here the value does not exist until call time.
-    fix: (value) => {
+    fix: proseOnly((value) => {
       const replacement = choose(value);
       return value.replace(fresh(pattern), () => replacement);
-    },
+    }),
   };
 }
 
@@ -328,7 +332,7 @@ export function detectRule<S = undefined>(spec: {
     cite,
     severity,
     signature: signatureOf('detect', id, summary, cite, severity, pattern, spec.params ?? []),
-    find: (value) => {
+    find: outsideCode((value) => {
       const surveyed = (survey ? survey(value) : undefined) as S;
       const out: Match[] = [];
       for (const m of value.matchAll(fresh(pattern))) {
@@ -336,7 +340,7 @@ export function detectRule<S = undefined>(spec: {
         if (kept) out.push(kept);
       }
       return out;
-    },
+    }),
   };
 }
 
@@ -364,7 +368,7 @@ function signatureOf(
   pattern: RegExp,
   params: readonly string[],
 ): string {
-  return [kind, id, summary, cite, severity, pattern.source, pattern.flags, ...params]
+  return [kind, id, summary, cite, severity, pattern.source, pattern.flags, CODE, ...params]
     .map((part) => JSON.stringify(part))
     .join(SEPARATOR);
 }
@@ -376,6 +380,241 @@ function signatureOf(
 export function composeNormalize(rules: readonly Rule[]): (value: string) => string {
   const fixes = rules.flatMap((r) => (r.fix ? [r.fix] : []));
   return (value) => fixes.reduce((acc, fix) => fix(acc), value);
+}
+
+// ---------------------------------------------------------------------------
+// Code, which no rule reads
+// ---------------------------------------------------------------------------
+
+// The input is a model's output, and a model's output puts prose and code in
+// one value: `typocheck fix --write guide.md` on a French guide with a bash
+// fence in it used to retype `n'oubliez` inside the fence, and `fr` put a
+// no-break space in front of both marks of `a ? b : c` in a code span. Every
+// rule had that exposure, because `it's` is letters either side of an
+// apostrophe wherever it occurs, and `looksMachine` cannot see it: the token
+// around it is `"it's`, which is prose, in a string, in a program.
+//
+// So the skipped region is computed once per value and honoured by every rule,
+// in the three constructors, rather than by any rule: a parameter on each
+// builder would be one decision copied into all of them. It is the first thing in the
+// package about the document rather than the characters, and it stays as
+// narrow as that allows. Two kinds of region, both delimited by Markdown and
+// both unambiguous where they are found:
+//
+// - a fenced block, from a line opening with three or more backticks or tildes
+//   to the line closing it, or to the end of the value when nothing does, which
+//   is how a renderer reads it too;
+// - an inline code span, a run of backticks to the next run of the same length
+//   in the same paragraph. A run with no partner is a literal backtick.
+//
+// **What it does not cover**, which is the rest of the old exposure and has no
+// delimiter to find: a JSON payload, an HTML attribute value, a log line. Those
+// are a whole value of machine text rather than a region of one, and
+// `test/hazards.test.ts` still lists the rules that rewrite them. An indented
+// code block is left out on purpose: four spaces of indent is also a list
+// item's second paragraph, so it is not unambiguous where it is found.
+//
+// **How a region is skipped.** Each region is replaced by one Unicode
+// noncharacter for the length of a rule call and put back afterwards. A
+// noncharacter is permanently reserved for exactly this, it is not a letter,
+// a digit or a space to any pattern here, and no rule can match, delete or
+// duplicate one, so the prose either side of a region keeps the context it
+// had: `foo` followed by `'s` is a mark after a symbol either way. Offsets are
+// mapped back to the value the caller passed, so a finding points at the text
+// the reader has.
+
+/** What the stamp hashes for this section, so that every rule built before
+ * code was skipped and every rule built after it sign differently. Text
+ * normalized by the two is normalized by two different rule sets, and a stamp
+ * that did not move would be the one thing nobody could see. */
+const CODE = 'skips:markdown-fence,markdown-code-span';
+
+/** The 32 noncharacters U+FDD0 to U+FDEF. A value carrying all of them is not
+ * text, and is then processed as it stands rather than refused, since a rule
+ * that throws on one value fails a whole batch. */
+const SENTINELS = Array.from({ length: 32 }, (_, i) => String.fromCharCode(0xfdd0 + i));
+
+/** A line opening a fence: up to three spaces, then three or more of one
+ * character. A backtick fence's info string may not hold a backtick, which is
+ * what keeps a line of three inline spans from reading as a fence. */
+const FENCE_OPEN = /^ {0,3}(?:(`{3,})[^`\n]*|(~{3,})[^\n]*)$/;
+
+interface Masked {
+  readonly text: string;
+  /** Where each region sits in `text`, as one character, in order. */
+  readonly at: readonly number[];
+  /** What each one stood for, as an offset and a length in the original. */
+  readonly regions: readonly Match[];
+  /** How much longer the original is than `text` past each region: the sum of
+   * every region's length up to and including that one, less one apiece. */
+  readonly shift: readonly number[];
+  readonly sentinel: string;
+}
+
+/** The last value masked, since `check` hands the same value to every rule. */
+let last: { value: string; masked: Masked | null } | undefined;
+
+/** The value with each code region replaced by one sentinel, or null when it
+ * has no code in it, which is the common case and costs one scan. */
+function mask(value: string): Masked | null {
+  if (last?.value === value) return last.masked;
+  const regions = codeRegions(value);
+  const sentinel = SENTINELS.find((s) => !value.includes(s));
+  let masked: Masked | null = null;
+  if (regions.length > 0 && sentinel !== undefined) {
+    const parts: string[] = [];
+    const at: number[] = [];
+    const shift: number[] = [];
+    let from = 0;
+    let length = 0;
+    let longer = 0;
+    for (const region of regions) {
+      parts.push(value.slice(from, region.index));
+      length += region.index - from;
+      at.push(length);
+      parts.push(sentinel);
+      length += 1;
+      longer += region.length - 1;
+      shift.push(longer);
+      from = region.index + region.length;
+    }
+    parts.push(value.slice(from));
+    masked = { text: parts.join(''), at, regions, shift, sentinel };
+  }
+  last = { value, masked };
+  return masked;
+}
+
+/** A `find` that reads the prose only, with its offsets in the caller's value. */
+function outsideCode(find: (value: string) => Match[]): (value: string) => Match[] {
+  return (value) => {
+    const masked = mask(value);
+    if (masked === null) return find(value);
+    return find(masked.text).map((m) => {
+      const index = unmasked(masked, m.index);
+      return { index, length: unmasked(masked, m.index + m.length) - index };
+    });
+  };
+}
+
+/** A `fix` that rewrites the prose only and hands every region back untouched. */
+function proseOnly(fix: (value: string) => string): (value: string) => string {
+  return (value) => {
+    const masked = mask(value);
+    if (masked === null) return fix(value);
+    const pieces = fix(masked.text).split(masked.sentinel);
+    if (pieces.length !== masked.regions.length + 1)
+      throw new Error(
+        'a fix deleted or duplicated a U+FDD0-U+FDEF noncharacter standing for a code region; ' +
+          'no rule may match one',
+      );
+    return pieces
+      .map((piece, i) => {
+        const region = masked.regions[i];
+        return region ? piece + value.slice(region.index, region.index + region.length) : piece;
+      })
+      .join('');
+  };
+}
+
+/** An offset in the masked text, as an offset in the value it was masked from.
+ * A position at a sentinel is the start of its region and a position after it
+ * is past the whole region, which keeps a match that spans one well formed. */
+function unmasked(masked: Masked, index: number): number {
+  let lo = 0;
+  let hi = masked.at.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (masked.at[mid]! < index) lo = mid + 1;
+    else hi = mid;
+  }
+  // `lo` regions sit before `index`, and each stood for its own length less the
+  // one character it occupies here.
+  return lo === 0 ? index : index + masked.shift[lo - 1]!;
+}
+
+/** Every fenced block and inline code span in `value`, in order and disjoint. */
+function codeRegions(value: string): Match[] {
+  if (!value.includes('`') && !value.includes('~~~')) return [];
+  const regions: Match[] = [];
+  let prose = 0;
+  let fence: { close: RegExp; start: number } | null = null;
+  let start = 0;
+  while (start <= value.length) {
+    const newline = value.indexOf('\n', start);
+    const end = newline === -1 ? value.length : newline;
+    const line = value.slice(start, end).replace(/\r$/, '');
+    if (fence === null) {
+      const open = FENCE_OPEN.exec(line);
+      if (open) {
+        // Closed by a run of the same character at least as long, on a line of
+        // its own. Both characters are literal in a pattern, so the run is
+        // written as itself.
+        const run = open[1] ?? open[2]!;
+        spans(value, prose, start, regions);
+        fence = { close: new RegExp(`^ {0,3}${run}+[ \\t]*$`), start };
+      }
+    } else {
+      if (fence.close.test(line)) {
+        regions.push({ index: fence.start, length: end - fence.start });
+        fence = null;
+        prose = end;
+      }
+    }
+    if (newline === -1) break;
+    start = newline + 1;
+  }
+  if (fence !== null) regions.push({ index: fence.start, length: value.length - fence.start });
+  else spans(value, prose, value.length, regions);
+  return regions;
+}
+
+/** The inline code spans between `from` and `to`, paragraph by paragraph, since
+ * a span cannot cross a blank line and a stray backtick must not reach into the
+ * next paragraph for a partner. */
+function spans(value: string, from: number, to: number, out: Match[]): void {
+  const blank = /\n[ \t]*\r?\n/g;
+  blank.lastIndex = from;
+  let start = from;
+  for (;;) {
+    const gap = blank.exec(value);
+    const end = gap === null || gap.index >= to ? to : gap.index;
+    spansIn(value, start, end, out);
+    if (end === to) return;
+    start = gap!.index + gap![0].length;
+  }
+}
+
+/** The pairing itself, in one pass. Each run of backticks looks for the next run
+ * of exactly its length, and the pointer for each length only moves forward, so
+ * a paragraph of unpartnered runs of every length stays linear. */
+function spansIn(value: string, from: number, to: number, out: Match[]): void {
+  const runs: Match[] = [];
+  for (const m of value.slice(from, to).matchAll(/`+/g))
+    runs.push({ index: from + m.index, length: m[0].length });
+  const byLength = new Map<number, number[]>();
+  runs.forEach((run, i) => {
+    const list = byLength.get(run.length) ?? [];
+    list.push(i);
+    byLength.set(run.length, list);
+  });
+  const next = new Map<number, number>();
+  let i = 0;
+  while (i < runs.length) {
+    const run = runs[i]!;
+    const list = byLength.get(run.length)!;
+    let p = next.get(run.length) ?? 0;
+    while (p < list.length && list[p]! <= i) p++;
+    next.set(run.length, p);
+    const partner = list[p];
+    if (partner === undefined) {
+      i++;
+      continue;
+    }
+    const close = runs[partner]!;
+    out.push({ index: run.index, length: close.index + close.length - run.index });
+    i = partner + 1;
+  }
 }
 
 // ---------------------------------------------------------------------------

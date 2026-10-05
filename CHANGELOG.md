@@ -2,11 +2,11 @@
 
 ## Unreleased
 
-Five stamps moved, `de-CH`, `de-DE`, `en`, `es` and `nl`, all for the one
-change below about U+2009, and the `pnpm battery` lines that moved all contain
-one. `fr` and its two widths did not move: text normalized under `fr@0.3.0` does
-not need re-normalizing, and text under the other five does only where it holds a
-thin space.
+Every stamp moved, because every rule now skips Markdown code, which is part of
+what a rule signs. Text normalized under `0.3.0` needs re-normalizing only where
+it holds a fenced block or an inline code span, or, outside `fr`, a thin space.
+Over the 8,799 generated inputs in `pnpm battery`, the only lines that moved
+contain U+2009.
 
 ### The breaking changes
 
@@ -27,6 +27,17 @@ thin space.
   `2`; it used to be an uncaught throw, which exits `1`, the findings code.
   `--style` or `--config` followed by another flag instead of its value is a
   misuse, as is a second `-`.
+
+### What is new
+
+- **Code is skipped.** Every rule, through the three constructors, takes fenced
+  blocks and inline code spans out of a value before it matches and puts them
+  back afterwards, so `typocheck fix --write guide.md` no longer retypes
+  `n'oubliez` inside a bash fence, and `fr` no longer puts a no-break space in
+  front of the marks of `a ? b : c` in a code span. A finding's offset still
+  points into the text as passed, and a ballot counts prose only. A value that is
+  all syntax with no delimiter, such as a JSON payload or an HTML attribute, is
+  not covered; [design.md](docs/design.md) has the boundary.
 
 ### Fixed
 

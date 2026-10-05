@@ -46,23 +46,18 @@ import { combinations } from './fixtures.ts';
  * reasons the reader already knows about stops being read.
  */
 const DIGESTS: Record<string, string> = {
-  // Five rows moved when U+2009 joined the one space class every style matches
-  // on, which only `fr` had matched before, and the French rows did not. Every
-  // line that moved has a thin space in it: 480 in `de-DE`, 283 in `es`, 281 in
-  // `de-CH`, and 8 each in `en` and `nl`, which have only `punctuation-spacing`
-  // to reach it with.
-  'de-CH': 'c6e0727636d9',
-  'de-DE': '509a864c5c18',
-  en: '42e8773a8a00',
-  es: '792bd0b9ae8f',
-  // The three French rows moved when the cross-language guard went on `fr`'s two
-  // inner-space rules, and no other row did. The diff was 713 distinct inputs
-  // and every one of them has a letter or a digit immediately outside a
-  // guillemet, which is the guard's condition and nothing wider.
-  fr: 'f0369d6a78d0',
-  nl: 'd0643ccb74ce',
-  'fr+00A0': 'c4eebc40f8e2',
-  'fr+202F': '804a0b17d89b',
+  // Every row moved when code regions started being skipped, and no line of
+  // output did: the generated inputs hold no backtick, so all that changed in
+  // them is the stamp each rule signs. The written fixtures are where the change
+  // shows, and are not in the digest.
+  'de-CH': '7b4f5c01b103',
+  'de-DE': '73203a39d276',
+  en: 'a125c950c63f',
+  es: '5fdfe594be13',
+  fr: '5023a1f20419',
+  nl: '4ec98b0ed590',
+  'fr+00A0': '1dad1db68a8b',
+  'fr+202F': '9b1b08af27a1',
 };
 
 test('the battery generates what it claims to', () => {
