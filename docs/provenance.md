@@ -123,6 +123,28 @@ is correct under the other. It has the domain hazard as well, since `--` between
 two letters is a dash in prose and a modifier in a stylesheet, but the citation
 would have stopped the repair on its own.
 
+## What is known to be wrong and left
+
+Two behaviours are wrong and stay, because the fix for each is a parse this
+package declines to do. Both are asserted where they live, so a change to either
+is seen.
+
+- **`de-DE` moves the spaces of a French quotation to its outside.**
+  `deDE.normalize('Er las « Le Monde » gestern Abend.')` returns
+  `Er las« Le Monde »gestern Abend.`, wrong under both conventions. The
+  cross-language guard is there and cannot help: a German closing `«` with a
+  stray space before it and a French opening `«` with a correct one after it are
+  the same string, and only pairing the marks tells them apart. `de-CH` and `es`
+  close the same quotation up and `fr` spaces it, which are corrections, since
+  their pair points the way the text does. A style is for text in its own
+  language; this is where that stops being only a convention.
+  `test/hazards.test.ts` asserts the output.
+- **`nl.mixed-quotation-marks` reports a correctly nested quotation.** A single
+  pair inside a double pair is two systems to a ballot. Telling nesting from
+  mixing needs to know where a quotation closes, and U+2019 closes the single
+  pair and is the apostrophe too. It is a warning and unmeasured; the comment
+  above the rule in `src/styles/nl.ts` has the options.
+
 ## What the corpora were
 
 Nine corpora, chosen on one bar: professionally typeset text nobody wrote with

@@ -209,6 +209,19 @@ const rules: readonly Rule[] = [
   // characters of Dutch statute turn out to contain no quotation mark of any of
   // the three systems at all: legislation defines rather than quotes, so this
   // rule's zero there is vacuous and no amount of further statute changes that.
+  //
+  // **It cannot tell nesting from mixing.** Dutch nests the single pair inside
+  // the double, which is correct usage and is also a document opening quotations
+  // in two systems, so the ballot counts it as a split and reports the inner
+  // marks. Telling the two apart means knowing where a quotation closes, and only
+  // the double pair has an unambiguous closer: U+2019 is the apostrophe as well,
+  // the collision measured above. Depth on the double pair alone would still
+  // need the primary system as a parameter and would still be wrong on a
+  // quotation spanning paragraphs. The finding is a warning, so the cost is a
+  // line a reader dismisses; nobody has measured how often it happens, and no
+  // Dutch text with quotations is left here to measure it on. This is also why
+  // `en` has no such rule: nesting is what the second system is for in English,
+  // so the false positive would be the common case.
   minorityReport({
     id: 'mixed-quotation-marks',
     summary: 'More than one system of quotation marks used in the same text',
