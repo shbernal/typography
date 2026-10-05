@@ -1,183 +1,168 @@
-# @shbernal/typography
+<div align="center">
 
-[![CI](https://github.com/shbernal/typography/actions/workflows/ci.yml/badge.svg)](https://github.com/shbernal/typography/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/@shbernal/typography)](https://www.npmjs.com/package/@shbernal/typography)
-[![No dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+  <img alt="typography" src="assets/banner-light.svg" width="100%">
+</picture>
 
-Composable orthotypography rules, as data rather than as advice. Six styles
-ship, for English, French, Spanish, German and Dutch, and you can compose your
-own out of the same parts.
+Check and fix the typography a model gets wrong without anyone seeing it.
+
+[![npm][npm-badge]][npm]
+[![CI][ci-badge]][ci]
+[![Dependencies][deps-badge]][deps]
+[![License][license-badge]][license]
+
+---
+
+[Install](#install) • [Quickstart](#quickstart) • [Styles](#six-styles) • [How it works](#how-it-works) • [Docs](#more)
+
+---
+
+</div>
+
+<p align="center">
+  <img alt="typocheck checking a French Markdown file, fixing it, and checking it again" src="assets/demo.gif" width="860">
+</p>
+
+## What it is
+
+Orthotypography rules for English, French, Spanish, German and Dutch, as data you can read, run and recompose.
+Point it at generated or translated text and it reports the spacing, apostrophes and quotation marks a reader cannot see are wrong, then fixes the part that is safe to fix unattended.
+
+- **Six styles**: `en`, `fr`, `es`, `de-DE`, `de-CH` and `nl`, each rule citing its source.
+- **`check` and `fix` are separate sets.** `check` reports everything; `fix` applies only repairs that need no judgment.
+- **Readable reports.** Every finding has a line, a column, the citation and an escaped excerpt like `<NNBSP>`, so the invisible character is visible.
+- **Composable.** A style is a named list of rules. Build your own with `compose` and `derive`, from the same builders the shipped styles use.
+- **Era stamps.** A style id like `fr@6154dd89738a` is hashed from its rules, so text normalized under it says exactly which rules it went through.
+- **Zero runtime dependencies.** A library, a `typocheck` CLI, and a Claude Code skill in one package.
+
+## Why?
+
+Ask a model for the same paragraph twice and one copy has `'` where the other has `’`, or a no-break space before a colon where the other has a plain one.
+Both look correct, because U+00A0, U+202F and U+0020 render identically.
+Over thousands of rows that becomes a body of text set a dozen ways, where every row is defensible and no two agree.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/invisible-dark.svg">
+  <img alt="Two copies of the same French sentence that look identical, their hidden characters revealed, then normalized to one" src="assets/invisible-light.svg" width="100%">
+</picture>
+
+The question this package answers is not whether a publisher would accept the text.
+It is whether the same content comes back the same way every time.
+
+| | Smart quotes or find-and-replace | `@shbernal/typography` |
+| --- | --- | --- |
+| No-break and narrow no-break spaces | Invisible, usually untouched | Checked, fixed, and named in reports |
+| Spacing per language (French `« »`, Spanish `«»`) | One rule for everything | Six styles |
+| Repairs that need a decision, like Spanish `¿` | Guessed or skipped silently | Reported, never guessed |
+| Where a rule comes from | Nowhere | A citation on every rule |
+| Which rules touched stored text | Unknown | A derived era stamp |
+
+## Install
 
 ```bash
 pnpm add @shbernal/typography
+```
+
+Node 22 or later. To run the CLI without installing:
+
+```bash
 pnpm dlx @shbernal/typography check --style fr README.fr.md
 ```
 
-## Why this exists
+## Quickstart
 
-Text that comes back from a model is typographically arbitrary. Ask for the same
-paragraph twice and one copy has `'` where the other has `’`, one puts a
-no-break space before a colon and the other an ordinary one, and both read as
-correct. Nobody sees it, because U+00A0, U+202F and a plain space render
-identically and `'` and `’` are a font away from each other. What accumulates is
-a body of text set a dozen different ways, where every row is defensible and no
-two agree.
+1. Check a file against a style. It exits non-zero on findings, so it drops into CI as is.
 
-So the question here is not "did somebody set this correctly", which is a
-question about a publisher. It is **"does the same content come back the same
-way every time"**, which is a question about a pipeline. Three things follow, and
-they are what this package is:
+   ```bash
+   typocheck check --style fr docs/guide.fr.md
+   ```
 
-**Rules are the primitive; a style is a bundle of them with a name.** `fr` is a
-rule list, and so is the style you compose yourself out of `compose`, `derive`
-and the builders in `@shbernal/typography/rules`. There is no second mechanism
-for the shipped ones and no plugin API to learn: a style need not even be about a
-language. What you get from `fr` is somebody's homework on French, not a
-privileged position in the code.
+2. Apply the safe fixes in place.
 
-**Checking and fixing are different rule sets.** A Spanish sentence ending in `?`
-with no opening `¿` is unambiguously wrong and *not* safely fixable, because
-inserting the mark means deciding where the clause began. So `check` reports
-everything and `fix` applies only what is safe unattended. A finding that cannot
-be fixed is the interesting kind: it means somebody has to decide, not that
-nobody got round to it.
+   ```bash
+   typocheck fix --style fr --write docs/guide.fr.md
+   ```
 
-**A style does not assert what its citation does not fix.** Every rule names
-where it came from, which is what stops a bundle becoming a place where
-preferences collect: Imprimerie nationale for French, RAE for Spanish, Duden for
-German, the Nederlandse Taalunie for Dutch, and for English, which has no such
-body, the two manuals `en` ships the agreement of. Where a source admits two
-spellings, the rule covers what is wrong under both and preserves the rest. The
-`Lexique` typesets its own guillemets with U+202F and specifies U+00A0 in its own
-table, so `fr` keeps whichever width a document already uses; the first version
-did not, and it "corrected" 6,462 guillemets in 2.4M characters of
-professionally typeset French. [How that was found and
-fixed](docs/provenance.md) is the most useful thing in this repo.
+3. Or do both from code, on text a model just returned.
 
-## What it is good for
+   ```ts
+   import { fr } from '@shbernal/typography/fr';
+   import { check, unfixable } from '@shbernal/typography';
 
-**Checking documentation and content in CI.** `typocheck check --style fr --strict`
-over your French or Spanish Markdown, exiting non-zero on findings. Every finding
-carries a line, a column, the citation and an escaped excerpt, so a report is
-readable and a reviewer can see the character. Fenced blocks and inline code
-spans are skipped, so `it's` in a code sample stays as the program wrote it.
+   const findings = check(fr, text);
+   const needsAHuman = unfixable(findings);
+   const cleaned = fr.normalize(text);
+   ```
 
-**Normalizing generated or translated text.** `style.normalize` is the safe
-subset and nothing else, and `{ id, normalize }` is the whole contract, so a host
-binds a style without either package importing the other. The `id` is an era
-stamp, `fr@6154dd89738a`, **derived from the rules themselves**: two bodies of
-text carrying it were checked by the same rules, and the day a rule moves
-the stamp moves without anybody remembering to bump it. Carry it beside anything
-you normalized. If you normalize field by field and the fields must agree with
-each other, the French width section of [api.md](docs/api.md) is the part you
-need.
+Store `fr.id` next to anything you normalized.
+Fenced code blocks and inline code spans are never touched.
 
-**Making a house style, and being able to say what it is.** `derive(fr, { drop:
-[...] })` or a `compose` call in a `typography.config.mjs`, and `typocheck
---style acme-fr` is your rules with your citations. The stamp is derived, so a
-house style cannot quietly claim to be the shipped one, and a config the CLI
-loaded is named in the report footer.
+For a coding agent, the Claude Code skill ships in the same package, so the skill and the binary it runs are always the same version:
 
-**Giving a coding agent typography it cannot guess at.** A Claude Code skill
-ships inside the package, so the skill and the binary it invokes cannot be
-different versions. It teaches the four things `--help` does not, starting with
-the fact that these findings are invisible and must be quoted escaped.
+```text
+/plugin marketplace add shbernal/typography
+```
 
-**Reading the rules.** A style is a plain array of rules with summaries and
-citations. `import { fr } from '@shbernal/typography/fr'` and print it.
+```text
+/plugin install typography-check@shbernal-typography
+```
 
-## Six conventions, not one with a locale flag
+## Six styles
 
-| | English | French | Spanish | German (DE/AT) | German (CH) | Dutch |
-|---|---|---|---|---|---|---|
-| Quotation marks | curly, **no rule** on which pair | `« … »` | `«…»` | `»…«` | `«…»` | **no rule** |
-| Space inside them | **no rule** | **required**, U+00A0 or U+202F | forbidden | forbidden | forbidden | n/a |
-| Space before `; : ! ?` | forbidden | **required** | forbidden | forbidden | forbidden | forbidden |
-| Opening marks | none | none | `¿` `¡`, **paired** | none | none | none |
+French and Spanish use the same characters with opposite spacing, and German points them the other way.
+That is one question with several answers, so each style is its own rule list, not one engine with a locale flag.
 
-French and Spanish use the identical pair of characters with opposite spacing.
-German points them the other way and Switzerland points them back. That is one
-question with four answers rather than four questions, so it is one rule builder
-taking what the correct spacing is, called once per style with its own citation;
-the styles are rule lists over shared parts and there is no engine with a locale
-switch in it. And **there is no bare `de`**: a style id gets stamped onto a body
-of text, and a stamp that cannot tell a Swiss quotation from a German mistake is
-worse than no stamp at all.
+| | `en` | `fr` | `es` | `de-DE` | `de-CH` | `nl` |
+| --- | --- | --- | --- | --- | --- | --- |
+| Source | Chicago and New Hart's Rules | Imprimerie nationale | RAE | Duden | Duden | Taalunie |
+| Quotation marks | curly, either pair | `« … »` | `«…»` | `»…«` | `«…»` | either, but one per document |
+| Space inside them | no rule | required | forbidden | forbidden | forbidden | n/a |
+| Space before `; : ! ?` | forbidden | required | forbidden | forbidden | forbidden | forbidden |
+| Opening `¿` `¡` | | | paired | | | |
 
-English is the newest column and the one with no standards body behind it. It
-ships the intersection of Chicago and New Hart's Rules and rules on nothing they
-disagree about, which is why the serial comma is absent and why the dash
-convention is reported rather than repaired: Chicago closes an em dash up and
-Oxford sets a spaced en dash, so a repair in either spelling would retype text
-that is correct in the other. What is left is mostly one character. `it's`,
-`'tis` and `'90s` all want U+2019, and a smart-quote pass gives the last two
-U+2018 instead.
+There is no bare `de` and no language detection: a French rule applied to Swiss German produces confident nonsense, so you always name the style.
+Where a source admits two spellings, the style rules only on what is wrong under both.
+[docs/provenance.md](docs/provenance.md) records where each rule came from and what it was measured against.
 
-Dutch is the other interesting column, and the blank is not a gap. The Taalunie's
-standard is a spelling standard and rules on neither spacing nor quotation marks,
-and its advice service says outright that there are no fixed rules for choosing
-between `‘…’` and `“…”` - and then recommends picking one and keeping to it. So
-`nl` asserts no system and instead reports a document that uses more than one.
-Its centre of gravity is the apostrophe, where Dutch is unusually demanding:
-`auto's`, `'s morgens`, `A4'tje`, `'s-Gravenhage`.
+## How it works
 
-## Status
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/how-it-works-dark.svg">
+  <img alt="Rule builders compose into a style with a derived stamp, which check and normalize run" src="assets/how-it-works-light.svg" width="100%">
+</picture>
 
-`0.3.0` is the published version and pre-1.0 is the accurate thing to say. **It
-breaks every consumer of `0.2.1`**: styles are composed, rule ids are global,
-stamps are derived, `--lang` is `--style`, and `en` is new.
-[CHANGELOG.md](CHANGELOG.md) has the migration, one line per thing that moved.
+A rule is the primitive: a pattern, a sentence, a citation, and a repair if one is safe.
+A style is a list of rules with a name, built by `compose` or changed by `derive`.
+`check` runs every rule; `normalize` runs only the fixable ones, and is idempotent.
+`audit` holds any style, yours included, to idempotence, conformance and non-interference over text you supply.
 
-The four original languages have been run past real published text: 2.4M
-characters of French, 2.4M of German, 1.1M of Spanish, 880k of Dutch, 699k of
-Swiss German. Those corpora are gone from the repository along with the gates
-that ran them, because the question they answered is not the one above; what
-they established is in [docs/provenance.md](docs/provenance.md), and what
-replaced them is `audit`, which holds a style to idempotence, conformance and
-non-interference over text you supply.
+```ts
+import { derive } from '@shbernal/typography';
+import { fr } from '@shbernal/typography/fr';
 
-**English shipped without any of that**, and it is the first style here to have
-done so. It has since been held against 6.7M characters of Project Gutenberg
-prose, which found zero false positives and one ceiling: a possessive after an
-`s` is neither repaired nor reported, because a word-final apostrophe and a
-closing single quotation mark are the same character in the same position.
+const house = derive(fr, {
+  name: 'acme-fr',
+  standard: 'ACME house style v3',
+  drop: ['missing-punctuation-space'],
+});
+```
 
-Dutch is still the thinnest-measured, and now for a sharper reason. It has seen
-two corpora, 1.86M characters, one of them published by the body that wrote its
-citations and the other 976k characters of Dutch statute; between them, three of
-its seven rules have met nothing they could match, because legislation does not
-quote, barely contracts and names no places.
+Put that in a `typography.config.mjs` and `typocheck --style acme-fr` runs your rules, with your stamp in the report footer.
 
-Both runs are recorded in [docs/provenance.md](docs/provenance.md) rather than
-smoothed over, along with what each number is worth and the narrowings the
-measurements bought. Zero findings can mean the text was set correctly or that it
-contained nothing the rule could match, and only the first is evidence.
+## More
 
-## Documentation
+- [API and CLI reference](docs/api.md)
+- [Design: why a rule is the primitive and the stamp is derived](docs/design.md)
+- [Provenance: sources, measurements and narrowings](docs/provenance.md)
+- [Adding a rule or a style](docs/development.md)
+- [Report a false positive](https://github.com/shbernal/typography/issues/new?template=false-positive.yml), the most useful issue this project can get
 
-| | |
-|---|---|
-| [docs/api.md](docs/api.md) | Library and CLI |
-| [docs/design.md](docs/design.md) | Why the package is shaped this way |
-| [docs/provenance.md](docs/provenance.md) | Where the defaults came from and what was measured |
-| [docs/development.md](docs/development.md) | Changing a rule, adding a style, cutting a release |
-
-## Contributing, and the report worth most
-
-The single most useful issue this project can receive is a **false positive**:
-text that was set correctly and that `typocheck` complained about anyway. Unit
-tests measure whether a rule fires on text written to make it fire, which is
-recall, which was never in doubt. Only prose somebody wrote without a thought for
-this checker measures the failure mode these rules have, and that is the one
-thing this repo cannot generate for itself.
-
-The other report worth as much is a style that misbehaves in company: a `fix`
-that does not settle, a `fix` that leaves behind something `check` still reports,
-or two rules that undo each other. `audit` is exported so you can find those in a
-style you composed, and a violation it reports in a shipped one is a bug here.
-
-- [Report a false positive](https://github.com/shbernal/typography/issues/new?template=false-positive.yml)
-- [CONTRIBUTING.md](CONTRIBUTING.md), and the [security policy](SECURITY.md)
-- [Changelog](CHANGELOG.md) and [code of conduct](CODE_OF_CONDUCT.md)
-
-MIT, in [LICENSE](LICENSE).
+[npm]: https://www.npmjs.com/package/@shbernal/typography
+[npm-badge]: https://img.shields.io/npm/v/@shbernal/typography?style=for-the-badge&logo=npm&logoColor=white&labelColor=1c1b19&color=c43d1c
+[ci]: https://github.com/shbernal/typography/actions/workflows/ci.yml
+[ci-badge]: https://img.shields.io/github/actions/workflow/status/shbernal/typography/ci.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=CI&labelColor=1c1b19&color=c43d1c
+[deps]: package.json
+[deps-badge]: https://img.shields.io/badge/dependencies-0-c43d1c?style=for-the-badge&labelColor=1c1b19
+[license]: LICENSE
+[license-badge]: https://img.shields.io/github/license/shbernal/typography?style=for-the-badge&labelColor=1c1b19&color=c43d1c
