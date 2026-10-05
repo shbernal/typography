@@ -113,6 +113,11 @@ For a coding agent, the Claude Code skill ships in the same package, so the skil
 French and Spanish use the same characters with opposite spacing, and German points them the other way.
 That is one question with several answers, so each style is its own rule list, not one engine with a locale flag.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/six-dark.svg">
+  <img alt="The word typo quoted six ways: curly quotes for en and nl, either pair; spaced guillemets for fr, with either no-break space; closed-up guillemets for es and de-CH; inward-pointing guillemets for de-DE" src="assets/six-light.svg" width="100%">
+</picture>
+
 | | `en` | `fr` | `es` | `de-DE` | `de-CH` | `nl` |
 | --- | --- | --- | --- | --- | --- | --- |
 | Source | Chicago and New Hart's Rules | Imprimerie nationale | RAE | Duden | Duden | Taalunie |
