@@ -19,13 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-This license covers the source code and documentation in this repository.
-
-It does not cover the release gate corpora. Those are third-party published works
-and are deliberately not redistributed here: `gates/corpora/` is ignored, and
-what is committed is a list of URLs, the fetcher, and per-rule counts. Building a
-corpus locally leaves you holding somebody else's text under whatever terms they
-publish it; MIT on this repository does not relicense it. See `gates/README.md`.
