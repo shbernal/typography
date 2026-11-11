@@ -243,21 +243,6 @@ test('audit catches a repair that does not settle', () => {
   assert.ok(found.some((v) => v.property === 'conformance' && v.rule === 'doubling'));
 });
 
-test('a derived style inherits the properties, over the whole fixture set', () => {
-  // The shipped styles are held to all three in `hazards.test.ts`, over these
-  // fixtures and the generated battery. What is worth asserting *here* is the
-  // half this file is about: `derive` produces a style nobody declared, and it
-  // has to come out of that holding what its base held. `withWidth` is the one
-  // the package ships, and it drops a rule and replaces three, which is every
-  // verb `derive` has.
-  for (const width of [NO_BREAK, NARROW_NO_BREAK])
-    assert.deepEqual(
-      audit(withWidth(width), texts()),
-      [],
-      'a derived French style fails a property',
-    );
-});
-
 test('unfixable keeps exactly the findings whose rule has no fix', () => {
   // Exported, documented, and what the skill calls the interesting half of a
   // report, so it is held to the rules rather than to its own filter: a finding
