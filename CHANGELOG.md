@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.1
+
+No rule, style or stamp changed. The package is the same code as `0.4.0`;
+`docs/development.md` no longer describes git hooks the repository has dropped.
+Contributors' checks run in CI only, and commit messages are checked there for
+AI attribution.
+
 ## 0.4.0
 
 Every stamp moved, because every rule now skips Markdown code, which is part of
