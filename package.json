@@ -103,7 +103,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.20.5",
-    "charcheck": "^0.4.0",
+    "charcheck": "^0.4.1",
     "knip": "^6.45.1",
     "oxfmt": "^0.78.0",
     "oxlint": "^1.93.0",
