@@ -89,8 +89,7 @@ reasoning behind the first four.
 - **No em dashes (U+2014).** This and the rule above it are the three rules in
   `charcheck.config.ts`, which is the only place either character list exists.
   `pnpm lint:chars` runs them over the tree, `test/chars.test.ts` runs them again
-  so they hold for anyone who runs only `pnpm test`, and the `lefthook.yml` hooks
-  run them over the staged content and over the commit message. A module that
+  so they hold for anyone who runs only `pnpm test`. A module that
   must *name* one of these characters builds it from its code point; a line that
   must carry one takes a `charcheck-disable-line` comment.
 - **Zero runtime dependencies.** Not an aspiration: it is what makes
