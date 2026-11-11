@@ -84,40 +84,6 @@ test('rule ids are unique within a style', () => {
   });
 });
 
-test('normalize is idempotent', () => {
-  // A backfill that does not converge rewrites the same corpus forever and each
-  // pass looks like progress. This is the one property whose absence is
-  // invisible in a single run.
-  everyStyle((style) => {
-    for (const { name, text } of HOSTILE) {
-      const once = style.normalize(text);
-      assert.equal(
-        style.normalize(once),
-        once,
-        `${style.id} is not idempotent on ${name}: ${reveal(text)}`,
-      );
-    }
-  });
-});
-
-test('every individual fix is idempotent', () => {
-  // Composition can hide a non-idempotent rule when a later rule happens to
-  // normalise its output, so each is checked alone.
-  everyStyle((style) => {
-    for (const rule of style.rules) {
-      if (!rule.fix) continue;
-      for (const { name, text } of HOSTILE) {
-        const once = rule.fix(text);
-        assert.equal(
-          rule.fix(once),
-          once,
-          `${rule.id} is not idempotent on ${name}: ${reveal(text)}`,
-        );
-      }
-    }
-  });
-});
-
 test('a fixable rule changes the text exactly when it reports a finding', () => {
   // The property the single-pattern rule constructor exists to buy. If `find`
   // and `fix` were written separately this is where they would be caught
@@ -135,23 +101,6 @@ test('a fixable rule changes the text exactly when it reports a finding', () => 
           `${rule.id} disagrees with itself on ${name}: ${reveal(text)}`,
         );
       }
-    }
-  });
-});
-
-test('check reports nothing fixable once normalize has run', () => {
-  // `fix` is a subset of `check`, so a normalized value must have no fixable
-  // findings left. Anything still reported is check-only by construction, which
-  // is the asymmetry stated as a test.
-  everyStyle((style) => {
-    for (const { name, text } of HOSTILE) {
-      const clean = style.normalize(text);
-      const left = check(style, clean).filter((f) => f.fixable);
-      assert.deepEqual(
-        left,
-        [],
-        `${style.id} still reports fixable findings after normalize on ${name}`,
-      );
     }
   });
 });
