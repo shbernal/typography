@@ -7,7 +7,7 @@ disagreements here are about text and are settleable with a citation.
 
 ## Getting set up
 
-Node 24 and pnpm. The sources run directly under Node's type stripping, which is
+Node 26 and pnpm. The sources run directly under Node's type stripping, which is
 why relative imports keep their `.ts` extension.
 
 ```bash
@@ -121,10 +121,11 @@ write it as an escape or build it from its code point.
 
 Both rules are [charcheck](https://github.com/shbernal/charcheck)'s, declared
 once in `charcheck.config.ts` and read from there by `pnpm lint:chars`, by
-`test/chars.test.ts` and by the git hooks, so nothing restates the character
-list. The hooks are lefthook's, installed by `prepare` on `pnpm install`: they
-check the staged content before a commit and the commit message itself, which
-is the one surface a scan of the tree cannot reach.
+and by `test/chars.test.ts`, so nothing restates the character list.
+
+Commit messages carry no AI attribution (no `Co-authored-by:` trailer for a
+tool, no "Generated with" line); CI's `commit-check` job enforces it. Say in the
+pull request description instead whether a tool wrote the change.
 
 ## Reporting a false positive
 

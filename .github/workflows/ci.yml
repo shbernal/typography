@@ -11,15 +11,25 @@ on:
 permissions:
   contents: read
 
-# `prepare` installs the git hooks on every `pnpm install`, and installing them
-# fetches the shared rules repo. A runner has no hooks to fire, so that is a
-# network call this workflow otherwise does not need, on a job whose whole point
-# is that `pnpm check` needs none. The hooks are a local pre-filter; the gate
-# below is the same one they mirror.
-env:
-  LEFTHOOK: '0'
-
 jobs:
+  # Rules in `.github/cchk.toml`: commit messages carry no AI attribution. The
+  # disclosure goes in the pull request description instead.
+  commit-check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out typography
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Check commit messages
+        uses: commit-check/commit-check-action@v2
+        with:
+          message: true
+          branch: false
+
   check:
     # Both platforms. Nothing here spawns a process or touches a path, so the
     # platform risk is narrow and specific: this package's whole subject is
@@ -42,7 +52,7 @@ jobs:
       # this and puts the version in the PR, so the cost is a review rather than
       # drift.
       - name: Set up pnpm
-        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
         # No `version`: the action reads `packageManager` from package.json, which
         # is the one place the pnpm version is written.
 
@@ -77,7 +87,7 @@ jobs:
       # this and puts the version in the PR, so the cost is a review rather than
       # drift.
       - name: Set up pnpm
-        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
         # No `version`: the action reads `packageManager` from package.json, which
         # is the one place the pnpm version is written.
 

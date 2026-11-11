@@ -27,7 +27,7 @@ and no deference to prior architecture unless the maintainer asks for it.
 
 ## Environment
 
-Node 24 for development (the sources run under type stripping); the published
+Node 26 for development (the sources run under type stripping); the published
 package targets Node 22.
 
 ```powershell
@@ -36,13 +36,9 @@ pnpm build
 pnpm battery        # every style over every fixture, as a diffable dump
 ```
 
-Git hooks are lefthook's, installed by `prepare` on `pnpm install` and declared
-in `lefthook.yml`: charcheck, oxlint and oxfmt over the staged content on
-`pre-commit`, charcheck and the shared `no-ai-attribution` rule on `commit-msg`.
-They are a fast pre-filter rather than the gate, skippable with `--no-verify`, and
-`scripts/install-hooks.ts` steps around a `core.hooksPath` lefthook does not own
-rather than failing the install, because `prepare` failing takes every `pnpm run`
-down with it.
+No git hooks: every check runs in CI. The `commit-check` job holds commit
+messages to `.github/cchk.toml`, which forbids AI attribution; the AI disclosure
+goes in the pull request description.
 
 `pnpm check` is the whole gate and needs no network. The nine corpora and the two
 gate scripts that used to sit beside it are gone; `audit` replaced them, holding a
@@ -92,8 +88,7 @@ change to `src/prose.ts` or to a shared helper.
 - **A report must never quote raw text.** Use `reveal` / `excerptAt`.
 - **No em dashes (U+2014).** That rule and the one above it are both
   `charcheck.config.ts` now, which is the only place either character list
-  exists: `pnpm lint:chars`, the `pre-commit` and `commit-msg` hooks, and
-  `test/chars.test.ts` all read it. A file that must *name* one of these
+  exists: `pnpm lint:chars` and `test/chars.test.ts` both read it. A file that must *name* one of these
   characters writes the escape, as `src/pack.ts` does; a line that
   must carry one takes a `charcheck-disable-line` comment, which says so in the
   diff.

@@ -1,7 +1,6 @@
-// Banned characters, checked three ways from this one file: `pnpm lint:chars`,
-// the `pre-commit` and `commit-msg` jobs in `lefthook.yml`, and
+// Banned characters, checked two ways from this one file: `pnpm lint:chars` and
 // `test/chars.test.ts`, so the rules hold for anyone who runs only `pnpm test`.
-// One config rather than a scanner plus a hook plus a test with three copies of
+// One config rather than a scanner plus a test with two copies of
 // the character list, which is the defect this repo has caught five times.
 //
 // Every banned character is built from its code point. A literal here would be

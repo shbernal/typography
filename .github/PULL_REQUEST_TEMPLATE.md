@@ -22,3 +22,5 @@
       of the style needs it too.
 - [ ] The stamp moved, which it does by itself when a rule moves. Say here what
       it was and what it is now.
+
+AI disclosure: <!-- harness and model, for example "Claude Code, Claude Opus 5.5", or "written by hand" -->
