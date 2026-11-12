@@ -1,10 +1,9 @@
 // Exercises the built CLI on the oldest Node this package claims to support.
 //
 // Plain `.mjs` on purpose: the test suite runs the TypeScript sources under
-// Node's type stripping, which needs Node 24, so it cannot be the thing that
-// backs `engines.node: >=22`. This can. It is deliberately thin - the rules are
-// tested elsewhere - and checks only that the published entry point loads,
-// reports, and exits the way a caller depends on.
+// Node's type stripping, so nothing else runs what is published, `dist/`. It is
+// deliberately thin - the rules are tested elsewhere - and checks only that the
+// published entry point loads, reports, and exits the way a caller depends on.
 
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';

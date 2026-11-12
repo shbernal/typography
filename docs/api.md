@@ -217,9 +217,9 @@ pnpm dlx @shbernal/typography fix --style es --write content/**/*.es.md
 
 ### Config
 
-A config is a module named `typography.config.mjs` (or `.js`, or `.ts` on Node
-22.18 and newer), in the working directory or an ancestor, default-exporting a
-style or an array of them.
+A config is a module named `typography.config.mjs` (or `.js`, `.ts` or `.mts`),
+in the working directory or an ancestor, default-exporting a style or an array
+of them.
 
 ```js
 // typography.config.mjs

@@ -31,13 +31,10 @@ import type { Style } from './pack.ts';
 /**
  * The file names looked for, in every directory from the working one upwards.
  *
- * `.mjs` and `.js` both work anywhere this package runs: a config's `export
- * default` is unambiguous module syntax, which Node has detected in a `.js` file
- * since 22.7 whether or not the nearest `package.json` says
- * `"type": "module"`. `.ts` is the one with a floor, since type stripping is on
- * by default from 22.18 and this package supports 22, and the error an older
- * Node gives for it is about a file extension rather than about TypeScript. That
- * is the one failure `explain` translates.
+ * All four work anywhere this package runs: a config's `export default` is
+ * unambiguous module syntax, which Node detects in a `.js` file whether or not
+ * the nearest `package.json` says `"type": "module"`, and Node 24 strips types
+ * by default.
  */
 const CONFIG_NAMES: readonly string[] = [
   'typography.config.mjs',
@@ -108,7 +105,9 @@ export async function loadConfig(path: string): Promise<Config> {
   try {
     exported = ((await import(pathToFileURL(path).href)) as { default?: unknown }).default;
   } catch (error) {
-    throw new Error(explain(error as Error, path), { cause: error });
+    // The path in front, and nothing else: a stack trace out of somebody's own
+    // config is more useful than anything this file could say about it.
+    throw new Error(`${path}: ${(error as Error).message}`, { cause: error });
   }
 
   if (exported === undefined)
@@ -195,25 +194,6 @@ export function available(config?: Config): readonly Listed[] {
 }
 
 // ---------------------------------------------------------------------------
-
-/**
- * A load failure, with the one that is not about the config translated.
- *
- * Exported so it can be tested, which is the whole reason it is a function: the
- * case it exists for is a Node older than the one this repo develops on, so the
- * only way to hold it is to hand it the error. Everything else is passed through
- * with the path in front of it, because a stack trace from somebody's own config
- * is more useful than anything this file could say about it.
- */
-export function explain(error: Error, path: string): string {
-  if (/unknown file extension/i.test(error.message) && /\.m?ts$/.test(path))
-    return (
-      `${path}: this Node cannot load a TypeScript config. Type stripping is on by ` +
-      'default from Node 22.18; on an older one, write the config as ' +
-      `typography.config.mjs.\n  ${error.message}`
-    );
-  return `${path}: ${error.message}`;
-}
 
 function isStyle(value: unknown): value is Style {
   if (typeof value !== 'object' || value === null) return false;
