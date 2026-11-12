@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.2
+
+No rule, style or stamp changed. The package needs Node 24 or later
+(`engines.node` was `>=22`). Node 24 strips types by default, so a
+`typography.config.ts` always loads, and the message that explained a failed
+`.ts` config on Node 22.0 to 22.17 is gone.
+
 ## 0.4.1
 
 No rule, style or stamp changed. The package is the same code as `0.4.0`;
