@@ -65,7 +65,7 @@ It is whether the same content comes back the same way every time.
 pnpm add @shbernal/typography
 ```
 
-Node 22 or later. To run the CLI without installing:
+Node 24 or later. To run the CLI without installing:
 
 ```bash
 pnpm dlx @shbernal/typography check --style fr README.fr.md

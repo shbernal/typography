@@ -26,6 +26,6 @@ body:
     id: versions
     attributes:
       label: Package version and Node version
-      placeholder: '@shbernal/typography 0.1.0, node 22.11.0'
+      placeholder: '@shbernal/typography 0.1.0, node 24.11.0'
     validations:
       required: true

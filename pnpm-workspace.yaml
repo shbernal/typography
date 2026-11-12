@@ -10,10 +10,10 @@ minimumReleaseAgeExclude:
   - knip@6.45.1
 
 # `@types/node` follows the oldest runtime the package claims, `engines.node`,
-# rather than the Node 24 it is developed on: the types are the only thing that
-# stops `src/` calling an API Node 22 lacks, since the Node 22 job in CI smokes
-# the built CLI and nothing else. `pnpm update --latest` would take it to the
-# newest major and quietly drop that guard, so it is held out of that.
+# rather than the Node 26 it is developed on: the types are what stop `src/`
+# calling an API Node 24 lacks, before the oldest-supported job in CI would.
+# `pnpm update --latest` would take it to the newest major and quietly drop that
+# guard, so it is held out of that.
 updateConfig:
   ignoreDependencies:
     - '@types/node'

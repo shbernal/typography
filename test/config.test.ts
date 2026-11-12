@@ -15,7 +15,6 @@ import { dirname, join, resolve } from 'node:path';
 import { after, test } from 'node:test';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { explain } from '../src/config.ts';
 import * as library from '../src/index.ts';
 import { fr } from '../src/styles/fr.ts';
 
@@ -303,32 +302,11 @@ test('--version answers even when the config in the tree is broken', () => {
   assert.equal(run(['styles'], root).status, 2);
 });
 
-test('a TypeScript config on a Node too old to strip types is told what happened', () => {
-  // Not reachable on the Node this repo develops on, where type stripping is on
-  // by default, and reachable on Node 22.0 through 22.17, which `engines`
-  // allows. The error Node gives names a file extension and not TypeScript, so
-  // the translation is the whole point. Held by handing `explain` the error,
-  // because the alternative is a test that only runs on a runtime CI does not
-  // have.
-  const error = new TypeError('Unknown file extension ".ts" for /w/typography.config.ts');
-  const said = explain(error, '/w/typography.config.ts');
-  assert.match(said, /type stripping/i);
-  assert.match(said, /22\.18/);
-  assert.match(said, /typography\.config\.mjs/);
-  // Anything else passes through with the path in front of it. A stack trace out
-  // of somebody's own config is more useful than a guess about it.
-  const other = new Error('fr is not defined');
-  assert.equal(
-    explain(other, '/w/typography.config.mjs'),
-    '/w/typography.config.mjs: fr is not defined',
-  );
-});
-
 test('the library has no config concept, and only the CLI imports one', () => {
   // A host embedding this package composes a `Style` in its own code and hands
   // it to `check`. The config file exists because a CLI cannot be handed an
   // object, and that is the whole of its remit.
-  for (const name of ['findConfig', 'loadConfig', 'resolveStyle', 'available', 'explain'])
+  for (const name of ['findConfig', 'loadConfig', 'resolveStyle', 'available'])
     assert.ok(!(name in library), `the root export carries ${name}, which is the CLI's`);
 
   // Over the imports and not only over the exports, because the way this

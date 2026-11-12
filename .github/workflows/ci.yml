@@ -70,10 +70,10 @@ jobs:
       - name: Build
         run: pnpm build
 
-  # `engines.node` claims >= 22, and the check job above cannot back that claim:
-  # it runs the sources under Node's type stripping, which needs 24. So this job
-  # builds `dist/` and exercises the built CLI on the oldest supported runtime.
-  # Without it the engines field is an aspiration.
+  # `engines.node` claims >= 24, and the check job above runs the Node in
+  # `.nvmrc`, which is newer. So this job runs the gate, builds `dist/` and
+  # exercises the built CLI on the oldest supported runtime. Without it the
+  # engines field is an aspiration.
   oldest-supported:
     runs-on: ubuntu-latest
     steps:
@@ -91,30 +91,17 @@ jobs:
         # No `version`: the action reads `packageManager` from package.json, which
         # is the one place the pnpm version is written.
 
-      - name: Set up Node 24 to build
+      - name: Set up Node 24
         uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
 
-      - name: Install and build
+      - name: Install, check and build
         run: |
           pnpm install --frozen-lockfile
+          pnpm check
           pnpm build
 
-      # `package-manager-cache` defaults to true, which makes this step run
-      # `pnpm store path` under the Node it just installed. Nothing is being
-      # installed here - `dist/` was built two steps ago and the smoke test has no
-      # dependencies - so there is no cache to want, and turning it off is what
-      # keeps this step free to name any runtime the engines field admits. That
-      # freedom is load-bearing rather than tidy: pnpm carries its own Node floor
-      # (pnpm 11's was 22.13), so with the cache on, the runtime this job can
-      # name would move with every pnpm bump instead of with `engines.node`.
-      - name: Set up Node 22 to run
-        uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          package-manager-cache: false
-
-      - name: Smoke the built CLI on Node 22
+      - name: Smoke the built CLI
         run: node scripts/smoke-dist.mjs

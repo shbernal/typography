@@ -28,7 +28,7 @@ and no deference to prior architecture unless the maintainer asks for it.
 ## Environment
 
 Node 26 for development (the sources run under type stripping); the published
-package targets Node 22.
+package targets Node 24.
 
 ```powershell
 pnpm check          # typecheck + lint + test. The done gate
